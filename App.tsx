@@ -24,6 +24,12 @@ import ParklandCalculator from './components/calculators/ParklandCalculator';
 import WellsPECalculator from './components/calculators/WellsPECalculator';
 import CURB65Calculator from './components/calculators/CURB65Calculator';
 import VasoactiveDrugsCalculator from './components/calculators/VasoactiveDrugsCalculator';
+import CHA2DS2VAScCalculator from './components/calculators/CHA2DS2VAScCalculator';
+import MELDCalculator from './components/calculators/MELDCalculator';
+import AlvaradoCalculator from './components/calculators/AlvaradoCalculator';
+import DosageCalculator from './components/calculators/DosageCalculator';
+import APGARCalculator from './components/calculators/APGARCalculator';
+
 import AdSpace from './components/AdSpace';
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
 import { 
@@ -43,7 +49,9 @@ import {
   LungsIcon,
   CalculamedLogo,
   SirenIcon,
-  BrainIcon
+  BrainIcon,
+  ScalpelIcon,
+  PillIcon
 } from './components/icons';
 
 // --- Extended View Enum for Legal Pages ---
@@ -64,8 +72,9 @@ const SPECIALTIES: SpecialtyDef[] = [
     icon: DropIcon,
     color: 'bg-emerald-500',
     calculators: [
-        { id: AppView.CALC_BMI, name: 'IMC', description: 'Índice de Massa Corporal' },
+        { id: AppView.CALC_DOSAGE, name: 'Cálculo de Medicação', description: 'Regra de três (mg x ml)' },
         { id: AppView.CALC_IV, name: 'Gotejamento', description: 'Velocidade de infusão IV' },
+        { id: AppView.CALC_BMI, name: 'IMC', description: 'Índice de Massa Corporal' },
         { id: AppView.CALC_WATER, name: 'Hidratação Diária', description: 'Meta de água por peso' },
         { id: AppView.CALC_IDEAL_WEIGHT, name: 'Peso Ideal', description: 'Fórmula de Devine' },
         { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Fórmula de Mosteller' },
@@ -85,6 +94,17 @@ const SPECIALTIES: SpecialtyDef[] = [
     ]
   },
   {
+    id: 'surgery',
+    name: 'Cirurgia Geral',
+    icon: ScalpelIcon,
+    color: 'bg-teal-600',
+    calculators: [
+        { id: AppView.CALC_ALVARADO, name: 'Escore de Alvarado', description: 'Diagnóstico de Apendicite' },
+        { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação em Queimados' },
+        { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Ajuste de doses' },
+    ]
+  },
+  {
     id: 'neuro',
     name: 'Neurologia',
     icon: BrainIcon,
@@ -99,6 +119,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     icon: HeartPulseIcon,
     color: 'bg-rose-500',
     calculators: [
+        { id: AppView.CALC_CHA2DS2_VASC, name: 'CHA₂DS₂-VASc', description: 'Risco AVC em FA' },
         { id: AppView.CALC_LDL, name: 'LDL (Friedewald)', description: 'Cálculo de Colesterol LDL' },
         { id: AppView.CALC_MAP, name: 'Pressão Média (PAM)', description: 'Avaliação hemodinâmica' },
         { id: AppView.CALC_QTC, name: 'QT Corrigido', description: 'Fórmula de Bazett' },
@@ -143,6 +164,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     icon: LiverIcon,
     color: 'bg-amber-600',
     calculators: [
+        { id: AppView.CALC_MELD, name: 'MELD Score', description: 'Gravidade Doença Hepática' },
         { id: AppView.CALC_CHILD_PUGH, name: 'Child-Pugh', description: 'Prognóstico na Cirrose' },
     ]
   },
@@ -152,6 +174,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     icon: ChildIcon,
     color: 'bg-orange-500',
     calculators: [
+        { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Avaliação de Recém-Nascido' },
         { id: AppView.CALC_PED_FLUIDS, name: 'Holliday-Segar', description: 'Fluidos de manutenção' },
         { id: AppView.CALC_BMI, name: 'IMC', description: 'Índice de Massa Corporal' },
     ]
@@ -163,6 +186,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     color: 'bg-pink-500',
     calculators: [
         { id: AppView.CALC_PREGNANCY, name: 'Idade Gestacional', description: 'DPP e IG via DUM' },
+        { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Avaliação de Recém-Nascido' },
     ]
   },
   {
@@ -258,6 +282,11 @@ const App: React.FC = () => {
       case AppView.CALC_WELLS_PE: return <WellsPECalculator />;
       case AppView.CALC_CURB65: return <CURB65Calculator />;
       case AppView.CALC_VASOACTIVE: return <VasoactiveDrugsCalculator />;
+      case AppView.CALC_CHA2DS2_VASC: return <CHA2DS2VAScCalculator />;
+      case AppView.CALC_MELD: return <MELDCalculator />;
+      case AppView.CALC_ALVARADO: return <AlvaradoCalculator />;
+      case AppView.CALC_DOSAGE: return <DosageCalculator />;
+      case AppView.CALC_APGAR: return <APGARCalculator />;
       
       case AppView.DASHBOARD:
       default:
@@ -280,10 +309,13 @@ const App: React.FC = () => {
       <aside className="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col z-30">
         <div className="p-6 border-b border-slate-700">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigate(AppView.DASHBOARD)}>
-            <CalculamedLogo className="w-8 h-8" />
-            <h1 className="text-xl font-bold text-white tracking-tight">
-              Calcula<span className="text-medical-500">med</span>
-            </h1>
+            <CalculamedLogo className="w-9 h-9" />
+            <div>
+                <h1 className="text-xl font-bold text-white tracking-tight leading-none">
+                  Calcula<span className="text-medical-500">med</span>
+                </h1>
+                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block mt-1">Calculadoras da Saúde</span>
+            </div>
           </div>
         </div>
         <nav className="p-4 space-y-2 flex-grow overflow-y-auto">
