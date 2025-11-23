@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppView, SpecialtyDef, SpecialtyId } from './types';
+import { AppView, SpecialtyDef, SpecialtyId, CalculatorDef } from './types';
 import BMICalculator from './components/calculators/BMICalculator';
 import EGFRCalculator from './components/calculators/EGFRCalculator';
 import CockcroftGaultCalculator from './components/calculators/CockcroftGaultCalculator';
@@ -44,7 +44,7 @@ import NutritionManager from './components/NutritionManager';
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
 import { auth, db, functions } from './services/firebaseConfig';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, getDocs, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 
 import { 
@@ -71,7 +71,8 @@ import {
   LockIcon,
   CrownIcon,
   AppleIcon,
-  ActivityIcon
+  ActivityIcon,
+  StarIcon
 } from './components/icons';
 
 enum LegalView {
@@ -242,26 +243,44 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isPro, setIsPro] = useState(false);
   const [loadingPro, setLoadingPro] = useState(true);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         setUser(currentUser);
         if (currentUser) {
-            // Verifica se tem assinatura ativa no Firestore
-            // A extensão "Run Payments with Stripe" cria uma subcoleção 'subscriptions' dentro de 'customers'
-            const q = query(
-                collection(db, 'customers', currentUser.uid, 'subscriptions'), 
-                where('status', 'in', ['active', 'trialing'])
-            );
-            
-            const unsubscribeSubs = onSnapshot(q, (snapshot) => {
-                setIsPro(!snapshot.empty);
+            // Check for Admin Bypass
+            if (currentUser.email === 'rodrigo@ajudamediko.com.br') {
+                setIsPro(true);
                 setLoadingPro(false);
-            });
-            
-            return () => unsubscribeSubs();
+            } else {
+                // Check for Subscription
+                const q = query(
+                    collection(db, 'customers', currentUser.uid, 'subscriptions'), 
+                    where('status', 'in', ['active', 'trialing'])
+                );
+                
+                const unsubscribeSubs = onSnapshot(q, (snapshot) => {
+                    setIsPro(!snapshot.empty);
+                    setLoadingPro(false);
+                });
+
+                // Load Favorites
+                try {
+                    const userDocRef = doc(db, 'users', currentUser.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (userDocSnap.exists() && userDocSnap.data().favorites) {
+                        setFavorites(userDocSnap.data().favorites);
+                    }
+                } catch (e) {
+                    console.error("Erro ao carregar favoritos", e);
+                }
+                
+                return () => unsubscribeSubs();
+            }
         } else {
             setIsPro(false);
+            setFavorites([]);
             setLoadingPro(false);
         }
     });
@@ -289,6 +308,35 @@ const App: React.FC = () => {
       } catch (e) {
           console.error("Erro ao abrir portal", e);
           alert("Erro ao abrir portal de assinatura. Tente novamente.");
+      }
+  };
+
+  const handleToggleFavorite = async (calcId: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!user) {
+          setView(AppView.PRO_LOGIN);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+      }
+
+      const isFav = favorites.includes(calcId);
+      const newFavorites = isFav 
+        ? favorites.filter(id => id !== calcId)
+        : [...favorites, calcId];
+      
+      setFavorites(newFavorites); // Optimistic update
+
+      try {
+          const userDocRef = doc(db, 'users', user.uid);
+          if (isFav) {
+              await updateDoc(userDocRef, { favorites: arrayRemove(calcId) });
+          } else {
+              await setDoc(userDocRef, { favorites: arrayUnion(calcId) }, { merge: true });
+          }
+      } catch (error) {
+          console.error("Erro ao salvar favorito", error);
+          // Revert on error
+          setFavorites(favorites);
       }
   };
 
@@ -346,8 +394,10 @@ const App: React.FC = () => {
                 specialtyId={selectedSpecialtyId} 
                 onSelectCalc={handleNavigate}
                 isPro={isPro}
+                favorites={favorites}
+                onToggleFavorite={handleToggleFavorite}
             />
-        ) : <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} />;
+        ) : <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} favorites={favorites} onToggleFavorite={handleToggleFavorite} />;
       
       case AppView.PRO_LOGIN: return <Auth onLogin={handleLoginSuccess} />;
       case AppView.NUTRITION_PRO: return <NutritionManager />;
@@ -395,7 +445,7 @@ const App: React.FC = () => {
       
       case AppView.DASHBOARD:
       default:
-        return <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} />;
+        return <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} favorites={favorites} onToggleFavorite={handleToggleFavorite} />;
     }
   };
 
@@ -641,7 +691,18 @@ const App: React.FC = () => {
   );
 };
 
-const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavigate: (view: ExtendedView) => void }> = ({ onSelectSpecialty, onNavigate }) => {
+interface DashboardProps { 
+    onSelectSpecialty: (id: SpecialtyId) => void; 
+    onNavigate: (view: ExtendedView) => void;
+    favorites: string[];
+    onToggleFavorite: (id: string, e: React.MouseEvent) => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, favorites, onToggleFavorite }) => {
+  
+  const favoriteCalculators = SPECIALTIES.flatMap(s => s.calculators.map(c => ({...c, specialtyName: s.name})))
+        .filter(c => favorites.includes(c.id));
+
   return (
     <div className="pb-10">
       <div className="mb-8">
@@ -652,12 +713,42 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
           </p>
       </div>
 
+      {favoriteCalculators.length > 0 && (
+          <div className="mb-10 animate-fade-in">
+              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                  <StarIcon className="w-5 h-5 text-yellow-500" filled />
+                  Suas Ferramentas Favoritas
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {favoriteCalculators.map(calc => (
+                      <div 
+                        key={calc.id}
+                        onClick={() => onNavigate(calc.id)}
+                        className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 cursor-pointer hover:border-medical-300 hover:shadow-md transition flex justify-between items-start group"
+                      >
+                          <div>
+                              <h4 className="font-bold text-slate-800 text-sm">{calc.name}</h4>
+                              <p className="text-xs text-slate-500 mt-1">{calc.specialtyName}</p>
+                          </div>
+                          <button 
+                            onClick={(e) => onToggleFavorite(calc.id, e)}
+                            className="text-yellow-400 hover:scale-110 transition"
+                          >
+                              <StarIcon className="w-5 h-5" filled />
+                          </button>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      )}
+
+      <h3 className="text-lg font-bold text-slate-800 mb-4">Especialidades</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {SPECIALTIES.map((spec) => (
             <div 
                 key={spec.id}
                 onClick={() => onSelectSpecialty(spec.id)}
-                className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer hover:shadow-md hover:border-medical-200 transition group flex flex-col h-full"
+                className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer hover:shadow-md hover:border-medical-200 transition group flex flex-col h-full relative"
             >
                 <div className={`w-12 h-12 ${spec.color} rounded-xl flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <spec.icon className="w-7 h-7 text-white" />
@@ -711,7 +802,15 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
   );
 };
 
-const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: ExtendedView) => void, isPro: boolean }> = ({ specialtyId, onSelectCalc, isPro }) => {
+interface CategoryViewProps { 
+    specialtyId: SpecialtyId; 
+    onSelectCalc: (view: ExtendedView) => void; 
+    isPro: boolean;
+    favorites: string[];
+    onToggleFavorite: (id: string, e: React.MouseEvent) => void;
+}
+
+const CategoryView: React.FC<CategoryViewProps> = ({ specialtyId, onSelectCalc, isPro, favorites, onToggleFavorite }) => {
     const specialty = SPECIALTIES.find(s => s.id === specialtyId);
 
     if (!specialty) return <div>Especialidade não encontrada</div>;
@@ -731,6 +830,7 @@ const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: Ex
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {specialty.calculators.map((calc) => {
                     const locked = calc.isPro && !isPro;
+                    const isFav = favorites.includes(calc.id);
                     return (
                         <div 
                             key={calc.id}
@@ -748,12 +848,21 @@ const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: Ex
                                 </div>
                                 <p className="text-sm text-slate-500 mt-1">{calc.description}</p>
                             </div>
-                            <div className={`p-2 rounded-full transition ${locked ? 'bg-slate-100' : 'bg-slate-50 group-hover:bg-medical-50'}`}>
-                                {locked ? (
-                                    <LockIcon className="w-5 h-5 text-slate-400" />
-                                ) : (
-                                    <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 rotate-180 transition" />
-                                )}
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    onClick={(e) => onToggleFavorite(calc.id, e)}
+                                    className={`p-2 rounded-full transition hover:bg-slate-100 ${isFav ? 'text-yellow-400' : 'text-slate-300 hover:text-yellow-400'}`}
+                                    title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                                >
+                                    <StarIcon className="w-5 h-5" filled={isFav} />
+                                </button>
+                                <div className={`p-2 rounded-full transition ${locked ? 'bg-slate-100' : 'bg-slate-50 group-hover:bg-medical-50'}`}>
+                                    {locked ? (
+                                        <LockIcon className="w-5 h-5 text-slate-400" />
+                                    ) : (
+                                        <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 rotate-180 transition" />
+                                    )}
+                                </div>
                             </div>
                         </div>
                     );
