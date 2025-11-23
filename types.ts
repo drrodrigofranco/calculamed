@@ -22,6 +22,7 @@ export enum AppView {
   // Neurology / Emergency
   CALC_GLASGOW = 'CALC_GLASGOW',
   CALC_ANION_GAP = 'CALC_ANION_GAP',
+  CALC_PARKLAND = 'CALC_PARKLAND',
   // Pediatrics
   CALC_PED_FLUIDS = 'CALC_PED_FLUIDS',
   // Nutrition
@@ -29,8 +30,12 @@ export enum AppView {
   // Endocrinology
   CALC_CORR_CALCIUM = 'CALC_CORR_CALCIUM',
   CALC_GLUCOSE = 'CALC_GLUCOSE',
+  CALC_SODIUM_CORR = 'CALC_SODIUM_CORR',
   // Gastro
-  CALC_CHILD_PUGH = 'CALC_CHILD_PUGH'
+  CALC_CHILD_PUGH = 'CALC_CHILD_PUGH',
+  // Pneumology
+  CALC_WELLS_PE = 'CALC_WELLS_PE',
+  CALC_CURB65 = 'CALC_CURB65'
 }
 
 export interface NewsItem {
@@ -46,7 +51,7 @@ export interface CalculatorResult {
   notes?: string;
 }
 
-export type SpecialtyId = 'cardio' | 'nephro' | 'obs' | 'peds' | 'neuro' | 'nutrition' | 'nursing' | 'endo' | 'gastro';
+export type SpecialtyId = 'cardio' | 'nephro' | 'obs' | 'peds' | 'neuro' | 'nutrition' | 'nursing' | 'endo' | 'gastro' | 'pneumo';
 
 export interface CalculatorDef {
   id: AppView;

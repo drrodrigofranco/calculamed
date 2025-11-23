@@ -141,3 +141,19 @@ export const XIcon = ({ className }: { className?: string }) => (
     <path d="m6 6 12 12" />
   </svg>
 );
+
+export const FlameIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.1.2-2.2.6-3.3.3.9.8 1.8 1.9 2.8z"/>
+  </svg>
+);
+
+export const LungsIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M17.4 4.6A9 9 0 0 1 21 12c0 5-4.5 9-9.5 9H11a9.5 9.5 0 0 1-9.5-9c0-2.8 1.3-5.2 3.4-6.9"/>
+    <path d="M12 22v-7"/>
+    <path d="M12 15a5 5 0 0 0 5-5c0-1-.3-2-.8-2.8"/>
+    <path d="M12 15a5 5 0 0 1-5-5c0-1 .3-2 .8-2.8"/>
+    <path d="M12 2v5"/>
+  </svg>
+);

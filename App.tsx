@@ -18,6 +18,10 @@ import CorrectedCalciumCalculator from './components/calculators/CorrectedCalciu
 import GlucoseConverter from './components/calculators/GlucoseConverter';
 import ChildPughCalculator from './components/calculators/ChildPughCalculator';
 import UnitConverter from './components/calculators/UnitConverter';
+import SodiumCorrectionCalculator from './components/calculators/SodiumCorrectionCalculator';
+import ParklandCalculator from './components/calculators/ParklandCalculator';
+import WellsPECalculator from './components/calculators/WellsPECalculator';
+import CURB65Calculator from './components/calculators/CURB65Calculator';
 import NewsFeed from './components/NewsFeed';
 import { 
   ActivityIcon, 
@@ -39,7 +43,9 @@ import {
   RefreshCwIcon,
   GithubIcon,
   SearchIcon,
-  XIcon
+  XIcon,
+  FlameIcon,
+  LungsIcon
 } from './components/icons';
 
 // --- Configuration Data ---
@@ -71,6 +77,16 @@ const SPECIALTIES: SpecialtyDef[] = [
     ]
   },
   {
+    id: 'pneumo',
+    name: 'Pneumologia',
+    icon: LungsIcon,
+    color: 'bg-sky-500',
+    calculators: [
+        { id: AppView.CALC_WELLS_PE, name: 'Score de Wells (TEP)', description: 'Risco de Embolia Pulmonar' },
+        { id: AppView.CALC_CURB65, name: 'CURB-65', description: 'Gravidade Pneumonia' },
+    ]
+  },
+  {
     id: 'endo',
     name: 'Endocrinologia',
     icon: FlaskIcon,
@@ -78,6 +94,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     calculators: [
         { id: AppView.CALC_GLUCOSE, name: 'Conversão Glicose', description: 'mg/dL ↔ mmol/L' },
         { id: AppView.CALC_CORR_CALCIUM, name: 'Cálcio Corrigido', description: 'Ajuste pela Albumina' },
+        { id: AppView.CALC_SODIUM_CORR, name: 'Sódio Corrigido', description: 'Hiperglicemia grave' },
         { id: AppView.CALC_BMI, name: 'IMC', description: 'Classificação de peso' },
     ]
   },
@@ -89,6 +106,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     calculators: [
         { id: AppView.CALC_EGFR, name: 'TFG (CKD-EPI)', description: 'Função Renal Estimada' },
         { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Ajuste de dose/diálise' },
+        { id: AppView.CALC_ANION_GAP, name: 'Anion Gap', description: 'Acidose Metabólica' },
     ]
   },
   {
@@ -107,6 +125,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     color: 'bg-violet-600',
     calculators: [
         { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de consciência' },
+        { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação em Queimados' },
         { id: AppView.CALC_MAP, name: 'Pressão Média (PAM)', description: 'Monitorização Trauma/Neuro' },
         { id: AppView.CALC_ANION_GAP, name: 'Anion Gap', description: 'Investigação de acidose' },
     ]
@@ -213,6 +232,10 @@ const App: React.FC = () => {
       case AppView.CALC_GLUCOSE: return <GlucoseConverter />;
       case AppView.CALC_CHILD_PUGH: return <ChildPughCalculator />;
       case AppView.CALC_CONVERTER: return <UnitConverter />;
+      case AppView.CALC_SODIUM_CORR: return <SodiumCorrectionCalculator />;
+      case AppView.CALC_PARKLAND: return <ParklandCalculator />;
+      case AppView.CALC_WELLS_PE: return <WellsPECalculator />;
+      case AppView.CALC_CURB65: return <CURB65Calculator />;
       
       case AppView.DASHBOARD:
       default:
