@@ -42,6 +42,11 @@ import AdSpace from './components/AdSpace';
 import Auth from './components/Auth';
 import NutritionManager from './components/NutritionManager';
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
+import { auth, db, functions } from './services/firebaseConfig';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestore';
+import { httpsCallable } from 'firebase/functions';
+
 import { 
   CalculatorIcon, 
   KidneyIcon, 
@@ -65,7 +70,8 @@ import {
   ToothIcon,
   LockIcon,
   CrownIcon,
-  AppleIcon
+  AppleIcon,
+  ActivityIcon
 } from './components/icons';
 
 enum LegalView {
@@ -233,24 +239,58 @@ const App: React.FC = () => {
   const [view, setView] = useState<ExtendedView>(AppView.DASHBOARD);
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<SpecialtyId | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isPro, setIsPro] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isPro, setIsPro] = useState(false);
+  const [loadingPro, setLoadingPro] = useState(true);
 
   useEffect(() => {
-    const storedPro = localStorage.getItem('as_is_pro');
-    if (storedPro === 'true') setIsPro(true);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        setUser(currentUser);
+        if (currentUser) {
+            // Verifica se tem assinatura ativa no Firestore
+            // A extensão "Run Payments with Stripe" cria uma subcoleção 'subscriptions' dentro de 'customers'
+            const q = query(
+                collection(db, 'customers', currentUser.uid, 'subscriptions'), 
+                where('status', 'in', ['active', 'trialing'])
+            );
+            
+            const unsubscribeSubs = onSnapshot(q, (snapshot) => {
+                setIsPro(!snapshot.empty);
+                setLoadingPro(false);
+            });
+            
+            return () => unsubscribeSubs();
+        } else {
+            setIsPro(false);
+            setLoadingPro(false);
+        }
+    });
+    return () => unsubscribe();
   }, []);
 
-  const handleLogin = () => {
-      setIsPro(true);
-      localStorage.setItem('as_is_pro', 'true');
+  const handleLoginSuccess = () => {
       setView(AppView.DASHBOARD);
   };
 
-  const handleLogout = () => {
-      setIsPro(false);
-      localStorage.removeItem('as_is_pro');
-      setView(AppView.DASHBOARD);
+  const handleLogout = async () => {
+      try {
+          await signOut(auth);
+          setView(AppView.DASHBOARD);
+      } catch (error) {
+          console.error("Erro ao sair", error);
+      }
   }
+
+  const handleManageSubscription = async () => {
+      try {
+          const functionRef = httpsCallable(functions, 'ext-firestore-stripe-payments-createPortalLink');
+          const { data }: any = await functionRef({ returnUrl: window.location.origin });
+          window.location.assign(data.url);
+      } catch (e) {
+          console.error("Erro ao abrir portal", e);
+          alert("Erro ao abrir portal de assinatura. Tente novamente.");
+      }
+  };
 
   const handleNavigate = (targetView: ExtendedView) => {
     if (Object.values(AppView).includes(targetView as AppView)) {
@@ -309,7 +349,7 @@ const App: React.FC = () => {
             />
         ) : <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} />;
       
-      case AppView.PRO_LOGIN: return <Auth onLogin={handleLogin} />;
+      case AppView.PRO_LOGIN: return <Auth onLogin={handleLoginSuccess} />;
       case AppView.NUTRITION_PRO: return <NutritionManager />;
       case LegalView.PRIVACY: return <PrivacyPolicy />;
       case LegalView.TERMS: return <TermsOfUse />;
@@ -386,18 +426,42 @@ const App: React.FC = () => {
         </div>
 
         <div className="p-4 bg-slate-800 border-b border-slate-700">
-            {isPro ? (
-                 <div className="flex items-center justify-between">
+            {user ? (
+                 <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-2">
-                        <div className="bg-yellow-500 p-1 rounded">
-                            <CrownIcon className="w-4 h-4 text-slate-900" />
-                        </div>
-                        <div>
-                            <p className="text-xs font-bold text-white">Assinante Pro</p>
-                            <p className="text-[10px] text-green-400">Ativo</p>
+                        {user.photoURL ? (
+                            <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-full border border-slate-500" />
+                        ) : (
+                            <div className="bg-slate-600 p-1 rounded">
+                                <CrownIcon className="w-4 h-4 text-slate-300" />
+                            </div>
+                        )}
+                        <div className="overflow-hidden">
+                            <p className="text-xs font-bold text-white truncate w-32">{user.displayName || 'Usuário'}</p>
+                            <p className={`text-[10px] ${isPro ? 'text-green-400 font-bold' : 'text-slate-400'}`}>
+                                {isPro ? 'Assinante PRO' : 'Plano Grátis'}
+                            </p>
                         </div>
                     </div>
-                    <button onClick={handleLogout} className="text-xs text-slate-400 hover:text-white underline">Sair</button>
+                    
+                    {isPro ? (
+                        <button 
+                            onClick={handleManageSubscription}
+                            className="text-xs bg-slate-700 hover:bg-slate-600 text-white py-1.5 rounded transition text-center"
+                        >
+                            Gerenciar Assinatura
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={() => handleNavigate(AppView.PRO_LOGIN)}
+                            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-slate-900 font-bold py-2 rounded text-sm transition"
+                        >
+                            <CrownIcon className="w-4 h-4" />
+                            Virar PRO
+                        </button>
+                    )}
+                    
+                    <button onClick={handleLogout} className="text-xs text-slate-400 hover:text-white underline text-left">Sair</button>
                  </div>
             ) : (
                 <button 

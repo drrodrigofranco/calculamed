@@ -1,31 +1,74 @@
 import React, { useState } from 'react';
 import { CrownIcon, GoogleIcon } from './icons';
+import { auth, googleProvider, db } from '../services/firebaseConfig';
+import { signInWithPopup } from 'firebase/auth';
+import { collection, addDoc, onSnapshot } from 'firebase/firestore';
 
 interface AuthProps {
   onLogin: () => void;
 }
 
 const Auth: React.FC<AuthProps> = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-        setError("Por favor, preencha todos os campos.");
-        return;
-    }
-    onLogin();
+  const handleGoogleLogin = async () => {
+      setIsLoading(true);
+      setError('');
+      try {
+          await signInWithPopup(auth, googleProvider);
+          onLogin();
+      } catch (err: any) {
+          console.error(err);
+          let msg = "Erro ao conectar com Google.";
+          if (err.code === 'auth/popup-closed-by-user') msg = "Login cancelado.";
+          if (err.code === 'auth/configuration-not-found') msg = "Erro de configuração no Firebase.";
+          setError(msg);
+      } finally {
+          setIsLoading(false);
+      }
   };
 
-  const handleGoogleLogin = () => {
+  const createCheckoutSession = async () => {
+      if (!auth.currentUser) {
+          await handleGoogleLogin();
+          return; // Após logar, o usuário clica de novo para assinar
+      }
+
       setIsLoading(true);
-      setTimeout(() => {
+      try {
+          // Cria um documento na coleção 'checkout_sessions' dentro do usuário
+          // A extensão do Stripe vai ouvir isso e gerar a URL de pagamento
+          const docRef = await addDoc(collection(db, "customers", auth.currentUser.uid, "checkout_sessions"), {
+              price: "price_1QoXXXXXX", // Substituir pelo ID real do preço no Stripe se tiver, ou a extensão usa o padrão
+              success_url: window.location.origin,
+              cancel_url: window.location.origin,
+          });
+
+          // Escuta o documento para pegar a URL gerada
+          onSnapshot(docRef, (snap) => {
+              const { error, url } = snap.data() as any || {};
+              if (error) {
+                  console.error("Erro Stripe:", error);
+                  setError(`Erro: ${error.message}`);
+                  setIsLoading(false);
+              }
+              if (url) {
+                  window.location.assign(url);
+              }
+          });
+
+      } catch (e: any) {
+          console.error(e);
+          setError("Erro ao iniciar pagamento: " + e.message);
           setIsLoading(false);
-          onLogin();
-      }, 1500);
+      }
+  };
+
+  // Mantido apenas visualmente, sem funcionalidade real de backend por enquanto
+  const handleEmailLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("No momento, apenas o login com Google está ativado para segurança.");
   };
 
   return (
@@ -59,7 +102,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     </li>
                     <li className="flex items-start gap-3">
                         <span className="text-green-400">✓</span>
-                        <span className="text-slate-300">Sem anúncios (Em breve)</span>
+                        <span className="text-slate-300">Login seguro com Google</span>
                     </li>
                     <li className="flex items-start gap-3">
                         <span className="text-green-400">✓</span>
@@ -73,8 +116,12 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                         <span className="text-3xl font-bold">R$ 29,90</span>
                         <span className="text-slate-400">/mês</span>
                     </div>
-                    <button onClick={onLogin} className="w-full mt-6 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 rounded-lg transition">
-                        Assinar Agora
+                    <button 
+                        onClick={createCheckoutSession} 
+                        disabled={isLoading}
+                        className="w-full mt-6 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 rounded-lg transition disabled:opacity-50 flex items-center justify-center"
+                    >
+                        {isLoading ? 'Processando...' : 'Assinar Agora'}
                     </button>
                     <p className="text-xs text-center text-slate-500 mt-3">Cancelamento grátis a qualquer momento.</p>
                 </div>
@@ -86,10 +133,12 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                 <button 
                     onClick={handleGoogleLogin}
                     disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-3 bg-white border border-slate-300 text-slate-700 font-semibold py-3 rounded-lg hover:bg-slate-50 transition mb-6 shadow-sm"
+                    className="w-full flex items-center justify-center gap-3 bg-white border border-slate-300 text-slate-700 font-semibold py-3 rounded-lg hover:bg-slate-50 transition mb-6 shadow-sm relative overflow-hidden"
                 >
                     {isLoading ? (
-                         <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
+                         <div className="absolute inset-0 flex items-center justify-center bg-white">
+                             <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
+                         </div>
                     ) : (
                          <GoogleIcon className="w-5 h-5" />
                     )}
@@ -111,14 +160,13 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleEmailLogin} className="space-y-4 opacity-50 pointer-events-none">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
                         <input 
                             type="email" 
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+                            disabled
+                            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg outline-none"
                             placeholder="seu@email.com"
                         />
                     </div>
@@ -126,20 +174,19 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                         <label className="block text-sm font-medium text-slate-700 mb-1">Senha</label>
                         <input 
                             type="password" 
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+                            disabled
+                            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg outline-none"
                             placeholder="••••••••"
                         />
                     </div>
                     
-                    <button type="submit" className="w-full bg-medical-600 hover:bg-medical-700 text-white font-bold py-3 rounded-lg transition shadow-md">
+                    <button type="submit" disabled className="w-full bg-slate-200 text-slate-500 font-bold py-3 rounded-lg transition shadow-md cursor-not-allowed">
                         Entrar
                     </button>
                 </form>
 
                 <div className="mt-6 text-center">
-                    <a href="#" className="text-sm text-medical-600 hover:underline">Esqueci minha senha</a>
+                    <span className="text-xs text-slate-400">Login por e-mail desativado temporariamente.</span>
                 </div>
             </div>
         </div>
