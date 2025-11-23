@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AppView, SpecialtyDef, SpecialtyId } from './types';
 import BMICalculator from './components/calculators/BMICalculator';
@@ -279,14 +280,7 @@ const App: React.FC = () => {
           </button>
         </nav>
         
-        <div className="p-6 space-y-4">
-            <div className="bg-slate-800 rounded-xl p-4">
-                <p className="text-xs text-slate-400 mb-2">Calculamed Pro</p>
-                <div className="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-medical-500 w-full"></div>
-                </div>
-            </div>
-        </div>
+        {/* Footer Area removed */}
       </aside>
 
       {/* Main Content Area */}

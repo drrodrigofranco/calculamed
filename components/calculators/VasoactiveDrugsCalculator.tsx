@@ -238,7 +238,7 @@ const VasoactiveDrugsCalculator: React.FC = () => {
                     type="number"
                     value={weight}
                     onChange={(e) => setWeight(e.target.value)}
-                    className="w-full p-2 pr-8 border border-slate-300 rounded shadow-sm focus:ring-2 focus:ring-medical-500 outline-none"
+                    className="w-full p-2 pr-8 border border-slate-300 rounded shadow-sm focus:ring-2 focus:ring-medical-500 outline-none bg-white text-slate-900 placeholder-slate-400"
                     placeholder="0,00"
                 />
                 <span className="absolute right-2 top-2 text-xs text-slate-500">kg</span>
@@ -281,7 +281,7 @@ const VasoactiveDrugsCalculator: React.FC = () => {
                                                     type="number"
                                                     value={rates[drug.id] || ''}
                                                     onChange={(e) => handleRateChange(drug.id, e.target.value)}
-                                                    className="w-full p-2 border border-slate-300 rounded text-center focus:ring-1 focus:ring-medical-500 outline-none"
+                                                    className="w-full p-2 border border-slate-300 rounded text-center focus:ring-1 focus:ring-medical-500 outline-none bg-white text-slate-900 placeholder-slate-400"
                                                     placeholder="0,00"
                                                 />
                                                 <span className="absolute right-2 top-2.5 text-[10px] text-slate-400 pointer-events-none">ml/h</span>
