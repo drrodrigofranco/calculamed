@@ -43,7 +43,7 @@ const BMICalculator: React.FC = () => {
             type="number"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 focus:border-medical-500 outline-none transition"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 focus:border-medical-500 outline-none transition placeholder-slate-400"
             placeholder="Ex: 75"
           />
         </div>
@@ -54,7 +54,7 @@ const BMICalculator: React.FC = () => {
             type="number"
             value={height}
             onChange={(e) => setHeight(e.target.value)}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 focus:border-medical-500 outline-none transition"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 focus:border-medical-500 outline-none transition placeholder-slate-400"
             placeholder="Ex: 175"
           />
         </div>

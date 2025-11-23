@@ -35,7 +35,7 @@ const GlasgowCalculator: React.FC = () => {
           <select 
             value={eye} 
             onChange={(e) => setEye(parseInt(e.target.value))}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
           >
             <option value={4}>4 - Espontânea</option>
             <option value={3}>3 - Ao comando verbal</option>
@@ -50,7 +50,7 @@ const GlasgowCalculator: React.FC = () => {
           <select 
             value={verbal} 
             onChange={(e) => setVerbal(parseInt(e.target.value))}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
           >
             <option value={5}>5 - Orientado</option>
             <option value={4}>4 - Confuso</option>
@@ -66,7 +66,7 @@ const GlasgowCalculator: React.FC = () => {
           <select 
             value={motor} 
             onChange={(e) => setMotor(parseInt(e.target.value))}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
           >
             <option value={6}>6 - Obedece comandos</option>
             <option value={5}>5 - Localiza dor</option>

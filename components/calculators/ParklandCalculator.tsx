@@ -43,7 +43,7 @@ const ParklandCalculator: React.FC = () => {
             type="number"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
             placeholder="Ex: 70"
           />
         </div>
@@ -54,7 +54,7 @@ const ParklandCalculator: React.FC = () => {
             type="number"
             value={tbsa}
             onChange={(e) => setTbsa(e.target.value)}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
             placeholder="Ex: 20"
           />
           <p className="text-xs text-slate-400 mt-1">Regra dos 9: Braço (9%), Perna (18%), Tronco (36%), Cabeça (9%).</p>

@@ -1,13 +1,13 @@
 import React from 'react';
 
-export const CalculamedLogo = ({ className }: { className?: string }) => (
+export const AjudaSaudeLogo = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" className={className}>
-    <rect x="0" y="0" width="40" height="40" rx="12" className="fill-medical-600"/>
-    <rect x="16" y="8" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
-    <rect x="16" y="16" width="8" height="8" rx="2" fill="white"/>
-    <rect x="16" y="24" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
-    <rect x="8" y="16" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
-    <rect x="24" y="16" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
+    {/* Background Shape - Soft Rounded Square/Heart suggestion */}
+    <path d="M20 40C31.0457 40 40 31.0457 40 20C40 8.9543 31.0457 0 20 0C8.9543 0 0 8.9543 0 20C0 31.0457 8.9543 40 20 40Z" className="fill-medical-600"/>
+    {/* Medical Cross Integrated with Heart Shape Vibe */}
+    <path d="M20 8C15 8 11 12 11 17C11 23 16 27 20 32C24 27 29 23 29 17C29 12 25 8 20 8Z" fill="white" fillOpacity="0.2"/>
+    <rect x="18" y="11" width="4" height="12" rx="2" fill="white"/>
+    <rect x="14" y="15" width="12" height="4" rx="2" fill="white"/>
   </svg>
 );
 
@@ -195,5 +195,41 @@ export const PillIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
     <path d="m8.5 8.5 7 7"/>
+  </svg>
+);
+
+export const BloodIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M12 2c0 0-6 8-6 13a6 6 0 0 0 12 0c0-5-6-13-6-13Z" />
+  </svg>
+);
+
+export const MindIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M12 5a7 7 0 0 1 7 7 15 15 0 0 1-7 9 15 15 0 0 1-7-9 7 7 0 0 1 7-7Z" />
+    <path d="M12 8v4" />
+    <path d="M12 16h.01" />
+  </svg>
+);
+
+export const ElderIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M9 4a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z" />
+    <path d="M6 20v-5" />
+    <path d="M12 20v-5" />
+    <path d="M4 15c-1 0-2-1-2-2v-4a2 2 0 0 1 2-2h3l2-3 2 3h2" />
+  </svg>
+);
+
+export const BoneIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z" />
+  </svg>
+);
+
+export const ToothIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M4.22 11.22a7 7 0 1 1 15.56 0C19.78 17.5 15.75 22 12 22s-7.78-4.5-7.78-10.78Z" />
+    <path d="M7 11c0 2 2.5 4 5 4s5-2 5-4" />
   </svg>
 );

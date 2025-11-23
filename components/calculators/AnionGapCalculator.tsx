@@ -43,7 +43,7 @@ const AnionGapCalculator: React.FC = () => {
             type="number"
             value={na}
             onChange={(e) => setNa(e.target.value)}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
             placeholder="Ex: 140"
           />
         </div>
@@ -55,7 +55,7 @@ const AnionGapCalculator: React.FC = () => {
                 type="number"
                 value={cl}
                 onChange={(e) => setCl(e.target.value)}
-                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+                className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
                 placeholder="Ex: 100"
             />
             </div>
@@ -65,7 +65,7 @@ const AnionGapCalculator: React.FC = () => {
                 type="number"
                 value={hco3}
                 onChange={(e) => setHco3(e.target.value)}
-                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+                className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
                 placeholder="Ex: 24"
             />
             </div>

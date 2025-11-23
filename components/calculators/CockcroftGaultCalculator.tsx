@@ -1,42 +1,47 @@
 import React, { useState } from 'react';
 import { CalculatorResult } from '../../types';
 
-const BMRCalculator: React.FC = () => {
-  const [weight, setWeight] = useState<string>('');
-  const [height, setHeight] = useState<string>('');
+const CockcroftGaultCalculator: React.FC = () => {
+  const [creatinine, setCreatinine] = useState<string>('');
   const [age, setAge] = useState<string>('');
+  const [weight, setWeight] = useState<string>('');
   const [gender, setGender] = useState<'male' | 'female'>('male');
   const [result, setResult] = useState<CalculatorResult | null>(null);
 
-  const calculateBMR = () => {
-    const w = parseFloat(weight);
-    const h = parseFloat(height);
+  const calculate = () => {
+    const cr = parseFloat(creatinine);
     const a = parseFloat(age);
+    const w = parseFloat(weight);
 
-    if (isNaN(w) || isNaN(h) || isNaN(a)) return;
+    if (isNaN(cr) || isNaN(a) || isNaN(w) || cr === 0) return;
 
-    // Harris-Benedict Equation (Revised)
-    // Men: 88.362 + (13.397 × weight in kg) + (4.799 × height in cm) - (5.677 × age in years)
-    // Women: 447.593 + (9.247 × weight in kg) + (3.098 × height in cm) - (4.330 × age in years)
+    // Cockcroft-Gault Formula
+    // Male: ((140 - Age) * Weight) / (72 * Cr)
+    // Female: Result * 0.85
     
-    let bmr = 0;
-    if (gender === 'male') {
-        bmr = 88.362 + (13.397 * w) + (4.799 * h) - (5.677 * a);
-    } else {
-        bmr = 447.593 + (9.247 * w) + (3.098 * h) - (4.330 * a);
+    let clcr = ((140 - a) * w) / (72 * cr);
+    if (gender === 'female') {
+        clcr = clcr * 0.85;
     }
 
+    let stage = '';
+    if (clcr > 90) stage = 'Função Renal Normal';
+    else if (clcr >= 60) stage = 'Disfunção Leve';
+    else if (clcr >= 30) stage = 'Disfunção Moderada';
+    else if (clcr >= 15) stage = 'Disfunção Grave';
+    else stage = 'Falência Renal';
+
     setResult({
-      value: Math.round(bmr),
-      classification: "kcal/dia",
-      notes: "Taxa Metabólica Basal (Harris-Benedict)"
+      value: clcr.toFixed(1),
+      classification: stage,
+      notes: "Cockcroft-Gault (Ideal para ajuste de dose de drogas)."
     });
   };
 
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-xl shadow-sm border border-slate-200">
       <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
-        Taxa Metabólica Basal
+        Clearance de Creatinina (Cockcroft-Gault)
       </h3>
 
       <div className="space-y-4">
@@ -54,29 +59,6 @@ const BMRCalculator: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-            <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Peso (kg)</label>
-            <input
-                type="number"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
-                placeholder="Ex: 75"
-            />
-            </div>
-            <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Altura (cm)</label>
-            <input
-                type="number"
-                value={height}
-                onChange={(e) => setHeight(e.target.value)}
-                className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
-                placeholder="Ex: 175"
-            />
-            </div>
-        </div>
-
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Idade (anos)</label>
           <input
@@ -84,25 +66,50 @@ const BMRCalculator: React.FC = () => {
             value={age}
             onChange={(e) => setAge(e.target.value)}
             className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
-            placeholder="Ex: 30"
+            placeholder="Ex: 65"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Peso (kg)</label>
+          <input
+            type="number"
+            value={weight}
+            onChange={(e) => setWeight(e.target.value)}
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
+            placeholder="Ex: 70"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Creatinina Sérica (mg/dL)</label>
+          <input
+            type="number"
+            value={creatinine}
+            onChange={(e) => setCreatinine(e.target.value)}
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
+            placeholder="Ex: 1.2"
           />
         </div>
 
         <button
-          onClick={calculateBMR}
+          onClick={calculate}
           className="w-full bg-medical-600 hover:bg-medical-700 text-white font-semibold py-3 rounded-lg transition shadow-md"
         >
-          Calcular Calorias
+          Calcular Clearance
         </button>
       </div>
 
       {result && (
         <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-          <p className="text-sm text-slate-500 uppercase tracking-wide">Gasto Calórico Basal</p>
+          <p className="text-sm text-slate-500 uppercase tracking-wide">Clearance Estimado</p>
           <div className="flex items-baseline gap-2 mt-1">
             <span className="text-3xl font-bold text-slate-900">{result.value}</span>
-            <span className="text-slate-500">{result.classification}</span>
+            <span className="text-slate-500">ml/min</span>
           </div>
+          <p className="mt-2 font-medium text-slate-700">
+            {result.classification}
+          </p>
           <p className="text-xs text-slate-400 mt-2">{result.notes}</p>
         </div>
       )}
@@ -110,4 +117,4 @@ const BMRCalculator: React.FC = () => {
   );
 };
 
-export default BMRCalculator;
+export default CockcroftGaultCalculator;

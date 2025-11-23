@@ -78,7 +78,7 @@ const EGFRCalculator: React.FC = () => {
                 type="number"
                 value={creatinine}
                 onChange={(e) => setCreatinine(e.target.value)}
-                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+                className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
                 placeholder="Ex: 0.9"
             />
             </div>
@@ -88,7 +88,7 @@ const EGFRCalculator: React.FC = () => {
                 type="number"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+                className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
                 placeholder="Ex: 45"
             />
             </div>

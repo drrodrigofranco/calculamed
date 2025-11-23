@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { AppView, SpecialtyDef, SpecialtyId } from './types';
 import BMICalculator from './components/calculators/BMICalculator';
 import EGFRCalculator from './components/calculators/EGFRCalculator';
+import CockcroftGaultCalculator from './components/calculators/CockcroftGaultCalculator';
 import IVDropCalculator from './components/calculators/IVDropCalculator';
 import PregnancyCalculator from './components/calculators/PregnancyCalculator';
 import LDLCalculator from './components/calculators/LDLCalculator';
@@ -23,12 +23,16 @@ import SodiumCorrectionCalculator from './components/calculators/SodiumCorrectio
 import ParklandCalculator from './components/calculators/ParklandCalculator';
 import WellsPECalculator from './components/calculators/WellsPECalculator';
 import CURB65Calculator from './components/calculators/CURB65Calculator';
+import PaO2FiO2Calculator from './components/calculators/PaO2FiO2Calculator';
 import VasoactiveDrugsCalculator from './components/calculators/VasoactiveDrugsCalculator';
 import CHA2DS2VAScCalculator from './components/calculators/CHA2DS2VAScCalculator';
+import HASBLEDCalculator from './components/calculators/HASBLEDCalculator';
 import MELDCalculator from './components/calculators/MELDCalculator';
 import AlvaradoCalculator from './components/calculators/AlvaradoCalculator';
 import DosageCalculator from './components/calculators/DosageCalculator';
 import APGARCalculator from './components/calculators/APGARCalculator';
+import ANCCalculator from './components/calculators/ANCCalculator';
+import PHQ9Calculator from './components/calculators/PHQ9Calculator';
 
 import AdSpace from './components/AdSpace';
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
@@ -47,11 +51,16 @@ import {
   SearchIcon,
   XIcon,
   LungsIcon,
-  CalculamedLogo,
+  AjudaSaudeLogo,
   SirenIcon,
   BrainIcon,
   ScalpelIcon,
-  PillIcon
+  PillIcon,
+  BloodIcon,
+  MindIcon,
+  ElderIcon,
+  BoneIcon,
+  ToothIcon
 } from './components/icons';
 
 // --- Extended View Enum for Legal Pages ---
@@ -67,72 +76,27 @@ type ExtendedView = AppView | LegalView;
 
 const SPECIALTIES: SpecialtyDef[] = [
   {
-    id: 'nursing',
-    name: 'Enfermagem & Geral',
-    icon: DropIcon,
-    color: 'bg-emerald-500',
-    calculators: [
-        { id: AppView.CALC_DOSAGE, name: 'Cálculo de Medicação', description: 'Regra de três (mg x ml)' },
-        { id: AppView.CALC_IV, name: 'Gotejamento', description: 'Velocidade de infusão IV' },
-        { id: AppView.CALC_BMI, name: 'IMC', description: 'Índice de Massa Corporal' },
-        { id: AppView.CALC_WATER, name: 'Hidratação Diária', description: 'Meta de água por peso' },
-        { id: AppView.CALC_IDEAL_WEIGHT, name: 'Peso Ideal', description: 'Fórmula de Devine' },
-        { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Fórmula de Mosteller' },
-        { id: AppView.CALC_CONVERTER, name: 'Conversor de Unidades', description: 'Temp (C/F) e Peso (Kg/Lbs)' },
-    ]
-  },
-  {
-    id: 'emergency',
-    name: 'Emergência & UTI',
-    icon: SirenIcon,
-    color: 'bg-red-600',
-    calculators: [
-        { id: AppView.CALC_VASOACTIVE, name: 'Drogas Vasoativas', description: 'Noradrenalina, Dobuta, etc' },
-        { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação em Queimados' },
-        { id: AppView.CALC_MAP, name: 'Pressão Média (PAM)', description: 'Monitorização Trauma/Choque' },
-        { id: AppView.CALC_ANION_GAP, name: 'Anion Gap', description: 'Investigação de acidose' },
-    ]
-  },
-  {
-    id: 'surgery',
-    name: 'Cirurgia Geral',
-    icon: ScalpelIcon,
-    color: 'bg-teal-600',
-    calculators: [
-        { id: AppView.CALC_ALVARADO, name: 'Escore de Alvarado', description: 'Diagnóstico de Apendicite' },
-        { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação em Queimados' },
-        { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Ajuste de doses' },
-    ]
-  },
-  {
-    id: 'neuro',
-    name: 'Neurologia',
-    icon: BrainIcon,
-    color: 'bg-violet-600',
-    calculators: [
-        { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de consciência' },
-    ]
-  },
-  {
     id: 'cardio',
-    name: 'Cardiologia',
+    name: 'Cardiologia e Vascular',
     icon: HeartPulseIcon,
     color: 'bg-rose-500',
     calculators: [
         { id: AppView.CALC_CHA2DS2_VASC, name: 'CHA₂DS₂-VASc', description: 'Risco AVC em FA' },
-        { id: AppView.CALC_LDL, name: 'LDL (Friedewald)', description: 'Cálculo de Colesterol LDL' },
+        { id: AppView.CALC_HAS_BLED, name: 'HAS-BLED', description: 'Risco de Sangramento' },
         { id: AppView.CALC_MAP, name: 'Pressão Média (PAM)', description: 'Avaliação hemodinâmica' },
         { id: AppView.CALC_QTC, name: 'QT Corrigido', description: 'Fórmula de Bazett' },
     ]
   },
   {
-    id: 'pneumo',
-    name: 'Pneumologia',
-    icon: LungsIcon,
-    color: 'bg-sky-500',
+    id: 'nutrition',
+    name: 'Nutrição e Metabolismo',
+    icon: ScaleIcon,
+    color: 'bg-lime-600',
     calculators: [
-        { id: AppView.CALC_WELLS_PE, name: 'Score de Wells (TEP)', description: 'Risco de Embolia Pulmonar' },
-        { id: AppView.CALC_CURB65, name: 'CURB-65', description: 'Gravidade Pneumonia' },
+        { id: AppView.CALC_BMI, name: 'IMC', description: 'Índice de Massa Corporal' },
+        { id: AppView.CALC_BMR, name: 'Taxa Metabólica', description: 'Harris-Benedict' },
+        { id: AppView.CALC_IDEAL_WEIGHT, name: 'Peso Ideal', description: 'Fórmula de Devine' },
+        { id: AppView.CALC_WATER, name: 'Hidratação Diária', description: 'Meta de água por peso' },
     ]
   },
   {
@@ -141,31 +105,29 @@ const SPECIALTIES: SpecialtyDef[] = [
     icon: FlaskIcon,
     color: 'bg-indigo-500',
     calculators: [
+        { id: AppView.CALC_SODIUM_CORR, name: 'Correção Sódio', description: 'Na Hiperglicemia' },
+        { id: AppView.CALC_LDL, name: 'LDL Calculado', description: 'Fórmula de Friedewald' },
         { id: AppView.CALC_GLUCOSE, name: 'Conversão Glicose', description: 'mg/dL ↔ mmol/L' },
-        { id: AppView.CALC_CORR_CALCIUM, name: 'Cálcio Corrigido', description: 'Ajuste pela Albumina' },
-        { id: AppView.CALC_SODIUM_CORR, name: 'Sódio Corrigido', description: 'Hiperglicemia grave' },
-        { id: AppView.CALC_BMI, name: 'IMC', description: 'Classificação de peso' },
     ]
   },
   {
     id: 'nephro',
-    name: 'Nefrologia',
+    name: 'Nefrologia e Urologia',
     icon: KidneyIcon,
     color: 'bg-blue-500',
     calculators: [
-        { id: AppView.CALC_EGFR, name: 'TFG (CKD-EPI)', description: 'Função Renal Estimada' },
-        { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Ajuste de dose/diálise' },
+        { id: AppView.CALC_COCKCROFT, name: 'Clearance Creatinina', description: 'Cockcroft-Gault' },
+        { id: AppView.CALC_EGFR, name: 'TFG (CKD-EPI)', description: 'Fórmula Atual (2021)' },
         { id: AppView.CALC_ANION_GAP, name: 'Anion Gap', description: 'Acidose Metabólica' },
     ]
   },
   {
-    id: 'gastro',
-    name: 'Gastroenterologia',
-    icon: LiverIcon,
-    color: 'bg-amber-600',
+    id: 'obs',
+    name: 'Obstetrícia e Gineco',
+    icon: BabyIcon,
+    color: 'bg-pink-500',
     calculators: [
-        { id: AppView.CALC_MELD, name: 'MELD Score', description: 'Gravidade Doença Hepática' },
-        { id: AppView.CALC_CHILD_PUGH, name: 'Child-Pugh', description: 'Prognóstico na Cirrose' },
+        { id: AppView.CALC_PREGNANCY, name: 'Idade Gestacional & DPP', description: 'Baseado na DUM' },
     ]
   },
   {
@@ -174,30 +136,89 @@ const SPECIALTIES: SpecialtyDef[] = [
     icon: ChildIcon,
     color: 'bg-orange-500',
     calculators: [
-        { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Avaliação de Recém-Nascido' },
-        { id: AppView.CALC_PED_FLUIDS, name: 'Holliday-Segar', description: 'Fluidos de manutenção' },
-        { id: AppView.CALC_BMI, name: 'IMC', description: 'Índice de Massa Corporal' },
+        { id: AppView.CALC_PED_FLUIDS, name: 'Manutenção de Fluidos', description: 'Holliday-Segar' },
+        { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Recém-Nascido' },
     ]
   },
   {
-    id: 'obs',
-    name: 'Obstetrícia',
-    icon: BabyIcon,
-    color: 'bg-pink-500',
+    id: 'emergency',
+    name: 'Emergência, Trauma e UTI',
+    icon: SirenIcon,
+    color: 'bg-red-600',
     calculators: [
-        { id: AppView.CALC_PREGNANCY, name: 'Idade Gestacional', description: 'DPP e IG via DUM' },
-        { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Avaliação de Recém-Nascido' },
+        { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Coma e Consciência' },
+        { id: AppView.CALC_WELLS_PE, name: 'Escore de Wells', description: 'Risco de TEP' },
+        { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Queimaduras' },
+        { id: AppView.CALC_VASOACTIVE, name: 'Drogas Vasoativas', description: 'Noradrenalina, Sedação, etc' },
     ]
   },
   {
-    id: 'nutrition',
-    name: 'Nutrição',
-    icon: ScaleIcon,
-    color: 'bg-lime-600',
+    id: 'pneumo',
+    name: 'Ventilação e Pneumo',
+    icon: LungsIcon,
+    color: 'bg-sky-500',
     calculators: [
-        { id: AppView.CALC_BMR, name: 'Taxa Metabólica', description: 'Harris-Benedict' },
-        { id: AppView.CALC_IDEAL_WEIGHT, name: 'Peso Ideal', description: 'Meta ponderal' },
-        { id: AppView.CALC_WATER, name: 'Hidratação', description: 'Meta hídrica' },
+        { id: AppView.CALC_PAO2_FIO2, name: 'Relação P/F', description: 'Critério de Berlim (SDRA)' },
+        { id: AppView.CALC_CURB65, name: 'CURB-65', description: 'Pneumonia Adquirida' },
+    ]
+  },
+  {
+    id: 'gastro',
+    name: 'Gastro e Hepatologia',
+    icon: LiverIcon,
+    color: 'bg-amber-600',
+    calculators: [
+        { id: AppView.CALC_CHILD_PUGH, name: 'Escore Child-Pugh', description: 'Cirrose Hepática' },
+        { id: AppView.CALC_MELD, name: 'MELD Score', description: 'Transplante Hepático' },
+    ]
+  },
+  {
+    id: 'hema',
+    name: 'Hematologia e Onco',
+    icon: BloodIcon,
+    color: 'bg-rose-700',
+    calculators: [
+        { id: AppView.CALC_CORR_CALCIUM, name: 'Cálcio Corrigido', description: 'Pela Albumina' },
+        { id: AppView.CALC_ANC, name: 'Neutrófilos Absolutos', description: 'Risco Infeccioso' },
+        { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Doses de Quimioterapia' },
+    ]
+  },
+  {
+    id: 'neuro',
+    name: 'Neurologia e Psiquiatria',
+    icon: BrainIcon,
+    color: 'bg-violet-600',
+    calculators: [
+        { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de Consciência' },
+        { id: AppView.CALC_PHQ9, name: 'PHQ-9', description: 'Rastreio de Depressão' },
+    ]
+  },
+  {
+    id: 'surgery',
+    name: 'Cirurgia e Anestesia',
+    icon: ScalpelIcon,
+    color: 'bg-teal-600',
+    calculators: [
+        { id: AppView.CALC_ALVARADO, name: 'Escore de Alvarado', description: 'Apendicite Aguda' },
+    ]
+  },
+  {
+    id: 'nursing',
+    name: 'Enfermagem e Geriatria',
+    icon: ElderIcon,
+    color: 'bg-emerald-600',
+    calculators: [
+        { id: AppView.CALC_IV, name: 'Cálculo de Gotejamento', description: 'Gotas/min' },
+        { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
+    ]
+  },
+  {
+    id: 'dental',
+    name: 'Odontologia e Outros',
+    icon: ToothIcon,
+    color: 'bg-slate-500',
+    calculators: [
+        { id: AppView.CALC_CONVERTER, name: 'Conversor de Unidades', description: 'Geral' },
     ]
   },
 ];
@@ -261,6 +282,7 @@ const App: React.FC = () => {
       // Calculators
       case AppView.CALC_BMI: return <BMICalculator />;
       case AppView.CALC_EGFR: return <EGFRCalculator />;
+      case AppView.CALC_COCKCROFT: return <CockcroftGaultCalculator />;
       case AppView.CALC_IV: return <IVDropCalculator />;
       case AppView.CALC_PREGNANCY: return <PregnancyCalculator />;
       case AppView.CALC_LDL: return <LDLCalculator />;
@@ -281,12 +303,16 @@ const App: React.FC = () => {
       case AppView.CALC_PARKLAND: return <ParklandCalculator />;
       case AppView.CALC_WELLS_PE: return <WellsPECalculator />;
       case AppView.CALC_CURB65: return <CURB65Calculator />;
+      case AppView.CALC_PAO2_FIO2: return <PaO2FiO2Calculator />;
       case AppView.CALC_VASOACTIVE: return <VasoactiveDrugsCalculator />;
       case AppView.CALC_CHA2DS2_VASC: return <CHA2DS2VAScCalculator />;
+      case AppView.CALC_HAS_BLED: return <HASBLEDCalculator />;
       case AppView.CALC_MELD: return <MELDCalculator />;
       case AppView.CALC_ALVARADO: return <AlvaradoCalculator />;
       case AppView.CALC_DOSAGE: return <DosageCalculator />;
       case AppView.CALC_APGAR: return <APGARCalculator />;
+      case AppView.CALC_ANC: return <ANCCalculator />;
+      case AppView.CALC_PHQ9: return <PHQ9Calculator />;
       
       case AppView.DASHBOARD:
       default:
@@ -309,10 +335,10 @@ const App: React.FC = () => {
       <aside className="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col z-30">
         <div className="p-6 border-b border-slate-700">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigate(AppView.DASHBOARD)}>
-            <CalculamedLogo className="w-9 h-9" />
+            <AjudaSaudeLogo className="w-9 h-9" />
             <div>
                 <h1 className="text-xl font-bold text-white tracking-tight leading-none">
-                  Calcula<span className="text-medical-500">med</span>
+                  Ajuda<span className="text-medical-500">Saúde</span>
                 </h1>
                 <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block mt-1">Calculadoras da Saúde</span>
             </div>
@@ -360,8 +386,8 @@ const App: React.FC = () => {
              {/* Mobile Logo */}
              {view === AppView.DASHBOARD && (
                <div className="md:hidden flex items-center gap-2">
-                  <CalculamedLogo className="w-6 h-6" />
-                  <span className="font-bold text-slate-800">Calculamed</span>
+                  <AjudaSaudeLogo className="w-6 h-6" />
+                  <span className="font-bold text-slate-800">Ajuda Saúde</span>
                </div>
              )}
 
@@ -373,7 +399,7 @@ const App: React.FC = () => {
                     </div>
                     <input
                         type="text"
-                        className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-full leading-5 bg-slate-50 placeholder-slate-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-medical-500 focus:border-medical-500 sm:text-sm transition"
+                        className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-full leading-5 bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-medical-500 focus:border-medical-500 sm:text-sm transition"
                         placeholder="Buscar calculadora..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -447,7 +473,7 @@ const App: React.FC = () => {
                 <h4 className="text-xs font-bold text-slate-400 uppercase mb-4 tracking-wider">Patrocinado</h4>
                 <AdSpace format="vertical" />
                 <div className="mt-6 text-xs text-slate-400">
-                    <p>O Calculamed é mantido através de publicidade para garantir o acesso gratuito a todos os profissionais.</p>
+                    <p>O Ajuda Saúde é mantido através de publicidade para garantir o acesso gratuito a todos os profissionais.</p>
                 </div>
             </div>
         </div>
@@ -456,8 +482,8 @@ const App: React.FC = () => {
         <footer className="bg-white border-t border-slate-200 py-8 px-4 mt-auto">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="flex items-center gap-2">
-                     <CalculamedLogo className="w-6 h-6 grayscale opacity-50" />
-                     <span className="text-slate-500 font-semibold">Calculamed</span>
+                     <AjudaSaudeLogo className="w-6 h-6 grayscale opacity-50" />
+                     <span className="text-slate-500 font-semibold">Ajuda Saúde</span>
                 </div>
                 <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-500">
                     <button onClick={() => handleNavigate(LegalView.ABOUT)} className="hover:text-medical-600">Sobre</button>
@@ -465,7 +491,7 @@ const App: React.FC = () => {
                     <button onClick={() => handleNavigate(LegalView.TERMS)} className="hover:text-medical-600">Termos de Uso</button>
                 </div>
                 <div className="text-xs text-slate-400">
-                    © {new Date().getFullYear()} Calculamed. Todos os direitos reservados.
+                    © {new Date().getFullYear()} Ajuda Saúde. Todos os direitos reservados.
                 </div>
             </div>
         </footer>
@@ -479,7 +505,7 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
   return (
     <div className="pb-10">
       <div className="mb-8">
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Bem-vindo ao Calculamed</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Bem-vindo ao Ajuda Saúde</h2>
           <p className="text-slate-600 max-w-2xl">
               Acesse rapidamente as ferramentas essenciais para sua prática clínica. 
               Organizadas por especialidade para facilitar o seu plantão.
@@ -523,7 +549,7 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
       <div className="mt-12 pt-8 border-t border-slate-200 prose prose-slate max-w-none text-slate-600">
           <h3>Calculadoras Médicas Profissionais</h3>
           <p>
-              O <strong>Calculamed</strong> é uma referência gratuita para profissionais de saúde, oferecendo acesso rápido a fórmulas complexas e escores clínicos. 
+              O <strong>Ajuda Saúde</strong> é uma referência gratuita para profissionais de saúde, oferecendo acesso rápido a fórmulas complexas e escores clínicos. 
               Nossa plataforma garante precisão em cálculos fundamentais para UTI, Emergência, Pediatria e diversas especialidades.
           </p>
           <div className="grid md:grid-cols-2 gap-8 mt-6">

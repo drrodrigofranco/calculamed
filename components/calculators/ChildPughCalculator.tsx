@@ -48,7 +48,7 @@ const ChildPughCalculator: React.FC = () => {
           <select 
             value={bilirubin} 
             onChange={(e) => setBilirubin(parseInt(e.target.value))}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
           >
             <option value={1}>&lt; 2.0 mg/dL (+1 ponto)</option>
             <option value={2}>2.0 - 3.0 mg/dL (+2 pontos)</option>
@@ -62,7 +62,7 @@ const ChildPughCalculator: React.FC = () => {
           <select 
             value={albumin} 
             onChange={(e) => setAlbumin(parseInt(e.target.value))}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
           >
             <option value={1}>&gt; 3.5 g/dL (+1 ponto)</option>
             <option value={2}>2.8 - 3.5 g/dL (+2 pontos)</option>
@@ -76,7 +76,7 @@ const ChildPughCalculator: React.FC = () => {
           <select 
             value={inr} 
             onChange={(e) => setInr(parseInt(e.target.value))}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
           >
             <option value={1}>&lt; 1.7 (+1 ponto)</option>
             <option value={2}>1.7 - 2.3 (+2 pontos)</option>
@@ -90,7 +90,7 @@ const ChildPughCalculator: React.FC = () => {
           <select 
             value={ascites} 
             onChange={(e) => setAscites(parseInt(e.target.value))}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
           >
             <option value={1}>Ausente (+1 ponto)</option>
             <option value={2}>Leve / Controlada (+2 pontos)</option>
@@ -104,7 +104,7 @@ const ChildPughCalculator: React.FC = () => {
           <select 
             value={enceph} 
             onChange={(e) => setEnceph(parseInt(e.target.value))}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
           >
             <option value={1}>Ausente (+1 ponto)</option>
             <option value={2}>Grau 1-2 (Leve) (+2 pontos)</option>

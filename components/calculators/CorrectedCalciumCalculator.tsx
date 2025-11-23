@@ -37,7 +37,7 @@ const CorrectedCalciumCalculator: React.FC = () => {
             type="number"
             value={calcium}
             onChange={(e) => setCalcium(e.target.value)}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
             placeholder="Ex: 8.5"
           />
         </div>
@@ -48,7 +48,7 @@ const CorrectedCalciumCalculator: React.FC = () => {
             type="number"
             value={albumin}
             onChange={(e) => setAlbumin(e.target.value)}
-            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none"
+            className="w-full p-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-400"
             placeholder="Ex: 2.5"
           />
         </div>

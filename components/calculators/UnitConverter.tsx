@@ -67,12 +67,12 @@ const UnitConverter: React.FC = () => {
            <div className="flex items-center gap-4">
                 <div className="flex-1">
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Celsius (°C)</label>
-                    <input type="number" value={celsius} onChange={(e) => handleC(e.target.value)} className="w-full p-3 text-lg border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none" placeholder="0" />
+                    <input type="number" value={celsius} onChange={(e) => handleC(e.target.value)} className="w-full p-3 text-lg bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-300" placeholder="0" />
                 </div>
                 <div className="text-slate-300 font-bold">=</div>
                 <div className="flex-1">
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Fahrenheit (°F)</label>
-                    <input type="number" value={fahrenheit} onChange={(e) => handleF(e.target.value)} className="w-full p-3 text-lg border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none" placeholder="32" />
+                    <input type="number" value={fahrenheit} onChange={(e) => handleF(e.target.value)} className="w-full p-3 text-lg bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-300" placeholder="32" />
                 </div>
            </div>
            <p className="text-xs text-slate-400 text-center">Fórmula: (0 °C × 9/5) + 32 = 32 °F</p>
@@ -84,12 +84,12 @@ const UnitConverter: React.FC = () => {
            <div className="flex items-center gap-4">
                 <div className="flex-1">
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Quilogramas (kg)</label>
-                    <input type="number" value={kg} onChange={(e) => handleKg(e.target.value)} className="w-full p-3 text-lg border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none" placeholder="70" />
+                    <input type="number" value={kg} onChange={(e) => handleKg(e.target.value)} className="w-full p-3 text-lg bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-300" placeholder="70" />
                 </div>
                 <div className="text-slate-300 font-bold">=</div>
                 <div className="flex-1">
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Libras (lbs)</label>
-                    <input type="number" value={lbs} onChange={(e) => handleLbs(e.target.value)} className="w-full p-3 text-lg border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none" placeholder="154" />
+                    <input type="number" value={lbs} onChange={(e) => handleLbs(e.target.value)} className="w-full p-3 text-lg bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-300" placeholder="154" />
                 </div>
            </div>
            <p className="text-xs text-slate-400 text-center">Fator: 1 kg ≈ 2.20462 lbs</p>

@@ -41,7 +41,7 @@ const GlucoseConverter: React.FC = () => {
                 type="number"
                 value={mg}
                 onChange={(e) => handleMgChange(e.target.value)}
-                className="w-full p-4 text-2xl font-bold text-center border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none text-medical-700"
+                className="w-full p-4 text-2xl font-bold text-center bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-300"
                 placeholder="0"
             />
         </div>
@@ -56,7 +56,7 @@ const GlucoseConverter: React.FC = () => {
                 type="number"
                 value={mmol}
                 onChange={(e) => handleMmolChange(e.target.value)}
-                className="w-full p-4 text-2xl font-bold text-center border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none text-medical-700"
+                className="w-full p-4 text-2xl font-bold text-center bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none placeholder-slate-300"
                 placeholder="0.0"
             />
         </div>
