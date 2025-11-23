@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 
 type CalcType = 'mcg_kg_min' | 'mcg_min' | 'ui_min' | 'mcg_kg_h' | 'mg_kg_h' | 'mg_kg_min' | 'ug_kg_min_cis';
@@ -22,28 +21,6 @@ interface DrugGroup {
   name: string;
   drugs: DrugConfig[];
 }
-
-// Helper to calc volumes from description logic
-// Standard Amp sizes assumptions based on text:
-// Nora: 4ml (4mg)
-// Vaso: 2ml (20UI)
-// Adrenalina: 1ml (1mg)
-// Dopa: 10ml (50mg)
-// Dobuta: 20ml (250mg)
-// Milrinone: 20ml (20mg)
-// Levosimendan: 5ml (12.5mg)
-// Nitroglicerina: 10ml (50mg)
-// Nitroprussiato: 2ml (50mg)
-// Fentanil: 10ml (500mcg = 0.5mg) ?? Text says 4 amp + 160. Usually 10ml amps in ICU. Let's assume standard 50mcg/ml. 4 amps = 2000mcg = 2mg. 
-// But wait, Fentanyl "4 amp + 160 ml". If amp is 10ml, total 200ml. 
-// Midazolam: 50mg/10ml. 4 amp = 40ml.
-// Propofol: 20ml (200mg).
-// Cetamina: 10ml (500mg).
-// Dex: 2ml (200mcg).
-// Atracurio: 10ml (100mg).
-// Cisatracurio: 50ml (100mg).
-// Rocuronio: 10ml (100mg).
-// Pancuronio: 20ml (40mg).
 
 const DATA: DrugGroup[] = [
   {
@@ -195,6 +172,7 @@ const VasoactiveDrugsCalculator: React.FC = () => {
     const w = parseFloat(weight);
     const r = parseFloat(rates[drug.id]);
 
+    // Handle invalid inputs gracefully
     if (!r || isNaN(r)) return '0,00';
 
     // Calculate Concentration
@@ -233,6 +211,8 @@ const VasoactiveDrugsCalculator: React.FC = () => {
              // Same as mcg_kg_min but labeled µ/kg/min
              res = (r * conc * 1000) / (w * 60);
              break;
+        default:
+            return '0,00';
     }
 
     // Format: if < 0.1 show 3 decimals, else 2

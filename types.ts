@@ -23,6 +23,7 @@ export enum AppView {
   CALC_ANION_GAP = 'CALC_ANION_GAP',
   CALC_PARKLAND = 'CALC_PARKLAND',
   CALC_VASOACTIVE = 'CALC_VASOACTIVE',
+  CALC_SODIUM_CORR = 'CALC_SODIUM_CORR',
   // Pediatrics
   CALC_PED_FLUIDS = 'CALC_PED_FLUIDS',
   // Nutrition
@@ -30,7 +31,6 @@ export enum AppView {
   // Endocrinology
   CALC_CORR_CALCIUM = 'CALC_CORR_CALCIUM',
   CALC_GLUCOSE = 'CALC_GLUCOSE',
-  CALC_SODIUM_CORR = 'CALC_SODIUM_CORR',
   // Gastro
   CALC_CHILD_PUGH = 'CALC_CHILD_PUGH',
   // Pneumology

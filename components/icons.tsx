@@ -3,7 +3,6 @@ import React from 'react';
 export const CalculamedLogo = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" className={className}>
     <rect x="0" y="0" width="40" height="40" rx="12" className="fill-medical-600"/>
-    {/* Medical Cross constructed from "calculator buttons" concept */}
     <rect x="16" y="8" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
     <rect x="16" y="16" width="8" height="8" rx="2" fill="white"/>
     <rect x="16" y="24" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
