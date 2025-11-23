@@ -3,7 +3,8 @@ import React from 'react';
 export enum AppView {
   DASHBOARD = 'DASHBOARD',
   CATEGORY_VIEW = 'CATEGORY_VIEW',
-  PRO_LOGIN = 'PRO_LOGIN', // New view for subscription/login
+  PRO_LOGIN = 'PRO_LOGIN',
+  NUTRITION_PRO = 'NUTRITION_PRO', // New view for Nutrition Calc
   // Nursing / General
   CALC_BMI = 'CALC_BMI',
   CALC_IDEAL_WEIGHT = 'CALC_IDEAL_WEIGHT',
@@ -87,4 +88,20 @@ export interface SpecialtyDef {
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   calculators: CalculatorDef[];
+}
+
+export interface ClinicalNote {
+  id: string;
+  date: string;
+  content: string;
+}
+
+export interface Patient {
+  id: string;
+  name: string;
+  birthDate: string;
+  contact?: string;
+  gender?: string;
+  notes: ClinicalNote[];
+  createdAt: string;
 }

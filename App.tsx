@@ -40,6 +40,7 @@ import TargetHeartRateCalculator from './components/calculators/TargetHeartRateC
 
 import AdSpace from './components/AdSpace';
 import Auth from './components/Auth';
+import NutritionManager from './components/NutritionManager';
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
 import { 
   CalculatorIcon, 
@@ -64,7 +65,7 @@ import {
   ToothIcon,
   LockIcon,
   CrownIcon,
-  UserIcon
+  AppleIcon
 } from './components/icons';
 
 // --- Extended View Enum for Legal Pages ---
@@ -282,7 +283,9 @@ const App: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (view === AppView.CATEGORY_VIEW) {
+    if (view === AppView.NUTRITION_PRO) {
+        setView(AppView.DASHBOARD);
+    } else if (view === AppView.CATEGORY_VIEW) {
       setView(AppView.DASHBOARD);
       setSelectedSpecialtyId(null);
     } else if (view !== AppView.DASHBOARD) {
@@ -317,6 +320,9 @@ const App: React.FC = () => {
       
       // Pro Login
       case AppView.PRO_LOGIN: return <Auth onLogin={handleLogin} />;
+      
+      // Nutrition Calc (Replaces Patient Management)
+      case AppView.NUTRITION_PRO: return <NutritionManager />;
 
       // Legal Pages
       case LegalView.PRIVACY: return <PrivacyPolicy />;
@@ -371,6 +377,7 @@ const App: React.FC = () => {
   const getHeaderTitle = () => {
     if (view === AppView.DASHBOARD) return 'Início';
     if (view === AppView.PRO_LOGIN) return 'Assinatura';
+    if (view === AppView.NUTRITION_PRO) return 'Nutrition Calc';
     if (Object.values(LegalView).includes(view as LegalView)) return 'Institucional';
     if (view === AppView.CATEGORY_VIEW && selectedSpecialtyId) {
         return SPECIALTIES.find(s => s.id === selectedSpecialtyId)?.name || 'Categoria';
@@ -427,6 +434,14 @@ const App: React.FC = () => {
           >
             <div className="w-5 h-5"><CalculatorIcon /></div>
             <span className="font-medium">Início</span>
+          </button>
+
+          <button
+            onClick={() => { setView(AppView.NUTRITION_PRO); setSelectedSpecialtyId(null); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${view === AppView.NUTRITION_PRO ? 'bg-medical-600 text-white shadow-lg shadow-medical-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+          >
+            <div className="w-5 h-5"><AppleIcon /></div>
+            <span className="font-medium">Nutrition Calc</span>
           </button>
           
           <div className="pt-4 pb-2">
@@ -537,7 +552,7 @@ const App: React.FC = () => {
             <div className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
                 <AdSpace format="horizontal" className="mb-6" />
 
-                {view !== AppView.DASHBOARD && view !== AppView.PRO_LOGIN && (
+                {view !== AppView.DASHBOARD && view !== AppView.PRO_LOGIN && view !== AppView.NUTRITION_PRO && (
                     <button 
                         onClick={handleBack}
                         className="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-medical-600 transition group"
