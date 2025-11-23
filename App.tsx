@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppView, SpecialtyDef, SpecialtyId } from './types';
 import BMICalculator from './components/calculators/BMICalculator';
 import EGFRCalculator from './components/calculators/EGFRCalculator';
@@ -39,10 +39,10 @@ import ProteinCalculator from './components/calculators/ProteinCalculator';
 import TargetHeartRateCalculator from './components/calculators/TargetHeartRateCalculator';
 
 import AdSpace from './components/AdSpace';
+import Auth from './components/Auth';
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
 import { 
   CalculatorIcon, 
-  DropIcon, 
   KidneyIcon, 
   ChevronLeftIcon,
   BabyIcon,
@@ -59,14 +59,12 @@ import {
   SirenIcon,
   BrainIcon,
   ScalpelIcon,
-  PillIcon,
   BloodIcon,
-  MindIcon,
   ElderIcon,
-  BoneIcon,
   ToothIcon,
-  DumbbellIcon,
-  CalendarHeartIcon
+  LockIcon,
+  CrownIcon,
+  UserIcon
 } from './components/icons';
 
 // --- Extended View Enum for Legal Pages ---
@@ -79,6 +77,7 @@ enum LegalView {
 type ExtendedView = AppView | LegalView;
 
 // --- Configuration Data ---
+// Added 'isPro' flag to complex calculators
 
 const SPECIALTIES: SpecialtyDef[] = [
   {
@@ -88,7 +87,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     color: 'bg-rose-500',
     calculators: [
         { id: AppView.CALC_CHA2DS2_VASC, name: 'CHA₂DS₂-VASc', description: 'Risco AVC em FA' },
-        { id: AppView.CALC_HAS_BLED, name: 'HAS-BLED', description: 'Risco de Sangramento' },
+        { id: AppView.CALC_HAS_BLED, name: 'HAS-BLED', description: 'Risco de Sangramento', isPro: true },
         { id: AppView.CALC_MAP, name: 'Pressão Média (PAM)', description: 'Avaliação hemodinâmica' },
         { id: AppView.CALC_QTC, name: 'QT Corrigido', description: 'Fórmula de Bazett' },
     ]
@@ -136,7 +135,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     color: 'bg-pink-500',
     calculators: [
         { id: AppView.CALC_PREGNANCY, name: 'Idade Gestacional (DUM)', description: 'Data da Última Menstruação' },
-        { id: AppView.CALC_PREGNANCY_USG, name: 'IG pelo Ultrassom', description: 'Correção pela USG' },
+        { id: AppView.CALC_PREGNANCY_USG, name: 'IG pelo Ultrassom', description: 'Correção pela USG', isPro: true },
     ]
   },
   {
@@ -156,10 +155,10 @@ const SPECIALTIES: SpecialtyDef[] = [
     color: 'bg-red-600',
     calculators: [
         { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Coma e Consciência' },
-        { id: AppView.CALC_BURN_AREA, name: 'SCQ (Regra dos 9)', description: 'Área Queimada' },
+        { id: AppView.CALC_BURN_AREA, name: 'SCQ (Regra dos 9)', description: 'Área Queimada', isPro: true },
         { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação Queimados' },
         { id: AppView.CALC_WELLS_PE, name: 'Escore de Wells', description: 'Risco de TEP' },
-        { id: AppView.CALC_VASOACTIVE, name: 'Drogas Vasoativas', description: 'Noradrenalina, Sedação, etc' },
+        { id: AppView.CALC_VASOACTIVE, name: 'Drogas Vasoativas', description: 'Noradrenalina, Sedação, etc', isPro: true },
     ]
   },
   {
@@ -179,7 +178,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     color: 'bg-amber-600',
     calculators: [
         { id: AppView.CALC_CHILD_PUGH, name: 'Escore Child-Pugh', description: 'Cirrose Hepática' },
-        { id: AppView.CALC_MELD, name: 'MELD Score', description: 'Transplante Hepático' },
+        { id: AppView.CALC_MELD, name: 'MELD Score', description: 'Transplante Hepático', isPro: true },
     ]
   },
   {
@@ -189,7 +188,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     color: 'bg-rose-700',
     calculators: [
         { id: AppView.CALC_CORR_CALCIUM, name: 'Cálcio Corrigido', description: 'Pela Albumina' },
-        { id: AppView.CALC_ANC, name: 'Neutrófilos Absolutos', description: 'Risco Infeccioso' },
+        { id: AppView.CALC_ANC, name: 'Neutrófilos Absolutos', description: 'Risco Infeccioso', isPro: true },
         { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Doses de Quimioterapia' },
     ]
   },
@@ -237,8 +236,39 @@ const App: React.FC = () => {
   const [view, setView] = useState<ExtendedView>(AppView.DASHBOARD);
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<SpecialtyId | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  
+  // User Authentication State
+  const [isPro, setIsPro] = useState<boolean>(false);
+
+  // Load auth state on mount
+  useEffect(() => {
+    const storedPro = localStorage.getItem('as_is_pro');
+    if (storedPro === 'true') setIsPro(true);
+  }, []);
+
+  const handleLogin = () => {
+      setIsPro(true);
+      localStorage.setItem('as_is_pro', 'true');
+      setView(AppView.DASHBOARD);
+  };
+
+  const handleLogout = () => {
+      setIsPro(false);
+      localStorage.removeItem('as_is_pro');
+      setView(AppView.DASHBOARD);
+  }
 
   const handleNavigate = (targetView: ExtendedView) => {
+    // Check if target is pro and user is not pro
+    if (Object.values(AppView).includes(targetView as AppView)) {
+        const targetCalc = SPECIALTIES.flatMap(s => s.calculators).find(c => c.id === targetView);
+        if (targetCalc?.isPro && !isPro) {
+            setView(AppView.PRO_LOGIN);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+    }
+
     setView(targetView);
     setSearchQuery(''); 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -280,10 +310,14 @@ const App: React.FC = () => {
         return selectedSpecialtyId ? (
             <CategoryView 
                 specialtyId={selectedSpecialtyId} 
-                onSelectCalc={handleNavigate} 
+                onSelectCalc={handleNavigate}
+                isPro={isPro}
             />
         ) : <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} />;
       
+      // Pro Login
+      case AppView.PRO_LOGIN: return <Auth onLogin={handleLogin} />;
+
       // Legal Pages
       case LegalView.PRIVACY: return <PrivacyPolicy />;
       case LegalView.TERMS: return <TermsOfUse />;
@@ -336,6 +370,7 @@ const App: React.FC = () => {
 
   const getHeaderTitle = () => {
     if (view === AppView.DASHBOARD) return 'Início';
+    if (view === AppView.PRO_LOGIN) return 'Assinatura';
     if (Object.values(LegalView).includes(view as LegalView)) return 'Institucional';
     if (view === AppView.CATEGORY_VIEW && selectedSpecialtyId) {
         return SPECIALTIES.find(s => s.id === selectedSpecialtyId)?.name || 'Categoria';
@@ -358,6 +393,33 @@ const App: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* User Status in Sidebar */}
+        <div className="p-4 bg-slate-800 border-b border-slate-700">
+            {isPro ? (
+                 <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="bg-yellow-500 p-1 rounded">
+                            <CrownIcon className="w-4 h-4 text-slate-900" />
+                        </div>
+                        <div>
+                            <p className="text-xs font-bold text-white">Assinante Pro</p>
+                            <p className="text-[10px] text-green-400">Ativo</p>
+                        </div>
+                    </div>
+                    <button onClick={handleLogout} className="text-xs text-slate-400 hover:text-white underline">Sair</button>
+                 </div>
+            ) : (
+                <button 
+                    onClick={() => handleNavigate(AppView.PRO_LOGIN)}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-slate-900 font-bold py-2 rounded text-sm transition"
+                >
+                    <CrownIcon className="w-4 h-4" />
+                    Seja Pro
+                </button>
+            )}
+        </div>
+
         <nav className="p-4 space-y-2 flex-grow overflow-y-auto">
           <button
             onClick={() => { setView(AppView.DASHBOARD); setSelectedSpecialtyId(null); }}
@@ -437,10 +499,13 @@ const App: React.FC = () => {
                                     <li 
                                         key={`${calc.id}-${idx}`}
                                         onClick={() => handleNavigate(calc.id)}
-                                        className="px-4 py-3 hover:bg-medical-50 cursor-pointer border-b border-slate-100 last:border-0 flex flex-col"
+                                        className="px-4 py-3 hover:bg-medical-50 cursor-pointer border-b border-slate-100 last:border-0 flex items-center justify-between"
                                     >
-                                        <span className="font-medium text-slate-800">{calc.name}</span>
-                                        <span className="text-xs text-slate-500">{calc.description} • {calc.specialtyName}</span>
+                                        <div className="flex flex-col">
+                                            <span className="font-medium text-slate-800">{calc.name}</span>
+                                            <span className="text-xs text-slate-500">{calc.description} • {calc.specialtyName}</span>
+                                        </div>
+                                        {calc.isPro && !isPro && <LockIcon className="w-4 h-4 text-slate-400" />}
                                     </li>
                                 ))}
                             </ul>
@@ -455,6 +520,11 @@ const App: React.FC = () => {
            </div>
 
            <div className="flex items-center gap-2 pl-4">
+               {isPro && (
+                   <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold border border-yellow-200 flex items-center gap-1">
+                       <CrownIcon className="w-3 h-3" /> PRO
+                   </span>
+               )}
                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden sm:block"></span>
                <span className="text-xs font-medium text-slate-500 hidden sm:block">Online</span>
            </div>
@@ -467,7 +537,7 @@ const App: React.FC = () => {
             <div className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
                 <AdSpace format="horizontal" className="mb-6" />
 
-                {view !== AppView.DASHBOARD && (
+                {view !== AppView.DASHBOARD && view !== AppView.PRO_LOGIN && (
                     <button 
                         onClick={handleBack}
                         className="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-medical-600 transition group"
@@ -589,7 +659,7 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
 };
 
 // Category View (List Calculators within a Specialty)
-const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: ExtendedView) => void }> = ({ specialtyId, onSelectCalc }) => {
+const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: ExtendedView) => void, isPro: boolean }> = ({ specialtyId, onSelectCalc, isPro }) => {
     const specialty = SPECIALTIES.find(s => s.id === specialtyId);
 
     if (!specialty) return <div>Especialidade não encontrada</div>;
@@ -607,21 +677,35 @@ const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: Ex
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {specialty.calculators.map((calc) => (
-                    <div 
-                        key={calc.id}
-                        onClick={() => onSelectCalc(calc.id)}
-                        className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:shadow-md hover:border-medical-300 cursor-pointer transition flex items-center justify-between group"
-                    >
-                        <div>
-                            <h3 className="font-bold text-slate-800">{calc.name}</h3>
-                            <p className="text-sm text-slate-500 mt-1">{calc.description}</p>
+                {specialty.calculators.map((calc) => {
+                    const locked = calc.isPro && !isPro;
+                    return (
+                        <div 
+                            key={calc.id}
+                            onClick={() => onSelectCalc(calc.id)}
+                            className={`bg-white p-5 rounded-lg border shadow-sm transition flex items-center justify-between group cursor-pointer ${locked ? 'border-yellow-200 bg-yellow-50/50' : 'border-slate-200 hover:shadow-md hover:border-medical-300'}`}
+                        >
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                    <h3 className={`font-bold ${locked ? 'text-slate-600' : 'text-slate-800'}`}>{calc.name}</h3>
+                                    {calc.isPro && (
+                                        <div className="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-yellow-200 flex items-center gap-1">
+                                            <CrownIcon className="w-3 h-3" /> PRO
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="text-sm text-slate-500 mt-1">{calc.description}</p>
+                            </div>
+                            <div className={`p-2 rounded-full transition ${locked ? 'bg-slate-100' : 'bg-slate-50 group-hover:bg-medical-50'}`}>
+                                {locked ? (
+                                    <LockIcon className="w-5 h-5 text-slate-400" />
+                                ) : (
+                                    <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 rotate-180 transition" />
+                                )}
+                            </div>
                         </div>
-                        <div className="bg-slate-50 p-2 rounded-full group-hover:bg-medical-50 transition">
-                            <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 rotate-180 transition" />
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
             
             {/* Contextual Text for Category SEO */}

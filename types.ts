@@ -3,6 +3,7 @@ import React from 'react';
 export enum AppView {
   DASHBOARD = 'DASHBOARD',
   CATEGORY_VIEW = 'CATEGORY_VIEW',
+  PRO_LOGIN = 'PRO_LOGIN', // New view for subscription/login
   // Nursing / General
   CALC_BMI = 'CALC_BMI',
   CALC_IDEAL_WEIGHT = 'CALC_IDEAL_WEIGHT',
@@ -16,7 +17,7 @@ export enum AppView {
   CALC_COCKCROFT = 'CALC_COCKCROFT',
   // Obstetrics
   CALC_PREGNANCY = 'CALC_PREGNANCY',
-  CALC_PREGNANCY_USG = 'CALC_PREGNANCY_USG', // New
+  CALC_PREGNANCY_USG = 'CALC_PREGNANCY_USG',
   CALC_APGAR = 'CALC_APGAR',
   // Cardiology
   CALC_LDL = 'CALC_LDL',
@@ -28,15 +29,15 @@ export enum AppView {
   CALC_GLASGOW = 'CALC_GLASGOW',
   CALC_ANION_GAP = 'CALC_ANION_GAP',
   CALC_PARKLAND = 'CALC_PARKLAND',
-  CALC_BURN_AREA = 'CALC_BURN_AREA', // New
+  CALC_BURN_AREA = 'CALC_BURN_AREA',
   CALC_VASOACTIVE = 'CALC_VASOACTIVE',
   CALC_SODIUM_CORR = 'CALC_SODIUM_CORR',
   // Pediatrics
   CALC_PED_FLUIDS = 'CALC_PED_FLUIDS',
   // Nutrition
   CALC_BMR = 'CALC_BMR',
-  CALC_PROTEIN = 'CALC_PROTEIN', // New
-  CALC_HR_TARGET = 'CALC_HR_TARGET', // New
+  CALC_PROTEIN = 'CALC_PROTEIN',
+  CALC_HR_TARGET = 'CALC_HR_TARGET',
   // Endocrinology
   CALC_CORR_CALCIUM = 'CALC_CORR_CALCIUM',
   CALC_GLUCOSE = 'CALC_GLUCOSE',
@@ -77,6 +78,7 @@ export interface CalculatorDef {
   id: AppView;
   name: string;
   description: string;
+  isPro?: boolean; // Flag to mark paid content
 }
 
 export interface SpecialtyDef {
