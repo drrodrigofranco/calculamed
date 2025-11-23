@@ -5,6 +5,7 @@ import EGFRCalculator from './components/calculators/EGFRCalculator';
 import CockcroftGaultCalculator from './components/calculators/CockcroftGaultCalculator';
 import IVDropCalculator from './components/calculators/IVDropCalculator';
 import PregnancyCalculator from './components/calculators/PregnancyCalculator';
+import PregnancyUSGCalculator from './components/calculators/PregnancyUSGCalculator';
 import LDLCalculator from './components/calculators/LDLCalculator';
 import MAPCalculator from './components/calculators/MAPCalculator';
 import WaterIntakeCalculator from './components/calculators/WaterIntakeCalculator';
@@ -21,6 +22,7 @@ import ChildPughCalculator from './components/calculators/ChildPughCalculator';
 import UnitConverter from './components/calculators/UnitConverter';
 import SodiumCorrectionCalculator from './components/calculators/SodiumCorrectionCalculator';
 import ParklandCalculator from './components/calculators/ParklandCalculator';
+import BurnAreaCalculator from './components/calculators/BurnAreaCalculator';
 import WellsPECalculator from './components/calculators/WellsPECalculator';
 import CURB65Calculator from './components/calculators/CURB65Calculator';
 import PaO2FiO2Calculator from './components/calculators/PaO2FiO2Calculator';
@@ -33,6 +35,8 @@ import DosageCalculator from './components/calculators/DosageCalculator';
 import APGARCalculator from './components/calculators/APGARCalculator';
 import ANCCalculator from './components/calculators/ANCCalculator';
 import PHQ9Calculator from './components/calculators/PHQ9Calculator';
+import ProteinCalculator from './components/calculators/ProteinCalculator';
+import TargetHeartRateCalculator from './components/calculators/TargetHeartRateCalculator';
 
 import AdSpace from './components/AdSpace';
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
@@ -60,7 +64,9 @@ import {
   MindIcon,
   ElderIcon,
   BoneIcon,
-  ToothIcon
+  ToothIcon,
+  DumbbellIcon,
+  CalendarHeartIcon
 } from './components/icons';
 
 // --- Extended View Enum for Legal Pages ---
@@ -95,6 +101,8 @@ const SPECIALTIES: SpecialtyDef[] = [
     calculators: [
         { id: AppView.CALC_BMI, name: 'IMC', description: 'Índice de Massa Corporal' },
         { id: AppView.CALC_BMR, name: 'Taxa Metabólica', description: 'Harris-Benedict' },
+        { id: AppView.CALC_PROTEIN, name: 'Ingestão de Proteína', description: 'Meta para Hipertrofia' },
+        { id: AppView.CALC_HR_TARGET, name: 'Zona Alvo (FC)', description: 'Fórmula de Karvonen' },
         { id: AppView.CALC_IDEAL_WEIGHT, name: 'Peso Ideal', description: 'Fórmula de Devine' },
         { id: AppView.CALC_WATER, name: 'Hidratação Diária', description: 'Meta de água por peso' },
     ]
@@ -127,7 +135,8 @@ const SPECIALTIES: SpecialtyDef[] = [
     icon: BabyIcon,
     color: 'bg-pink-500',
     calculators: [
-        { id: AppView.CALC_PREGNANCY, name: 'Idade Gestacional & DPP', description: 'Baseado na DUM' },
+        { id: AppView.CALC_PREGNANCY, name: 'Idade Gestacional (DUM)', description: 'Data da Última Menstruação' },
+        { id: AppView.CALC_PREGNANCY_USG, name: 'IG pelo Ultrassom', description: 'Correção pela USG' },
     ]
   },
   {
@@ -147,8 +156,9 @@ const SPECIALTIES: SpecialtyDef[] = [
     color: 'bg-red-600',
     calculators: [
         { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Coma e Consciência' },
+        { id: AppView.CALC_BURN_AREA, name: 'SCQ (Regra dos 9)', description: 'Área Queimada' },
+        { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação Queimados' },
         { id: AppView.CALC_WELLS_PE, name: 'Escore de Wells', description: 'Risco de TEP' },
-        { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Queimaduras' },
         { id: AppView.CALC_VASOACTIVE, name: 'Drogas Vasoativas', description: 'Noradrenalina, Sedação, etc' },
     ]
   },
@@ -285,6 +295,7 @@ const App: React.FC = () => {
       case AppView.CALC_COCKCROFT: return <CockcroftGaultCalculator />;
       case AppView.CALC_IV: return <IVDropCalculator />;
       case AppView.CALC_PREGNANCY: return <PregnancyCalculator />;
+      case AppView.CALC_PREGNANCY_USG: return <PregnancyUSGCalculator />;
       case AppView.CALC_LDL: return <LDLCalculator />;
       case AppView.CALC_MAP: return <MAPCalculator />;
       case AppView.CALC_WATER: return <WaterIntakeCalculator />;
@@ -292,6 +303,8 @@ const App: React.FC = () => {
       case AppView.CALC_GLASGOW: return <GlasgowCalculator />;
       case AppView.CALC_PED_FLUIDS: return <PediatricFluidCalculator />;
       case AppView.CALC_BMR: return <BMRCalculator />;
+      case AppView.CALC_PROTEIN: return <ProteinCalculator />;
+      case AppView.CALC_HR_TARGET: return <TargetHeartRateCalculator />;
       case AppView.CALC_IDEAL_WEIGHT: return <IdealWeightCalculator />;
       case AppView.CALC_BSA: return <BSACalculator />;
       case AppView.CALC_ANION_GAP: return <AnionGapCalculator />;
@@ -301,6 +314,7 @@ const App: React.FC = () => {
       case AppView.CALC_CONVERTER: return <UnitConverter />;
       case AppView.CALC_SODIUM_CORR: return <SodiumCorrectionCalculator />;
       case AppView.CALC_PARKLAND: return <ParklandCalculator />;
+      case AppView.CALC_BURN_AREA: return <BurnAreaCalculator />;
       case AppView.CALC_WELLS_PE: return <WellsPECalculator />;
       case AppView.CALC_CURB65: return <CURB65Calculator />;
       case AppView.CALC_PAO2_FIO2: return <PaO2FiO2Calculator />;
