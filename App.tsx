@@ -37,7 +37,6 @@ import {
   FlaskIcon,
   RulerIcon,
   LiverIcon,
-  GithubIcon,
   SearchIcon,
   XIcon,
   LungsIcon
@@ -264,16 +263,6 @@ const App: React.FC = () => {
         </nav>
         
         <div className="p-6 space-y-4">
-            <a 
-              href="https://github.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 text-slate-400 hover:text-white transition p-2 rounded-lg hover:bg-slate-800"
-            >
-              <GithubIcon className="w-5 h-5" />
-              <span className="text-sm font-medium">Projeto no GitHub</span>
-            </a>
-
             <div className="bg-slate-800 rounded-xl p-4">
                 <p className="text-xs text-slate-400 mb-2">Versão Profissional</p>
                 <div className="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
