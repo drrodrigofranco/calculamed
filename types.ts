@@ -22,6 +22,7 @@ export enum AppView {
   CALC_GLASGOW = 'CALC_GLASGOW',
   CALC_ANION_GAP = 'CALC_ANION_GAP',
   CALC_PARKLAND = 'CALC_PARKLAND',
+  CALC_VASOACTIVE = 'CALC_VASOACTIVE',
   // Pediatrics
   CALC_PED_FLUIDS = 'CALC_PED_FLUIDS',
   // Nutrition
@@ -50,7 +51,7 @@ export interface CalculatorResult {
   notes?: string;
 }
 
-export type SpecialtyId = 'cardio' | 'nephro' | 'obs' | 'peds' | 'neuro' | 'nutrition' | 'nursing' | 'endo' | 'gastro' | 'pneumo';
+export type SpecialtyId = 'cardio' | 'nephro' | 'obs' | 'peds' | 'neuro' | 'nutrition' | 'nursing' | 'endo' | 'gastro' | 'pneumo' | 'emergency';
 
 export interface CalculatorDef {
   id: AppView;

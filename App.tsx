@@ -22,6 +22,7 @@ import SodiumCorrectionCalculator from './components/calculators/SodiumCorrectio
 import ParklandCalculator from './components/calculators/ParklandCalculator';
 import WellsPECalculator from './components/calculators/WellsPECalculator';
 import CURB65Calculator from './components/calculators/CURB65Calculator';
+import VasoactiveDrugsCalculator from './components/calculators/VasoactiveDrugsCalculator';
 import { 
   CalculatorIcon, 
   DropIcon, 
@@ -39,7 +40,10 @@ import {
   LiverIcon,
   SearchIcon,
   XIcon,
-  LungsIcon
+  LungsIcon,
+  CalculamedLogo,
+  SyringeIcon,
+  SirenIcon
 } from './components/icons';
 
 // --- Configuration Data ---
@@ -57,6 +61,27 @@ const SPECIALTIES: SpecialtyDef[] = [
         { id: AppView.CALC_IDEAL_WEIGHT, name: 'Peso Ideal', description: 'Fórmula de Devine' },
         { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Fórmula de Mosteller' },
         { id: AppView.CALC_CONVERTER, name: 'Conversor de Unidades', description: 'Temp (C/F) e Peso (Kg/Lbs)' },
+    ]
+  },
+  {
+    id: 'emergency',
+    name: 'Emergência & UTI',
+    icon: SirenIcon,
+    color: 'bg-red-600',
+    calculators: [
+        { id: AppView.CALC_VASOACTIVE, name: 'Drogas Vasoativas', description: 'Noradrenalina, Dobuta, etc' },
+        { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação em Queimados' },
+        { id: AppView.CALC_MAP, name: 'Pressão Média (PAM)', description: 'Monitorização Trauma/Choque' },
+        { id: AppView.CALC_ANION_GAP, name: 'Anion Gap', description: 'Investigação de acidose' },
+    ]
+  },
+  {
+    id: 'neuro',
+    name: 'Neurologia',
+    icon: BrainIcon,
+    color: 'bg-violet-600',
+    calculators: [
+        { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de consciência' },
     ]
   },
   {
@@ -110,18 +135,6 @@ const SPECIALTIES: SpecialtyDef[] = [
     color: 'bg-amber-600',
     calculators: [
         { id: AppView.CALC_CHILD_PUGH, name: 'Child-Pugh', description: 'Prognóstico na Cirrose' },
-    ]
-  },
-  {
-    id: 'neuro',
-    name: 'Neuro & Emergência',
-    icon: BrainIcon,
-    color: 'bg-violet-600',
-    calculators: [
-        { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de consciência' },
-        { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação em Queimados' },
-        { id: AppView.CALC_MAP, name: 'Pressão Média (PAM)', description: 'Monitorização Trauma/Neuro' },
-        { id: AppView.CALC_ANION_GAP, name: 'Anion Gap', description: 'Investigação de acidose' },
     ]
   },
   {
@@ -228,6 +241,7 @@ const App: React.FC = () => {
       case AppView.CALC_PARKLAND: return <ParklandCalculator />;
       case AppView.CALC_WELLS_PE: return <WellsPECalculator />;
       case AppView.CALC_CURB65: return <CURB65Calculator />;
+      case AppView.CALC_VASOACTIVE: return <VasoactiveDrugsCalculator />;
       
       case AppView.DASHBOARD:
       default:
@@ -248,9 +262,12 @@ const App: React.FC = () => {
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col">
         <div className="p-6 border-b border-slate-700">
-          <h1 className="text-xl font-bold flex items-center gap-2">
-            <span className="text-medical-500">Medi</span>Calc
-          </h1>
+          <div className="flex items-center gap-3">
+            <CalculamedLogo className="w-8 h-8" />
+            <h1 className="text-xl font-bold text-white tracking-tight">
+              Calcula<span className="text-medical-500">med</span>
+            </h1>
+          </div>
         </div>
         <nav className="p-4 space-y-2 flex-grow">
           <button
@@ -264,7 +281,7 @@ const App: React.FC = () => {
         
         <div className="p-6 space-y-4">
             <div className="bg-slate-800 rounded-xl p-4">
-                <p className="text-xs text-slate-400 mb-2">Versão Profissional</p>
+                <p className="text-xs text-slate-400 mb-2">Calculamed Pro</p>
                 <div className="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
                     <div className="h-full bg-medical-500 w-full"></div>
                 </div>
@@ -285,6 +302,14 @@ const App: React.FC = () => {
              <h2 className="text-lg font-semibold text-slate-800 hidden md:block">
                 {getHeaderTitle()}
              </h2>
+             
+             {/* Mobile Logo/Name only on Dashboard */}
+             {view === AppView.DASHBOARD && (
+               <div className="md:hidden flex items-center gap-2">
+                  <CalculamedLogo className="w-6 h-6" />
+                  <span className="font-bold text-slate-800">Calculamed</span>
+               </div>
+             )}
 
              {/* Search Bar */}
              <div className="relative max-w-md w-full ml-2 md:ml-8">
@@ -337,7 +362,7 @@ const App: React.FC = () => {
 
            <div className="flex items-center gap-2 pl-4">
                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden sm:block"></span>
-               <span className="text-xs font-medium text-slate-500 hidden sm:block">Pro</span>
+               <span className="text-xs font-medium text-slate-500 hidden sm:block">Online</span>
            </div>
         </header>
 

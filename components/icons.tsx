@@ -1,5 +1,17 @@
 import React from 'react';
 
+export const CalculamedLogo = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" className={className}>
+    <rect x="0" y="0" width="40" height="40" rx="12" className="fill-medical-600"/>
+    {/* Medical Cross constructed from "calculator buttons" concept */}
+    <rect x="16" y="8" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
+    <rect x="16" y="16" width="8" height="8" rx="2" fill="white"/>
+    <rect x="16" y="24" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
+    <rect x="8" y="16" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
+    <rect x="24" y="16" width="8" height="8" rx="2" fill="white" fillOpacity="0.9"/>
+  </svg>
+);
+
 export const ActivityIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
@@ -148,5 +160,27 @@ export const LungsIcon = ({ className }: { className?: string }) => (
     <path d="M12 15a5 5 0 0 0 5-5c0-1-.3-2-.8-2.8"/>
     <path d="M12 15a5 5 0 0 1-5-5c0-1 .3-2 .8-2.8"/>
     <path d="M12 2v5"/>
+  </svg>
+);
+
+export const SyringeIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="m18 2 4 4" />
+    <path d="m17 7 3-3" />
+    <path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5" />
+    <path d="m9 11 4 4" />
+    <path d="m5 19-3 3" />
+    <path d="m14 4 6 6" />
+  </svg>
+);
+
+export const SirenIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M7 18v-6a5 5 0 1 1 10 0v6" />
+    <path d="M5 21a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1H5v-1Z" />
+    <path d="M12 2v2" />
+    <path d="M21 12h1" />
+    <path d="M2 12h1" />
+    <path d="M4 18h16" />
   </svg>
 );
