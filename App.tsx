@@ -249,35 +249,29 @@ const App: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         setUser(currentUser);
         if (currentUser) {
-            // Check for Admin Bypass
-            if (currentUser.email === 'rodrigo@ajudamediko.com.br') {
-                setIsPro(true);
+            // Check for Subscription
+            const q = query(
+                collection(db, 'customers', currentUser.uid, 'subscriptions'), 
+                where('status', 'in', ['active', 'trialing'])
+            );
+            
+            const unsubscribeSubs = onSnapshot(q, (snapshot) => {
+                setIsPro(!snapshot.empty);
                 setLoadingPro(false);
-            } else {
-                // Check for Subscription
-                const q = query(
-                    collection(db, 'customers', currentUser.uid, 'subscriptions'), 
-                    where('status', 'in', ['active', 'trialing'])
-                );
-                
-                const unsubscribeSubs = onSnapshot(q, (snapshot) => {
-                    setIsPro(!snapshot.empty);
-                    setLoadingPro(false);
-                });
+            });
 
-                // Load Favorites
-                try {
-                    const userDocRef = doc(db, 'users', currentUser.uid);
-                    const userDocSnap = await getDoc(userDocRef);
-                    if (userDocSnap.exists() && userDocSnap.data().favorites) {
-                        setFavorites(userDocSnap.data().favorites);
-                    }
-                } catch (e) {
-                    console.error("Erro ao carregar favoritos", e);
+            // Load Favorites
+            try {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists() && userDocSnap.data().favorites) {
+                    setFavorites(userDocSnap.data().favorites);
                 }
-                
-                return () => unsubscribeSubs();
+            } catch (e) {
+                console.error("Erro ao carregar favoritos", e);
             }
+            
+            return () => unsubscribeSubs();
         } else {
             setIsPro(false);
             setFavorites([]);

@@ -32,20 +32,22 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   const createCheckoutSession = async () => {
       if (!auth.currentUser) {
           await handleGoogleLogin();
-          return; // Após logar, o usuário clica de novo para assinar
+          return;
       }
 
       setIsLoading(true);
       try {
-          // Cria um documento na coleção 'checkout_sessions' dentro do usuário
-          // A extensão do Stripe vai ouvir isso e gerar a URL de pagamento
+          // CRIA A SESSÃO NO BANCO DE DADOS
+          // A extensão do Firebase instalada vai ler isso e criar o link do Stripe
           const docRef = await addDoc(collection(db, "customers", auth.currentUser.uid, "checkout_sessions"), {
-              price: "price_1QoXXXXXX", // Substituir pelo ID real do preço no Stripe se tiver, ou a extensão usa o padrão
+              // IMPORTANTE: Substitua pelo ID do preço do seu produto no Stripe (ex: price_1Qo...)
+              // Se não colocar, a extensão tentará usar o padrão se configurado, mas o ideal é por aqui.
+              price: "price_1QoXXXXXX", 
               success_url: window.location.origin,
               cancel_url: window.location.origin,
           });
 
-          // Escuta o documento para pegar a URL gerada
+          // ESCUTA O DOCUMENTO PARA PEGAR A URL
           onSnapshot(docRef, (snap) => {
               const { error, url } = snap.data() as any || {};
               if (error) {
@@ -65,7 +67,6 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
       }
   };
 
-  // Mantido apenas visualmente, sem funcionalidade real de backend por enquanto
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setError("No momento, apenas o login com Google está ativado para segurança.");
