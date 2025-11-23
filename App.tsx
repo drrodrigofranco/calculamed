@@ -68,7 +68,6 @@ import {
   AppleIcon
 } from './components/icons';
 
-// --- Extended View Enum for Legal Pages ---
 enum LegalView {
     PRIVACY = 'PRIVACY',
     TERMS = 'TERMS',
@@ -76,9 +75,6 @@ enum LegalView {
 }
 
 type ExtendedView = AppView | LegalView;
-
-// --- Configuration Data ---
-// Added 'isPro' flag to complex calculators
 
 const SPECIALTIES: SpecialtyDef[] = [
   {
@@ -237,11 +233,8 @@ const App: React.FC = () => {
   const [view, setView] = useState<ExtendedView>(AppView.DASHBOARD);
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<SpecialtyId | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
-  // User Authentication State
   const [isPro, setIsPro] = useState<boolean>(false);
 
-  // Load auth state on mount
   useEffect(() => {
     const storedPro = localStorage.getItem('as_is_pro');
     if (storedPro === 'true') setIsPro(true);
@@ -260,7 +253,6 @@ const App: React.FC = () => {
   }
 
   const handleNavigate = (targetView: ExtendedView) => {
-    // Check if target is pro and user is not pro
     if (Object.values(AppView).includes(targetView as AppView)) {
         const targetCalc = SPECIALTIES.flatMap(s => s.calculators).find(c => c.id === targetView);
         if (targetCalc?.isPro && !isPro) {
@@ -298,7 +290,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Search Logic
   const filteredCalculators = searchQuery 
     ? SPECIALTIES.flatMap(s => s.calculators.map(c => ({...c, specialtyName: s.name})))
         .filter(c => 
@@ -318,18 +309,12 @@ const App: React.FC = () => {
             />
         ) : <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} />;
       
-      // Pro Login
       case AppView.PRO_LOGIN: return <Auth onLogin={handleLogin} />;
-      
-      // Nutrition Calc (Replaces Patient Management)
       case AppView.NUTRITION_PRO: return <NutritionManager />;
-
-      // Legal Pages
       case LegalView.PRIVACY: return <PrivacyPolicy />;
       case LegalView.TERMS: return <TermsOfUse />;
       case LegalView.ABOUT: return <AboutUs />;
 
-      // Calculators
       case AppView.CALC_BMI: return <BMICalculator />;
       case AppView.CALC_EGFR: return <EGFRCalculator />;
       case AppView.CALC_COCKCROFT: return <CockcroftGaultCalculator />;
@@ -387,7 +372,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
-      {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col z-30">
         <div className="p-6 border-b border-slate-700">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigate(AppView.DASHBOARD)}>
@@ -401,7 +385,6 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* User Status in Sidebar */}
         <div className="p-4 bg-slate-800 border-b border-slate-700">
             {isPro ? (
                  <div className="flex items-center justify-between">
@@ -460,9 +443,7 @@ const App: React.FC = () => {
         </nav>
       </aside>
 
-      {/* Main Content Area */}
       <main className="flex-1 h-screen overflow-y-auto relative flex flex-col">
-        {/* Header */}
         <header className="bg-white border-b border-slate-200 p-4 md:px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm">
            <div className="flex items-center gap-4 flex-1">
              {view !== AppView.DASHBOARD && (
@@ -474,7 +455,6 @@ const App: React.FC = () => {
                 {getHeaderTitle()}
              </h2>
              
-             {/* Mobile Logo */}
              {view === AppView.DASHBOARD && (
                <div className="md:hidden flex items-center gap-2">
                   <AjudaSaudeLogo className="w-6 h-6" />
@@ -482,7 +462,6 @@ const App: React.FC = () => {
                </div>
              )}
 
-             {/* Search Bar */}
              <div className="relative max-w-md w-full ml-2 md:ml-8">
                 <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -505,7 +484,6 @@ const App: React.FC = () => {
                     )}
                 </div>
 
-                {/* Search Results */}
                 {searchQuery && (
                     <div className="absolute mt-1 w-full bg-white shadow-lg rounded-xl border border-slate-200 overflow-hidden z-50 max-h-96 overflow-y-auto">
                         {filteredCalculators.length > 0 ? (
@@ -545,10 +523,8 @@ const App: React.FC = () => {
            </div>
         </header>
 
-        {/* Content Container with Sidebar for Ads */}
         <div className="flex-1 flex flex-col xl:flex-row">
             
-            {/* Center Column */}
             <div className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
                 <AdSpace format="horizontal" className="mb-6" />
 
@@ -565,9 +541,12 @@ const App: React.FC = () => {
                 {renderContent()}
 
                 <AdSpace format="horizontal" className="mt-8" />
+                <div className="mt-8 text-center text-xs text-slate-400 max-w-2xl mx-auto">
+                    Aviso Legal: As informações contidas neste aplicativo servem apenas como auxílio e não substituem o julgamento clínico profissional. 
+                    Confirme sempre os resultados com outras fontes.
+                </div>
             </div>
 
-            {/* Right Ad Sidebar (Desktop Only) */}
             <div className="hidden xl:block w-80 p-6 border-l border-slate-200 bg-white">
                 <h4 className="text-xs font-bold text-slate-400 uppercase mb-4 tracking-wider">Patrocinado</h4>
                 <AdSpace format="vertical" />
@@ -577,7 +556,6 @@ const App: React.FC = () => {
             </div>
         </div>
 
-        {/* Footer */}
         <footer className="bg-white border-t border-slate-200 py-8 px-4 mt-auto">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="flex items-center gap-2">
@@ -599,7 +577,6 @@ const App: React.FC = () => {
   );
 };
 
-// Dashboard (Specialty Grid)
 const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavigate: (view: ExtendedView) => void }> = ({ onSelectSpecialty, onNavigate }) => {
   return (
     <div className="pb-10">
@@ -612,7 +589,6 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Specialty Cards */}
         {SPECIALTIES.map((spec) => (
             <div 
                 key={spec.id}
@@ -625,7 +601,6 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
                 <h4 className="text-lg font-bold text-slate-800 mb-1">{spec.name}</h4>
                 <p className="text-slate-500 text-xs mb-4">{spec.calculators.length} Calculadoras</p>
                 <div className="mt-auto flex -space-x-2 overflow-hidden mb-3">
-                    {/* Visual indicators for calculators inside */}
                     {spec.calculators.slice(0, 3).map((_, i) => (
                         <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-100 flex items-center justify-center text-[10px] text-slate-400 font-bold">
                            <LightningIcon className="w-3 h-3" />
@@ -644,7 +619,6 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
         ))}
       </div>
 
-      {/* SEO Content Section for AdSense Approval */}
       <div className="mt-12 pt-8 border-t border-slate-200 prose prose-slate max-w-none text-slate-600">
           <h3>Calculadoras Médicas Profissionais</h3>
           <p>
@@ -673,7 +647,6 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
   );
 };
 
-// Category View (List Calculators within a Specialty)
 const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: ExtendedView) => void, isPro: boolean }> = ({ specialtyId, onSelectCalc, isPro }) => {
     const specialty = SPECIALTIES.find(s => s.id === specialtyId);
 
@@ -723,7 +696,6 @@ const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: Ex
                 })}
             </div>
             
-            {/* Contextual Text for Category SEO */}
             <div className="mt-8 pt-6 border-t border-slate-100 text-sm text-slate-500">
                 <p>
                     As calculadoras de <strong>{specialty.name}</strong> são ferramentas de apoio à decisão clínica. 

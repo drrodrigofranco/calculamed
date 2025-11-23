@@ -8,7 +8,7 @@ const BMICalculator: React.FC = () => {
 
   const calculateBMI = () => {
     const w = parseFloat(weight);
-    const h = parseFloat(height) / 100; // Convert cm to m
+    const h = parseFloat(height) / 100;
 
     if (isNaN(w) || isNaN(h) || h === 0) return;
 

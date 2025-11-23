@@ -12,9 +12,6 @@ const CorrectedCalciumCalculator: React.FC = () => {
 
     if (isNaN(ca) || isNaN(alb)) return;
 
-    // Corrected Calcium = Measured Ca + 0.8 * (4.0 - Albumin)
-    // Assuming Calcium in mg/dL and Albumin in g/dL
-    
     const corrected = ca + 0.8 * (4.0 - alb);
 
     setResult({

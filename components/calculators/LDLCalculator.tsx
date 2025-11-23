@@ -14,9 +14,6 @@ const LDLCalculator: React.FC = () => {
 
     if (isNaN(t) || isNaN(h) || isNaN(tr)) return;
 
-    // Friedewald Formula: LDL = Total - HDL - (Triglycerides / 5)
-    // Valid only if Triglycerides < 400 mg/dL
-    
     if (tr >= 400) {
       setResult({
         value: "N/A",
@@ -29,7 +26,6 @@ const LDLCalculator: React.FC = () => {
     const ldl = t - h - (tr / 5);
     
     let classification = '';
-    // General guidelines (example)
     if (ldl < 100) classification = "Ótimo";
     else if (ldl < 130) classification = "Desejável";
     else if (ldl < 160) classification = "Limítrofe";

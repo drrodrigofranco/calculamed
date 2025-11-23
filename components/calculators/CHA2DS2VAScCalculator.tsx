@@ -21,7 +21,7 @@ const CHA2DS2VAScCalculator: React.FC = () => {
     if (stroke) score += 2;
     if (vasc) score += 1;
     if (age75) score += 2;
-    else if (age6574) score += 1; // Mutually exclusive in UI logic ideally, but additive in code
+    else if (age6574) score += 1; 
     if (female) score += 1;
 
     let risk = '';

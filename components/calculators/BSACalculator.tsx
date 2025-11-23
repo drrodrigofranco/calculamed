@@ -12,9 +12,6 @@ const BSACalculator: React.FC = () => {
 
     if (isNaN(w) || isNaN(h) || h === 0 || w === 0) return;
 
-    // Mosteller Formula
-    // BSA = sqrt( (Height(cm) * Weight(kg)) / 3600 )
-    
     const bsa = Math.sqrt( (h * w) / 3600 );
 
     setResult({

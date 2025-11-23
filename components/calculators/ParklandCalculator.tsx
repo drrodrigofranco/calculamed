@@ -11,15 +11,11 @@ const ParklandCalculator: React.FC = () => {
     const burns = parseFloat(tbsa);
 
     if (isNaN(w) || isNaN(burns) || w <= 0) return;
-
-    // Parkland Formula: 4ml * kg * %TBSA
-    // 50% in first 8 hours, 50% in next 16 hours
     
     const totalVolume = 4 * w * burns;
     const first8h = totalVolume / 2;
     const next16h = totalVolume / 2;
     
-    // Hourly rates
     const rate1st = first8h / 8;
     const rate2nd = next16h / 16;
 

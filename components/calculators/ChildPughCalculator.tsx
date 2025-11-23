@@ -41,8 +41,6 @@ const ChildPughCalculator: React.FC = () => {
       </h3>
 
       <div className="space-y-6">
-        
-        {/* Bilirubina */}
         <div>
           <label className="block text-sm font-bold text-slate-800 mb-2">Bilirubina Total (mg/dL)</label>
           <select 
@@ -56,7 +54,6 @@ const ChildPughCalculator: React.FC = () => {
           </select>
         </div>
 
-        {/* Albumina */}
         <div>
           <label className="block text-sm font-bold text-slate-800 mb-2">Albumina (g/dL)</label>
           <select 
@@ -70,7 +67,6 @@ const ChildPughCalculator: React.FC = () => {
           </select>
         </div>
 
-        {/* INR */}
         <div>
           <label className="block text-sm font-bold text-slate-800 mb-2">INR (Tempo de Protrombina)</label>
           <select 
@@ -84,7 +80,6 @@ const ChildPughCalculator: React.FC = () => {
           </select>
         </div>
 
-        {/* Ascite */}
         <div>
           <label className="block text-sm font-bold text-slate-800 mb-2">Ascite</label>
           <select 
@@ -98,7 +93,6 @@ const ChildPughCalculator: React.FC = () => {
           </select>
         </div>
 
-        {/* Encefalopatia */}
         <div>
           <label className="block text-sm font-bold text-slate-800 mb-2">Encefalopatia Hepática</label>
           <select 

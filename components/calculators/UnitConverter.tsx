@@ -3,15 +3,12 @@ import React, { useState } from 'react';
 const UnitConverter: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'temp' | 'weight'>('temp');
   
-  // Temp State
   const [celsius, setCelsius] = useState<string>('');
   const [fahrenheit, setFahrenheit] = useState<string>('');
 
-  // Weight State
   const [kg, setKg] = useState<string>('');
   const [lbs, setLbs] = useState<string>('');
 
-  // Temp Logic
   const handleC = (val: string) => {
     setCelsius(val);
     if (val === '') { setFahrenheit(''); return; }
@@ -26,7 +23,6 @@ const UnitConverter: React.FC = () => {
     if (!isNaN(f)) setCelsius(((f - 32) * 5/9).toFixed(1));
   };
 
-  // Weight Logic
   const handleKg = (val: string) => {
     setKg(val);
     if (val === '') { setLbs(''); return; }

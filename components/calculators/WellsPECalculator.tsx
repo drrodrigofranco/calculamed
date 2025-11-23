@@ -25,7 +25,6 @@ const WellsPECalculator: React.FC = () => {
     let risk = '';
     let conduct = '';
 
-    // 3-tier model
     if (score <= 1) {
         risk = 'Baixo Risco';
         conduct = 'Considerar D-Dímero para exclusão.';

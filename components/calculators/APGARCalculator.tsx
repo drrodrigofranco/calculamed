@@ -97,18 +97,18 @@ const APGARCalculator: React.FC = () => {
             onChange={setActivity}
             options={[
                 { val: 0, text: 'Flácido' },
-                { val: 1, text: 'Alguma flexão' },
+                { val: 1, text: 'Alguma flexão de extremidades' },
                 { val: 2, text: 'Movimentos ativos' }
             ]}
         />
         <Criterion 
-            label="Respiração (Esforço)"
+            label="Respiração"
             value={respiration}
             onChange={setRespiration}
             options={[
                 { val: 0, text: 'Ausente' },
                 { val: 1, text: 'Lenta / Irregular' },
-                { val: 2, text: 'Regular / Choro forte' }
+                { val: 2, text: 'Forte / Choro' }
             ]}
         />
 
@@ -127,10 +127,9 @@ const APGARCalculator: React.FC = () => {
             <span className="text-3xl font-bold text-slate-900">{result.value}</span>
             <span className="text-slate-500">/ 10</span>
           </div>
-          <p className={`mt-2 font-medium text-lg ${result.notes}`}>
+          <p className={`mt-2 font-medium ${result.notes}`}>
             {result.classification}
           </p>
-          <p className="text-xs text-slate-500 mt-2">Avaliar no 1º e 5º minuto de vida.</p>
         </div>
       )}
     </div>

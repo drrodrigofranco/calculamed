@@ -5,7 +5,6 @@ const EGFRCalculator: React.FC = () => {
   const [creatinine, setCreatinine] = useState<string>('');
   const [age, setAge] = useState<string>('');
   const [gender, setGender] = useState<'male' | 'female'>('male');
-  const [race, setRace] = useState<'black' | 'other'>('other');
   const [result, setResult] = useState<CalculatorResult | null>(null);
 
   const calculateEGFR = () => {
@@ -23,16 +22,8 @@ const EGFRCalculator: React.FC = () => {
       alpha = -0.329;
       genderFactor = 1.018;
     }
-
-    // CKD-EPI 2009 Formula
-    // GFR = 141 * min(Scr/k, 1)^alpha * max(Scr/k, 1)^-1.209 * 0.993^Age * 1.018 [if female] * 1.159 [if black]
     
-    // Note: The race coefficient (1.159 for black) is controversial and removed in 2021 guidelines,
-    // but often still present in legacy calculators. 
-    // Implementing 2021 CKD-EPI Creatinine (Race-free):
-    // GFR = 142 * min(Scr/k, 1)^alpha * max(Scr/k, 1)^-1.200 * 0.9938^Age * 1.012 [if female]
-    
-    // Let's use the 2021 Race-Free formula for modern accuracy.
+    // CKD-EPI 2021 Race-Free
     if (gender === 'female') {
         k = 0.7;
         alpha = -0.241;

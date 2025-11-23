@@ -11,16 +11,12 @@ const QTcCalculator: React.FC = () => {
     const hrVal = parseFloat(hr); // in bpm
 
     if (isNaN(qtVal) || isNaN(hrVal) || hrVal <= 0) return;
-
-    // Bazett's Formula: QTc = QT / sqrt(RR interval in seconds)
-    // RR interval (seconds) = 60 / HR
     
     const rrSeconds = 60 / hrVal;
     const qtc = qtVal / Math.sqrt(rrSeconds);
 
     let classification = '';
-    // General limits (simplified)
-    if (qtc > 450) classification = "Prolongado (Masculino)"; // strict cut-off
+    if (qtc > 450) classification = "Prolongado (Masculino)";
     if (qtc > 460) classification = "Prolongado (Feminino)";
     if (qtc > 500) classification = "Muito Prolongado (Risco de Torsades)";
     if (qtc <= 440) classification = "Normal";

@@ -8,11 +8,6 @@ const PediatricFluidCalculator: React.FC = () => {
   const calculateFluid = () => {
     const w = parseFloat(weight);
     if (isNaN(w) || w <= 0) return;
-
-    // Holliday-Segar Rule
-    // 0-10kg: 100ml/kg
-    // 10-20kg: 1000ml + 50ml/kg for each kg > 10
-    // >20kg: 1500ml + 20ml/kg for each kg > 20
     
     let dailyVol = 0;
 
@@ -24,7 +19,6 @@ const PediatricFluidCalculator: React.FC = () => {
       dailyVol = 1500 + (w - 20) * 20;
     }
 
-    // Hourly rate
     const hourlyRate = dailyVol / 24;
 
     setResult({

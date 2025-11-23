@@ -9,14 +9,10 @@ const IVDropCalculator: React.FC = () => {
 
   const calculateDrip = () => {
     const vol = parseFloat(volume);
-    const t = parseFloat(time); // in hours
+    const t = parseFloat(time);
 
     if (isNaN(vol) || isNaN(t) || t === 0) return;
 
-    // Drops per minute = (Volume in ml * Drop Factor) / (Time in minutes)
-    // Macrogotas (standard): 20 drops/ml
-    // Microgotas: 60 drops/ml
-    
     const dropFactor = type === 'drops' ? 20 : 60;
     const minutes = t * 60;
     

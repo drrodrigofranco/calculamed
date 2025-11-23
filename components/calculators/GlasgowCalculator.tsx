@@ -29,7 +29,6 @@ const GlasgowCalculator: React.FC = () => {
       </h3>
 
       <div className="space-y-6">
-        {/* Abertura Ocular */}
         <div>
           <label className="block text-sm font-bold text-slate-800 mb-2">Abertura Ocular</label>
           <select 
@@ -44,7 +43,6 @@ const GlasgowCalculator: React.FC = () => {
           </select>
         </div>
 
-        {/* Resposta Verbal */}
         <div>
           <label className="block text-sm font-bold text-slate-800 mb-2">Resposta Verbal</label>
           <select 
@@ -60,7 +58,6 @@ const GlasgowCalculator: React.FC = () => {
           </select>
         </div>
 
-        {/* Resposta Motora */}
         <div>
           <label className="block text-sm font-bold text-slate-800 mb-2">Resposta Motora</label>
           <select 

@@ -10,7 +10,6 @@ const WaterIntakeCalculator: React.FC = () => {
 
     if (isNaN(w) || w <= 0) return;
 
-    // Standard recommendation: 35ml per kg of body weight
     const ml = w * 35;
     const liters = ml / 1000;
 

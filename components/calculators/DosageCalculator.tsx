@@ -14,7 +14,6 @@ const DosageCalculator: React.FC = () => {
 
     if (isNaN(p) || isNaN(a) || isNaN(v) || a === 0) return;
 
-    // Rule of Three: (Prescribed * Volume) / Available
     const ml = (p * v) / a;
 
     setResult({

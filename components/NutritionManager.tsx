@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AppleIcon, ScaleIcon, DumbbellIcon, ChevronLeftIcon, FlameIcon, DropIcon } from './icons';
+import { AppleIcon, ScaleIcon, DumbbellIcon, FlameIcon, DropIcon } from './icons';
 
 type Goal = 'loss' | 'gain' | null;
 
@@ -24,11 +24,10 @@ const NutritionManager: React.FC = () => {
 
     if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) return;
 
-    // Calc BMI
     const heightInMeters = h / 100;
     const bmiValue = w / (heightInMeters * heightInMeters);
     setBmi(bmiValue);
-    setGoal(null); // Reset goal if recalculated
+    setGoal(null); 
     setMacros(null);
   };
 
@@ -38,38 +37,25 @@ const NutritionManager: React.FC = () => {
 
     setGoal(selectedGoal);
 
-    // Estimativa Simplificada de Gasto Energético (Rule of Thumb)
-    // Manutenção média ~30kcal/kg
     let targetCalories = 0;
     let protein = 0;
     let fats = 0;
     let carbs = 0;
 
     if (selectedGoal === 'loss') {
-        // Déficit Calórico
-        // Meta: ~20-25 kcal/kg
         targetCalories = w * 24; 
-        
-        // Macros Perda de Peso (Proteína Alta para segurar massa)
-        protein = w * 2.0; // 2g/kg
-        fats = w * 0.8;    // 0.8g/kg
+        protein = w * 2.0; 
+        fats = w * 0.8;    
     } else {
-        // Superávit Calórico
-        // Meta: ~30-35 kcal/kg
         targetCalories = w * 34;
-
-        // Macros Hipertrofia
-        protein = w * 2.2; // 2.2g/kg
-        fats = w * 1.0;    // 1g/kg
+        protein = w * 2.2; 
+        fats = w * 1.0;    
     }
 
-    // Carbs fill the rest of calories
-    // 1g Prot = 4kcal, 1g Fat = 9kcal, 1g Carb = 4kcal
     const caloriesFromProtAndFat = (protein * 4) + (fats * 9);
     const remainingCalories = targetCalories - caloriesFromProtAndFat;
     carbs = remainingCalories / 4;
 
-    // Water: 35ml to 50ml per kg
     const water = (w * 40) / 1000;
 
     setMacros({
@@ -82,7 +68,6 @@ const NutritionManager: React.FC = () => {
   };
 
   const getBMIClassification = (val: number) => {
-      // Escala OMS (WHO)
       if (val < 18.5) return { label: 'Abaixo do Peso', color: 'text-yellow-600', bg: 'bg-yellow-100' };
       if (val < 25) return { label: 'Peso Normal', color: 'text-green-600', bg: 'bg-green-100' };
       if (val < 30) return { label: 'Sobrepeso', color: 'text-orange-500', bg: 'bg-orange-100' };
@@ -101,7 +86,6 @@ const NutritionManager: React.FC = () => {
         </div>
 
         <div className="grid md:grid-cols-12 gap-8">
-            {/* Left Column: Inputs */}
             <div className="md:col-span-5 space-y-6">
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                     <h3 className="font-bold text-slate-800 mb-4">Seus Dados</h3>
@@ -150,7 +134,6 @@ const NutritionManager: React.FC = () => {
                 )}
             </div>
 
-            {/* Right Column: Goals & Results */}
             <div className="md:col-span-7">
                 {!bmi ? (
                     <div className="h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 p-8">
@@ -159,7 +142,6 @@ const NutritionManager: React.FC = () => {
                     </div>
                 ) : (
                     <div className="space-y-6 animate-fade-in">
-                        {/* Goal Selector */}
                         <div>
                             <h3 className="font-bold text-slate-800 mb-3">Qual é o seu objetivo?</h3>
                             <div className="grid grid-cols-2 gap-4">
@@ -180,10 +162,8 @@ const NutritionManager: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Results */}
                         {macros && (
                             <div className="space-y-6">
-                                {/* Macro Cards */}
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     <div className="bg-blue-50 p-3 rounded-xl border border-blue-100">
                                         <p className="text-xs text-blue-600 font-bold uppercase">Calorias</p>
@@ -207,7 +187,6 @@ const NutritionManager: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Water Recommendation */}
                                 <div className="bg-cyan-50 p-4 rounded-xl border border-cyan-100 flex items-center gap-4">
                                     <div className="bg-cyan-100 p-2 rounded-full">
                                         <DropIcon className="w-5 h-5 text-cyan-600" />
@@ -218,7 +197,6 @@ const NutritionManager: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Food Recommendations */}
                                 <div className="bg-white p-5 rounded-xl border border-slate-200">
                                     <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                                         <AppleIcon className="w-5 h-5 text-medical-600" />

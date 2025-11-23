@@ -17,13 +17,11 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
         setError("Por favor, preencha todos os campos.");
         return;
     }
-    // Login automático para qualquer credencial para facilitar o acesso do usuário
     onLogin();
   };
 
   const handleGoogleLogin = () => {
       setIsLoading(true);
-      // Simulação de delay de rede
       setTimeout(() => {
           setIsLoading(false);
           onLogin();
@@ -44,7 +42,6 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 items-start">
-            {/* Sales Card */}
             <div className="bg-slate-900 text-white p-8 rounded-2xl shadow-xl">
                 <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                     <CrownIcon className="w-5 h-5 text-yellow-400" />
@@ -83,11 +80,9 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                 </div>
             </div>
 
-            {/* Login Form */}
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
                 <h3 className="text-xl font-bold text-slate-800 mb-6">Já é assinante?</h3>
                 
-                {/* Google Button */}
                 <button 
                     onClick={handleGoogleLogin}
                     disabled={isLoading}

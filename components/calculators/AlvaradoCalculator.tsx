@@ -15,15 +15,14 @@ const AlvaradoCalculator: React.FC = () => {
 
   const calculate = () => {
     let score = 0;
-    // MANTRELS
     if (migration) score += 1;
     if (anorexia) score += 1;
     if (nausea) score += 1;
-    if (tenderness) score += 2; // Tenderness in RLQ
-    if (rebound) score += 1; // Rebound tenderness
-    if (fever) score += 1; // Elevation of temp > 37.3
-    if (leukocytosis) score += 2; // Leukocytosis > 10k
-    if (shift) score += 1; // Shift to left
+    if (tenderness) score += 2; 
+    if (rebound) score += 1; 
+    if (fever) score += 1; 
+    if (leukocytosis) score += 2; 
+    if (shift) score += 1; 
 
     let interpretation = '';
     if (score <= 4) interpretation = 'Baixa probabilidade de Apendicite';

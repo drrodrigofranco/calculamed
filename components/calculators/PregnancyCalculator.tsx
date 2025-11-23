@@ -13,11 +13,9 @@ const PregnancyCalculator: React.FC = () => {
 
     if (isNaN(lmpDate.getTime())) return;
 
-    // Naegele's Rule: LMP + 7 days - 3 months + 1 year (or just + 280 days)
     const edd = new Date(lmpDate);
     edd.setDate(lmpDate.getDate() + 280);
 
-    // Gestational Age
     const diffTime = Math.abs(today.getTime() - lmpDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     

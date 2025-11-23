@@ -16,17 +16,12 @@ const MELDCalculator: React.FC = () => {
 
     if (isNaN(bili) || isNaN(i) || isNaN(creat)) return;
 
-    // Rules for MELD:
-    // Any value < 1 is set to 1
     if (bili < 1) bili = 1;
     if (i < 1) i = 1;
     if (creat < 1) creat = 1;
     
-    // If Creatinine > 4, set to 4. Also if on dialysis (twice in past week), set to 4.
     if (creat > 4 || dialysis) creat = 4.0;
 
-    // MELD Formula = 3.78×ln(bilirubin) + 11.2×ln(INR) + 9.57×ln(creatinine) + 6.43
-    // Round to nearest integer
     const score = Math.round((0.378 * Math.log(bili) + 1.120 * Math.log(i) + 0.957 * Math.log(creat) + 0.643) * 10);
 
     let mortality = '';

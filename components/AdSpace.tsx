@@ -6,9 +6,6 @@ interface AdSpaceProps {
 }
 
 const AdSpace: React.FC<AdSpaceProps> = ({ format = 'horizontal', className = '' }) => {
-  // Quando o AdSense for aprovado, você substituirá este conteúdo pelo código do script do Google.
-  // Por enquanto, mantemos um placeholder visual para o layout ser aprovado (o Google avalia onde os anúncios ficarão).
-  
   let sizeClass = '';
   if (format === 'horizontal') sizeClass = 'h-24 w-full';
   if (format === 'vertical') sizeClass = 'h-[600px] w-full min-w-[160px]';

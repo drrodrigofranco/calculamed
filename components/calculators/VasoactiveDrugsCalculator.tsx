@@ -6,10 +6,9 @@ interface DrugConfig {
   id: string;
   name: string;
   concentrationDesc: string;
-  // Concentration params
-  totalDrugMass: number; // in mg (or UI for vasopressin)
-  totalVol: number; // in ml
-  isUI?: boolean; // true if mass is in UI
+  totalDrugMass: number; 
+  totalVol: number; 
+  isUI?: boolean;
   
   calcType: CalcType;
   minDose: string;
@@ -162,7 +161,7 @@ const DATA: DrugGroup[] = [
 
 const VasoactiveDrugsCalculator: React.FC = () => {
   const [weight, setWeight] = useState<string>('');
-  const [rates, setRates] = useState<Record<string, string>>({}); // Map drugId -> rate
+  const [rates, setRates] = useState<Record<string, string>>({}); 
 
   const handleRateChange = (drugId: string, val: string) => {
     setRates(prev => ({ ...prev, [drugId]: val }));
@@ -172,50 +171,39 @@ const VasoactiveDrugsCalculator: React.FC = () => {
     const w = parseFloat(weight);
     const r = parseFloat(rates[drug.id]);
 
-    // Handle invalid inputs gracefully
     if (!r || isNaN(r)) return '0,00';
 
-    // Calculate Concentration
-    // baseUnit per ml (mg/ml or UI/ml)
     const conc = drug.totalDrugMass / drug.totalVol;
 
     let res = 0;
 
-    // Formulas
     switch (drug.calcType) {
         case 'mcg_kg_min':
             if (!w || w <= 0) return '0,00';
-            // (ml/h * mg/ml * 1000) / (kg * 60)
             res = (r * conc * 1000) / (w * 60);
             break;
         case 'mcg_min':
-            // (ml/h * mg/ml * 1000) / 60
             res = (r * conc * 1000) / 60;
             break;
         case 'ui_min':
-            // (ml/h * UI/ml) / 60
             res = (r * conc) / 60;
             break;
         case 'mcg_kg_h':
             if (!w || w <= 0) return '0,00';
-            // (ml/h * mg/ml * 1000) / kg
             res = (r * conc * 1000) / w;
             break;
         case 'mg_kg_h':
             if (!w || w <= 0) return '0,00';
-            // (ml/h * mg/ml) / kg
             res = (r * conc) / w;
             break;
         case 'ug_kg_min_cis':
              if (!w || w <= 0) return '0,00';
-             // Same as mcg_kg_min but labeled µ/kg/min
              res = (r * conc * 1000) / (w * 60);
              break;
         default:
             return '0,00';
     }
 
-    // Format: if < 0.1 show 3 decimals, else 2
     if (res < 0.01 && res > 0) return res.toFixed(3).replace('.', ',');
     return res.toFixed(2).replace('.', ',');
   };
@@ -226,7 +214,6 @@ const VasoactiveDrugsCalculator: React.FC = () => {
         Calculadora Emergência e UTI
       </h3>
 
-      {/* Step 1 */}
       <div className="mb-8">
           <h4 className="text-lg font-bold text-slate-800 mb-3">
               Passo 1) Coloque o peso do paciente
@@ -246,7 +233,6 @@ const VasoactiveDrugsCalculator: React.FC = () => {
           </div>
       </div>
 
-      {/* Step 2 */}
       <div>
           <h4 className="text-lg font-bold text-slate-800 mb-4">
               Passo 2) Escolha o agente de acordo com a diluição e coloque a vazão.

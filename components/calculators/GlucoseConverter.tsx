@@ -12,7 +12,6 @@ const GlucoseConverter: React.FC = () => {
     }
     const num = parseFloat(val);
     if (!isNaN(num)) {
-        // Fator: divide por 18
         setMmol((num / 18).toFixed(2));
     }
   };
@@ -25,7 +24,6 @@ const GlucoseConverter: React.FC = () => {
     }
     const num = parseFloat(val);
     if (!isNaN(num)) {
-        // Fator: multiplica por 18
         setMg((num * 18).toFixed(0));
     }
   };

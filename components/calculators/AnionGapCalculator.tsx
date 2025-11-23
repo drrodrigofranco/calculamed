@@ -14,11 +14,9 @@ const AnionGapCalculator: React.FC = () => {
 
     if (isNaN(sodium) || isNaN(chloride) || isNaN(bicarb)) return;
 
-    // Anion Gap = Na - (Cl + HCO3)
     const gap = sodium - (chloride + bicarb);
 
     let classification = '';
-    // Normal range commonly 8-12 or 8-16 depending on assay (potassium excluded)
     if (gap > 12) classification = 'Elevado (Acidose Metabólica)';
     else if (gap < 8) classification = 'Baixo (Raro)';
     else classification = 'Normal';

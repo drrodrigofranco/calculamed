@@ -12,9 +12,6 @@ const SodiumCorrectionCalculator: React.FC = () => {
 
     if (isNaN(na) || isNaN(gluc)) return;
 
-    // Formula: Corrected Na = Measured Na + 0.016 * (Glucose - 100)
-    // Adiciona 1.6 mEq/L de sódio para cada 100 mg/dL de glicose acima de 100.
-    
     const correctedNa = na + 0.016 * (gluc - 100);
 
     setResult({

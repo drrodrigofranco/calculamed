@@ -15,10 +15,6 @@ const BMRCalculator: React.FC = () => {
 
     if (isNaN(w) || isNaN(h) || isNaN(a)) return;
 
-    // Harris-Benedict Equation (Revised)
-    // Men: 88.362 + (13.397 × weight in kg) + (4.799 × height in cm) - (5.677 × age in years)
-    // Women: 447.593 + (9.247 × weight in kg) + (3.098 × height in cm) - (4.330 × age in years)
-    
     let bmr = 0;
     if (gender === 'male') {
         bmr = 88.362 + (13.397 * w) + (4.799 * h) - (5.677 * a);

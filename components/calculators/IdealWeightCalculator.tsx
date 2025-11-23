@@ -11,8 +11,6 @@ const IdealWeightCalculator: React.FC = () => {
 
     if (isNaN(h) || h === 0) return;
 
-    // Devine Formula
-    // Height in inches
     const heightInInches = h / 2.54;
     const feetOver5 = heightInInches - 60;
 

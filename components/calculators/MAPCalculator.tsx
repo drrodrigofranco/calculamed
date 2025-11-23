@@ -12,7 +12,6 @@ const MAPCalculator: React.FC = () => {
 
     if (isNaN(s) || isNaN(d)) return;
 
-    // MAP = (SBP + 2 * DBP) / 3
     const map = (s + (2 * d)) / 3;
 
     let note = '';

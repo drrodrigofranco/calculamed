@@ -11,8 +11,9 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// Fixed: Extend Component directly to ensure proper type inference for props
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  public state: ErrorBoundaryState;
+
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {

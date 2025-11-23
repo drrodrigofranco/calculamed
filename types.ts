@@ -4,7 +4,7 @@ export enum AppView {
   DASHBOARD = 'DASHBOARD',
   CATEGORY_VIEW = 'CATEGORY_VIEW',
   PRO_LOGIN = 'PRO_LOGIN',
-  NUTRITION_PRO = 'NUTRITION_PRO', // New view for Nutrition Calc
+  NUTRITION_PRO = 'NUTRITION_PRO', 
   // Nursing / General
   CALC_BMI = 'CALC_BMI',
   CALC_IDEAL_WEIGHT = 'CALC_IDEAL_WEIGHT',
@@ -57,13 +57,6 @@ export enum AppView {
   CALC_PHQ9 = 'CALC_PHQ9'
 }
 
-export interface NewsItem {
-  title: string;
-  category: string;
-  summary: string;
-  impact: string;
-}
-
 export interface CalculatorResult {
   value: number | string;
   classification?: string;
@@ -79,7 +72,7 @@ export interface CalculatorDef {
   id: AppView;
   name: string;
   description: string;
-  isPro?: boolean; // Flag to mark paid content
+  isPro?: boolean; 
 }
 
 export interface SpecialtyDef {
@@ -90,16 +83,23 @@ export interface SpecialtyDef {
   calculators: CalculatorDef[];
 }
 
+export interface NewsItem {
+  title: string;
+  category: string;
+  summary: string;
+  impact: string;
+}
+
 export interface ClinicalNote {
   id: string;
-  date: string;
+  date: string; // ISO string
   content: string;
 }
 
 export interface Patient {
   id: string;
   name: string;
-  birthDate: string;
+  birthDate: string; // YYYY-MM-DD
   contact?: string;
   gender?: string;
   notes: ClinicalNote[];
