@@ -1,0 +1,5 @@
+{
+  "name": "Calculamed",
+  "description": "Uma plataforma integrada para profissionais de saúde contendo calculadoras clínicas essenciais (IMC, TFG, Gotejamento) e um feed de notícias médicas atualizadas geradas por IA.",
+  "requestFramePermissions": []
+}
