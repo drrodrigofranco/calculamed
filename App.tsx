@@ -24,6 +24,8 @@ import ParklandCalculator from './components/calculators/ParklandCalculator';
 import WellsPECalculator from './components/calculators/WellsPECalculator';
 import CURB65Calculator from './components/calculators/CURB65Calculator';
 import VasoactiveDrugsCalculator from './components/calculators/VasoactiveDrugsCalculator';
+import AdSpace from './components/AdSpace';
+import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
 import { 
   CalculatorIcon, 
   DropIcon, 
@@ -31,21 +33,27 @@ import {
   ChevronLeftIcon,
   BabyIcon,
   HeartPulseIcon,
-  GlassWaterIcon,
-  BrainIcon,
   ScaleIcon,
   ChildIcon,
   LightningIcon,
   FlaskIcon,
-  RulerIcon,
   LiverIcon,
   SearchIcon,
   XIcon,
   LungsIcon,
   CalculamedLogo,
-  SyringeIcon,
-  SirenIcon
+  SirenIcon,
+  BrainIcon
 } from './components/icons';
+
+// --- Extended View Enum for Legal Pages ---
+enum LegalView {
+    PRIVACY = 'PRIVACY',
+    TERMS = 'TERMS',
+    ABOUT = 'ABOUT'
+}
+
+type ExtendedView = AppView | LegalView;
 
 // --- Configuration Data ---
 
@@ -171,19 +179,21 @@ const SPECIALTIES: SpecialtyDef[] = [
 ];
 
 const App: React.FC = () => {
-  const [view, setView] = useState<AppView>(AppView.DASHBOARD);
+  const [view, setView] = useState<ExtendedView>(AppView.DASHBOARD);
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<SpecialtyId | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const handleNavigate = (targetView: AppView) => {
+  const handleNavigate = (targetView: ExtendedView) => {
     setView(targetView);
-    setSearchQuery(''); // Clear search on navigation
+    setSearchQuery(''); 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSelectSpecialty = (id: SpecialtyId) => {
     setSelectedSpecialtyId(id);
     setView(AppView.CATEGORY_VIEW);
     setSearchQuery('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBack = () => {
@@ -191,11 +201,11 @@ const App: React.FC = () => {
       setView(AppView.DASHBOARD);
       setSelectedSpecialtyId(null);
     } else if (view !== AppView.DASHBOARD) {
-        // If coming from a calculator, go back to category if selected, otherwise dashboard
-        if (selectedSpecialtyId) {
+        if (selectedSpecialtyId && Object.values(AppView).includes(view as AppView)) {
             setView(AppView.CATEGORY_VIEW);
         } else {
             setView(AppView.DASHBOARD);
+            setSelectedSpecialtyId(null);
         }
     }
   };
@@ -219,6 +229,11 @@ const App: React.FC = () => {
             />
         ) : <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} />;
       
+      // Legal Pages
+      case LegalView.PRIVACY: return <PrivacyPolicy />;
+      case LegalView.TERMS: return <TermsOfUse />;
+      case LegalView.ABOUT: return <AboutUs />;
+
       // Calculators
       case AppView.CALC_BMI: return <BMICalculator />;
       case AppView.CALC_EGFR: return <EGFRCalculator />;
@@ -251,7 +266,8 @@ const App: React.FC = () => {
   };
 
   const getHeaderTitle = () => {
-    if (view === AppView.DASHBOARD) return 'Especialidades';
+    if (view === AppView.DASHBOARD) return 'Início';
+    if (Object.values(LegalView).includes(view as LegalView)) return 'Institucional';
     if (view === AppView.CATEGORY_VIEW && selectedSpecialtyId) {
         return SPECIALTIES.find(s => s.id === selectedSpecialtyId)?.name || 'Categoria';
     }
@@ -259,18 +275,18 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
       {/* Sidebar Navigation */}
-      <aside className="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col">
+      <aside className="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col z-30">
         <div className="p-6 border-b border-slate-700">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigate(AppView.DASHBOARD)}>
             <CalculamedLogo className="w-8 h-8" />
             <h1 className="text-xl font-bold text-white tracking-tight">
               Calcula<span className="text-medical-500">med</span>
             </h1>
           </div>
         </div>
-        <nav className="p-4 space-y-2 flex-grow">
+        <nav className="p-4 space-y-2 flex-grow overflow-y-auto">
           <button
             onClick={() => { setView(AppView.DASHBOARD); setSelectedSpecialtyId(null); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${view === AppView.DASHBOARD && !selectedSpecialtyId ? 'bg-medical-600 text-white shadow-lg shadow-medical-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
@@ -278,15 +294,27 @@ const App: React.FC = () => {
             <div className="w-5 h-5"><CalculatorIcon /></div>
             <span className="font-medium">Início</span>
           </button>
+          
+          <div className="pt-4 pb-2">
+            <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Especialidades</p>
+          </div>
+          {SPECIALTIES.map(spec => (
+              <button
+                key={spec.id}
+                onClick={() => handleSelectSpecialty(spec.id)}
+                className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition text-sm ${selectedSpecialtyId === spec.id ? 'text-white bg-slate-800' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+              >
+                  <spec.icon className="w-4 h-4" />
+                  <span>{spec.name}</span>
+              </button>
+          ))}
         </nav>
-        
-        {/* Footer Area removed */}
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 bg-slate-50 h-screen overflow-y-auto relative">
+      <main className="flex-1 h-screen overflow-y-auto relative flex flex-col">
         {/* Header */}
-        <header className="bg-white border-b border-slate-200 p-4 md:px-8 flex items-center justify-between sticky top-0 z-20">
+        <header className="bg-white border-b border-slate-200 p-4 md:px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm">
            <div className="flex items-center gap-4 flex-1">
              {view !== AppView.DASHBOARD && (
                  <button onClick={handleBack} className="md:hidden p-2 hover:bg-slate-100 rounded-full">
@@ -297,7 +325,7 @@ const App: React.FC = () => {
                 {getHeaderTitle()}
              </h2>
              
-             {/* Mobile Logo/Name only on Dashboard */}
+             {/* Mobile Logo */}
              {view === AppView.DASHBOARD && (
                <div className="md:hidden flex items-center gap-2">
                   <CalculamedLogo className="w-6 h-6" />
@@ -328,7 +356,7 @@ const App: React.FC = () => {
                     )}
                 </div>
 
-                {/* Search Results Dropdown */}
+                {/* Search Results */}
                 {searchQuery && (
                     <div className="absolute mt-1 w-full bg-white shadow-lg rounded-xl border border-slate-200 overflow-hidden z-50 max-h-96 overflow-y-auto">
                         {filteredCalculators.length > 0 ? (
@@ -360,29 +388,73 @@ const App: React.FC = () => {
            </div>
         </header>
 
-        <div className="p-4 md:p-8">
-            {view !== AppView.DASHBOARD && (
-                <button 
-                    onClick={handleBack}
-                    className="mb-6 flex items-center gap-2 text-sm text-slate-500 hover:text-medical-600 transition group"
-                >
-                    <ChevronLeftIcon className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    Voltar
-                </button>
-            )}
-            {renderContent()}
+        {/* Content Container with Sidebar for Ads */}
+        <div className="flex-1 flex flex-col xl:flex-row">
+            
+            {/* Center Column */}
+            <div className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
+                <AdSpace format="horizontal" className="mb-6" />
+
+                {view !== AppView.DASHBOARD && (
+                    <button 
+                        onClick={handleBack}
+                        className="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-medical-600 transition group"
+                    >
+                        <ChevronLeftIcon className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Voltar
+                    </button>
+                )}
+                
+                {renderContent()}
+
+                <AdSpace format="horizontal" className="mt-8" />
+            </div>
+
+            {/* Right Ad Sidebar (Desktop Only) */}
+            <div className="hidden xl:block w-80 p-6 border-l border-slate-200 bg-white">
+                <h4 className="text-xs font-bold text-slate-400 uppercase mb-4 tracking-wider">Patrocinado</h4>
+                <AdSpace format="vertical" />
+                <div className="mt-6 text-xs text-slate-400">
+                    <p>O Calculamed é mantido através de publicidade para garantir o acesso gratuito a todos os profissionais.</p>
+                </div>
+            </div>
         </div>
+
+        {/* Footer */}
+        <footer className="bg-white border-t border-slate-200 py-8 px-4 mt-auto">
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="flex items-center gap-2">
+                     <CalculamedLogo className="w-6 h-6 grayscale opacity-50" />
+                     <span className="text-slate-500 font-semibold">Calculamed</span>
+                </div>
+                <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-500">
+                    <button onClick={() => handleNavigate(LegalView.ABOUT)} className="hover:text-medical-600">Sobre</button>
+                    <button onClick={() => handleNavigate(LegalView.PRIVACY)} className="hover:text-medical-600">Política de Privacidade</button>
+                    <button onClick={() => handleNavigate(LegalView.TERMS)} className="hover:text-medical-600">Termos de Uso</button>
+                </div>
+                <div className="text-xs text-slate-400">
+                    © {new Date().getFullYear()} Calculamed. Todos os direitos reservados.
+                </div>
+            </div>
+        </footer>
       </main>
     </div>
   );
 };
 
 // Dashboard (Specialty Grid)
-const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavigate: (view: AppView) => void }> = ({ onSelectSpecialty, onNavigate }) => {
+const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavigate: (view: ExtendedView) => void }> = ({ onSelectSpecialty, onNavigate }) => {
   return (
-    <div className="max-w-6xl mx-auto pb-10">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        
+    <div className="pb-10">
+      <div className="mb-8">
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Bem-vindo ao Calculamed</h2>
+          <p className="text-slate-600 max-w-2xl">
+              Acesse rapidamente as ferramentas essenciais para sua prática clínica. 
+              Organizadas por especialidade para facilitar o seu plantão.
+          </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Specialty Cards */}
         {SPECIALTIES.map((spec) => (
             <div 
@@ -413,14 +485,39 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
                 </div>
             </div>
         ))}
+      </div>
 
+      {/* SEO Content Section for AdSense Approval */}
+      <div className="mt-12 pt-8 border-t border-slate-200 prose prose-slate max-w-none text-slate-600">
+          <h3>Calculadoras Médicas Profissionais</h3>
+          <p>
+              O <strong>Calculamed</strong> é uma referência gratuita para profissionais de saúde, oferecendo acesso rápido a fórmulas complexas e escores clínicos. 
+              Nossa plataforma garante precisão em cálculos fundamentais para UTI, Emergência, Pediatria e diversas especialidades.
+          </p>
+          <div className="grid md:grid-cols-2 gap-8 mt-6">
+              <div>
+                  <h4 className="font-bold text-slate-800">Ferramentas de Destaque</h4>
+                  <ul className="list-disc pl-5 space-y-1 text-sm">
+                      <li><strong>Drogas Vasoativas:</strong> Cálculo preciso de vazão e dose para Noradrenalina e outros.</li>
+                      <li><strong>Nefrologia:</strong> Estimativa de TFG (CKD-EPI) e ajustes renais.</li>
+                      <li><strong>Emergência:</strong> Escala de Glasgow, Parkland para queimados e Anion Gap.</li>
+                  </ul>
+              </div>
+              <div>
+                  <h4 className="font-bold text-slate-800">Por que usar?</h4>
+                  <p className="text-sm">
+                      Economize tempo durante o atendimento com uma interface limpa, livre de distrações e otimizada para dispositivos móveis. 
+                      Todas as fórmulas são revisadas com base nas diretrizes médicas mais recentes.
+                  </p>
+              </div>
+          </div>
       </div>
     </div>
   );
 };
 
 // Category View (List Calculators within a Specialty)
-const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: AppView) => void }> = ({ specialtyId, onSelectCalc }) => {
+const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: ExtendedView) => void }> = ({ specialtyId, onSelectCalc }) => {
     const specialty = SPECIALTIES.find(s => s.id === specialtyId);
 
     if (!specialty) return <div>Especialidade não encontrada</div>;
@@ -453,6 +550,14 @@ const CategoryView: React.FC<{ specialtyId: SpecialtyId, onSelectCalc: (view: Ap
                         </div>
                     </div>
                 ))}
+            </div>
+            
+            {/* Contextual Text for Category SEO */}
+            <div className="mt-8 pt-6 border-t border-slate-100 text-sm text-slate-500">
+                <p>
+                    As calculadoras de <strong>{specialty.name}</strong> são ferramentas de apoio à decisão clínica. 
+                    Certifique-se de validar os dados de entrada antes de aplicar os resultados no cuidado ao paciente.
+                </p>
             </div>
         </div>
     );
