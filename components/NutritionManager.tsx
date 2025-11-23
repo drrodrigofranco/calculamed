@@ -82,10 +82,13 @@ const NutritionManager: React.FC = () => {
   };
 
   const getBMIClassification = (val: number) => {
-      if (val < 18.5) return { label: 'Abaixo do Peso', color: 'text-yellow-600' };
-      if (val < 24.9) return { label: 'Peso Normal', color: 'text-green-600' };
-      if (val < 29.9) return { label: 'Sobrepeso', color: 'text-orange-500' };
-      return { label: 'Obesidade', color: 'text-red-600' };
+      // Escala OMS (WHO)
+      if (val < 18.5) return { label: 'Abaixo do Peso', color: 'text-yellow-600', bg: 'bg-yellow-100' };
+      if (val < 25) return { label: 'Peso Normal', color: 'text-green-600', bg: 'bg-green-100' };
+      if (val < 30) return { label: 'Sobrepeso', color: 'text-orange-500', bg: 'bg-orange-100' };
+      if (val < 35) return { label: 'Obesidade Grau I', color: 'text-red-500', bg: 'bg-red-100' };
+      if (val < 40) return { label: 'Obesidade Grau II', color: 'text-red-600', bg: 'bg-red-200' };
+      return { label: 'Obesidade Grau III', color: 'text-red-700', bg: 'bg-red-300' };
   };
 
   return (
@@ -140,7 +143,7 @@ const NutritionManager: React.FC = () => {
                             <span className="text-4xl font-bold">{bmi.toFixed(1)}</span>
                             <span className="text-sm mb-1 text-slate-400">kg/m²</span>
                         </div>
-                        <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold bg-white ${getBMIClassification(bmi).color}`}>
+                        <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${getBMIClassification(bmi).bg} ${getBMIClassification(bmi).color}`}>
                             {getBMIClassification(bmi).label}
                         </div>
                     </div>
