@@ -22,11 +22,8 @@ import SodiumCorrectionCalculator from './components/calculators/SodiumCorrectio
 import ParklandCalculator from './components/calculators/ParklandCalculator';
 import WellsPECalculator from './components/calculators/WellsPECalculator';
 import CURB65Calculator from './components/calculators/CURB65Calculator';
-import NewsFeed from './components/NewsFeed';
 import { 
-  ActivityIcon, 
   CalculatorIcon, 
-  NewsIcon, 
   DropIcon, 
   KidneyIcon, 
   ChevronLeftIcon,
@@ -40,11 +37,9 @@ import {
   FlaskIcon,
   RulerIcon,
   LiverIcon,
-  RefreshCwIcon,
   GithubIcon,
   SearchIcon,
   XIcon,
-  FlameIcon,
   LungsIcon
 } from './components/icons';
 
@@ -203,8 +198,6 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     switch (view) {
-      case AppView.NEWS:
-        return <NewsFeed />;
       case AppView.CATEGORY_VIEW:
         return selectedSpecialtyId ? (
             <CategoryView 
@@ -245,7 +238,6 @@ const App: React.FC = () => {
 
   const getHeaderTitle = () => {
     if (view === AppView.DASHBOARD) return 'Especialidades';
-    if (view === AppView.NEWS) return 'Notícias';
     if (view === AppView.CATEGORY_VIEW && selectedSpecialtyId) {
         return SPECIALTIES.find(s => s.id === selectedSpecialtyId)?.name || 'Categoria';
     }
@@ -268,14 +260,6 @@ const App: React.FC = () => {
           >
             <div className="w-5 h-5"><CalculatorIcon /></div>
             <span className="font-medium">Início</span>
-          </button>
-
-           <button
-            onClick={() => { setView(AppView.NEWS); setSelectedSpecialtyId(null); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${view === AppView.NEWS ? 'bg-medical-600 text-white shadow-lg shadow-medical-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
-          >
-            <div className="w-5 h-5"><NewsIcon /></div>
-            <span className="font-medium">Notícias (IA)</span>
           </button>
         </nav>
         
@@ -369,7 +353,7 @@ const App: React.FC = () => {
         </header>
 
         <div className="p-4 md:p-8">
-            {view !== AppView.DASHBOARD && view !== AppView.NEWS && (
+            {view !== AppView.DASHBOARD && (
                 <button 
                     onClick={handleBack}
                     className="mb-6 flex items-center gap-2 text-sm text-slate-500 hover:text-medical-600 transition group"
@@ -391,26 +375,6 @@ const Dashboard: React.FC<{ onSelectSpecialty: (id: SpecialtyId) => void, onNavi
     <div className="max-w-6xl mx-auto pb-10">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         
-        {/* News Teaser Card */}
-        <div 
-            onClick={() => onNavigate(AppView.NEWS)}
-            className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 bg-gradient-to-r from-medical-600 to-medical-800 rounded-2xl p-8 text-white cursor-pointer shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 relative overflow-hidden group"
-        >
-            <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-4">
-                    <span className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
-                        <ActivityIcon className="text-white" />
-                    </span>
-                    <span className="font-semibold tracking-wide text-medical-100">MEDICINA BASEADA EM EVIDÊNCIA</span>
-                </div>
-                <h3 className="text-3xl font-bold mb-2">Atualizações Clínicas</h3>
-                <p className="text-medical-100 max-w-xl">
-                    Utilize nossa IA para resumir diretrizes recentes e manter-se atualizado.
-                </p>
-            </div>
-            <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
-        </div>
-
         {/* Specialty Cards */}
         {SPECIALTIES.map((spec) => (
             <div 

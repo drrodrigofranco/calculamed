@@ -3,7 +3,6 @@ import React from 'react';
 export enum AppView {
   DASHBOARD = 'DASHBOARD',
   CATEGORY_VIEW = 'CATEGORY_VIEW',
-  NEWS = 'NEWS',
   // Nursing / General
   CALC_BMI = 'CALC_BMI',
   CALC_IDEAL_WEIGHT = 'CALC_IDEAL_WEIGHT',
