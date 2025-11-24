@@ -68,12 +68,12 @@ const NutritionManager: React.FC = () => {
   };
 
   const getBMIClassification = (val: number) => {
-      if (val < 18.5) return { label: 'Abaixo do Peso', color: 'text-yellow-600', bg: 'bg-yellow-100' };
-      if (val < 25) return { label: 'Peso Normal', color: 'text-green-600', bg: 'bg-green-100' };
-      if (val < 30) return { label: 'Sobrepeso', color: 'text-orange-500', bg: 'bg-orange-100' };
-      if (val < 35) return { label: 'Obesidade Grau I', color: 'text-red-500', bg: 'bg-red-100' };
-      if (val < 40) return { label: 'Obesidade Grau II', color: 'text-red-600', bg: 'bg-red-200' };
-      return { label: 'Obesidade Grau III', color: 'text-red-700', bg: 'bg-red-300' };
+      if (val < 18.5) return { label: 'Abaixo do Peso', color: 'text-yellow-600', bg: 'bg-yellow-100 dark:bg-yellow-900/20' };
+      if (val < 25) return { label: 'Peso Normal', color: 'text-green-600', bg: 'bg-green-100 dark:bg-green-900/20' };
+      if (val < 30) return { label: 'Sobrepeso', color: 'text-orange-500', bg: 'bg-orange-100 dark:bg-orange-900/20' };
+      if (val < 35) return { label: 'Obesidade Grau I', color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/20' };
+      if (val < 40) return { label: 'Obesidade Grau II', color: 'text-red-600', bg: 'bg-red-200 dark:bg-red-900/30' };
+      return { label: 'Obesidade Grau III', color: 'text-red-700', bg: 'bg-red-300 dark:bg-red-900/40' };
   };
 
   return (
@@ -147,14 +147,14 @@ const NutritionManager: React.FC = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <button
                                     onClick={() => selectGoal('loss')}
-                                    className={`p-4 rounded-xl border-2 transition flex flex-col items-center gap-2 ${goal === 'loss' ? 'border-medical-600 bg-medical-50 text-medical-800' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-medical-300 dark:hover:border-medical-500'}`}
+                                    className={`p-4 rounded-xl border-2 transition flex flex-col items-center gap-2 ${goal === 'loss' ? 'border-medical-600 bg-medical-50 text-medical-800 dark:bg-medical-900/20 dark:text-medical-400' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-medical-300 dark:hover:border-medical-500'}`}
                                 >
                                     <FlameIcon className="w-6 h-6" />
                                     <span className="font-bold">Perda de Peso</span>
                                 </button>
                                 <button
                                     onClick={() => selectGoal('gain')}
-                                    className={`p-4 rounded-xl border-2 transition flex flex-col items-center gap-2 ${goal === 'gain' ? 'border-medical-600 bg-medical-50 text-medical-800' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-medical-300 dark:hover:border-medical-500'}`}
+                                    className={`p-4 rounded-xl border-2 transition flex flex-col items-center gap-2 ${goal === 'gain' ? 'border-medical-600 bg-medical-50 text-medical-800 dark:bg-medical-900/20 dark:text-medical-400' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-medical-300 dark:hover:border-medical-500'}`}
                                 >
                                     <DumbbellIcon className="w-6 h-6" />
                                     <span className="font-bold">Ganhar Massa</span>
@@ -165,35 +165,35 @@ const NutritionManager: React.FC = () => {
                         {macros && (
                             <div className="space-y-6">
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                    <div className="bg-blue-50 p-3 rounded-xl border border-blue-100">
-                                        <p className="text-xs text-blue-600 font-bold uppercase">Calorias</p>
-                                        <p className="text-xl font-bold text-blue-900">{macros.calories}</p>
-                                        <p className="text-[10px] text-blue-400">kcal/dia</p>
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-xl border border-blue-100 dark:border-blue-800">
+                                        <p className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase">Calorias</p>
+                                        <p className="text-xl font-bold text-blue-900 dark:text-blue-100">{macros.calories}</p>
+                                        <p className="text-[10px] text-blue-400 dark:text-blue-300">kcal/dia</p>
                                     </div>
-                                    <div className="bg-red-50 p-3 rounded-xl border border-red-100">
-                                        <p className="text-xs text-red-600 font-bold uppercase">Proteínas</p>
-                                        <p className="text-xl font-bold text-red-900">{macros.protein}g</p>
-                                        <p className="text-[10px] text-red-400">{goal === 'gain' ? '2.2g/kg' : '2.0g/kg'}</p>
+                                    <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-xl border border-red-100 dark:border-red-800">
+                                        <p className="text-xs text-red-600 dark:text-red-400 font-bold uppercase">Proteínas</p>
+                                        <p className="text-xl font-bold text-red-900 dark:text-red-100">{macros.protein}g</p>
+                                        <p className="text-[10px] text-red-400 dark:text-red-300">{goal === 'gain' ? '2.2g/kg' : '2.0g/kg'}</p>
                                     </div>
-                                    <div className="bg-orange-50 p-3 rounded-xl border border-orange-100">
-                                        <p className="text-xs text-orange-600 font-bold uppercase">Carboidratos</p>
-                                        <p className="text-xl font-bold text-orange-900">{macros.carbs}g</p>
-                                        <p className="text-[10px] text-orange-400">Energia</p>
+                                    <div className="bg-orange-50 dark:bg-orange-900/20 p-3 rounded-xl border border-orange-100 dark:border-orange-800">
+                                        <p className="text-xs text-orange-600 dark:text-orange-400 font-bold uppercase">Carboidratos</p>
+                                        <p className="text-xl font-bold text-orange-900 dark:text-orange-100">{macros.carbs}g</p>
+                                        <p className="text-[10px] text-orange-400 dark:text-orange-300">Energia</p>
                                     </div>
-                                    <div className="bg-yellow-50 p-3 rounded-xl border border-yellow-100">
-                                        <p className="text-xs text-yellow-600 font-bold uppercase">Gorduras</p>
-                                        <p className="text-xl font-bold text-yellow-900">{macros.fats}g</p>
-                                        <p className="text-[10px] text-yellow-400">{goal === 'gain' ? '1.0g/kg' : '0.8g/kg'}</p>
+                                    <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-xl border border-yellow-100 dark:border-yellow-800">
+                                        <p className="text-xs text-yellow-600 dark:text-yellow-400 font-bold uppercase">Gorduras</p>
+                                        <p className="text-xl font-bold text-yellow-900 dark:text-yellow-100">{macros.fats}g</p>
+                                        <p className="text-[10px] text-yellow-400 dark:text-yellow-300">{goal === 'gain' ? '1.0g/kg' : '0.8g/kg'}</p>
                                     </div>
                                 </div>
 
-                                <div className="bg-cyan-50 p-4 rounded-xl border border-cyan-100 flex items-center gap-4">
-                                    <div className="bg-cyan-100 p-2 rounded-full">
-                                        <DropIcon className="w-5 h-5 text-cyan-600" />
+                                <div className="bg-cyan-50 dark:bg-cyan-900/20 p-4 rounded-xl border border-cyan-100 dark:border-cyan-800 flex items-center gap-4">
+                                    <div className="bg-cyan-100 dark:bg-cyan-900/30 p-2 rounded-full">
+                                        <DropIcon className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                                     </div>
                                     <div>
-                                        <p className="font-bold text-cyan-900">Hidratação Recomendada</p>
-                                        <p className="text-sm text-cyan-700">Beba aproximadamente <strong>{macros.water} Litros</strong> de água por dia.</p>
+                                        <p className="font-bold text-cyan-900 dark:text-cyan-100">Hidratação Recomendada</p>
+                                        <p className="text-sm text-cyan-700 dark:text-cyan-200">Beba aproximadamente <strong>{macros.water} Litros</strong> de água por dia.</p>
                                     </div>
                                 </div>
 
@@ -205,7 +205,7 @@ const NutritionManager: React.FC = () => {
                                     
                                     <div className="space-y-4 text-sm dark:text-slate-300">
                                         <div>
-                                            <p className="font-bold text-red-700 mb-1">Proteínas ({Math.round(macros.protein / 4)}g por refeição em 4 refs)</p>
+                                            <p className="font-bold text-red-700 dark:text-red-400 mb-1">Proteínas ({Math.round(macros.protein / 4)}g por refeição em 4 refs)</p>
                                             <ul className="list-disc pl-5 text-slate-600 dark:text-slate-300 space-y-1">
                                                 <li>Filé de Frango (100g = 30g proteína)</li>
                                                 <li>Ovos Cozidos (1 unid = 6g proteína)</li>
@@ -215,7 +215,7 @@ const NutritionManager: React.FC = () => {
                                         </div>
 
                                         <div>
-                                            <p className="font-bold text-orange-700 mb-1">Carboidratos (Energia)</p>
+                                            <p className="font-bold text-orange-700 dark:text-orange-400 mb-1">Carboidratos (Energia)</p>
                                             <ul className="list-disc pl-5 text-slate-600 dark:text-slate-300 space-y-1">
                                                 <li>Arroz Branco/Integral (100g cozido = 28g carbo)</li>
                                                 <li>Batata Doce (100g = 20g carbo)</li>
@@ -225,7 +225,7 @@ const NutritionManager: React.FC = () => {
                                         </div>
 
                                         <div>
-                                            <p className="font-bold text-yellow-700 mb-1">Gorduras Boas</p>
+                                            <p className="font-bold text-yellow-700 dark:text-yellow-400 mb-1">Gorduras Boas</p>
                                             <ul className="list-disc pl-5 text-slate-600 dark:text-slate-300 space-y-1">
                                                 <li>Azeite de Oliva (1 col. sopa = 12g gordura)</li>
                                                 <li>Abacate (100g = 15g gordura)</li>

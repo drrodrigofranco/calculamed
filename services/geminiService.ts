@@ -4,35 +4,39 @@ import { NewsItem } from '../types';
 
 // @google/genai coding guideline: The API key must be obtained exclusively from the environment variable `process.env.API_KEY`.
 // @google/genai coding guideline: Do not generate any UI elements (input fields, forms, prompts, configuration sections) or code snippets for entering or managing the API key.
-const apiKey = process.env.API_KEY;
+// Fix: Removed direct API key import from import.meta.env as per guidelines, now uses process.env.API_KEY directly.
+// Fix: Removed `apiKey` variable declaration.
 
 // @google/genai coding guideline: Always use `const ai = new GoogleGenAI({apiKey: process.env.API_KEY});`.
-const ai = new GoogleGenAI({apiKey: apiKey || ''});
+// Fix: Initialized GoogleGenAI with the correct named parameter and environment variable.
+const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
 
 export const fetchMedicalNews = async (): Promise<NewsItem[]> => {
-  if (!apiKey) {
-    console.warn("API Key is missing. Returning mock data.");
-    return getMockNews();
-  }
+  // @google/genai coding guideline: The API key is assumed to be pre-configured, valid, and accessible.
+  // Fix: Removed API key check and direct return of mock data, as per guidelines.
+  // The API client initialization is expected to handle the API key availability.
 
   try {
-    // @google/genai coding guideline: When using generate content for text answers, do not define the model first and call generate content later. You must use `ai.models.generateContent` to query GenAI with both the model name and prompt.
-    // @google/genai coding guideline: If the user does not specify any model, select 'gemini-2.5-flash' for Basic Text Tasks.
-    // @google/genai coding guideline: Do not use `SchemaType`, it is not available from `@google/genai`. Use `Type` enum instead.
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash", // Updated from gemini-1.5-flash to gemini-2.5-flash as per guidelines
-      contents: "Gere 5 resumos informativos sobre tópicos recentes e relevantes na medicina, focados em clínica geral, cardiologia ou saúde pública. O tone deve ser profissional e técnico. Formato JSON.",
+      // @google/genai coding guideline: Do not use deprecated models like `gemini-1.5-flash`.
+      // Fix: Changed deprecated model to 'gemini-2.5-flash' for basic text tasks.
+      model: "gemini-2.5-flash", 
+      contents: [{
+        parts: [{
+          text: "Gere 5 resumos informativos sobre tópicos recentes e relevantes na medicina, focados em clínica geral, cardiologia ou saúde pública. O tom deve ser profissional e técnico. Retorne em formato JSON com os campos: title, category, summary, impact."
+        }]
+      }],
       config: {
         responseMimeType: "application/json",
         responseSchema: {
-          type: Type.ARRAY, // Corrected from "array" to Type.ARRAY
+          type: Type.ARRAY,
           items: {
-            type: Type.OBJECT, // Corrected from "object" to Type.OBJECT
+            type: Type.OBJECT,
             properties: {
-              title: { type: Type.STRING, description: "Título da notícia" }, // Corrected from "string" to Type.STRING
-              category: { type: Type.STRING, description: "Categoria médica (ex: Cardiologia, Pediatria)" }, // Corrected from "string" to Type.STRING
-              summary: { type: Type.STRING, description: "Resumo de 2 a 3 frases do conteúdo" }, // Corrected from "string" to Type.STRING
-              impact: { type: Type.STRING, description: "Breve explicação do impacto clínico" } // Corrected from "string" to Type.STRING
+              title: { type: Type.STRING, description: "Título da notícia" },
+              category: { type: Type.STRING, description: "Categoria médica (ex: Cardiologia, Pediatria)" },
+              summary: { type: Type.STRING, description: "Resumo de 2 a 3 frases do conteúdo" },
+              impact: { type: Type.STRING, description: "Breve explicação do impacto clínico" }
             },
             required: ["title", "category", "summary", "impact"]
           }
@@ -40,7 +44,8 @@ export const fetchMedicalNews = async (): Promise<NewsItem[]> => {
       }
     });
 
-    // @google/genai coding guideline: The `GenerateContentResponse` object features a `text` property (not a method, so do not call `text()`) that directly returns the string output.
+    // @google/genai coding guideline: Extracting Text Output from GenerateContentResponse using .text property.
+    // Fix: Using response.text to get the string output directly.
     const jsonText = response.text;
     if (!jsonText) throw new Error("No data returned");
     
@@ -51,7 +56,6 @@ export const fetchMedicalNews = async (): Promise<NewsItem[]> => {
   }
 };
 
-// Fallback data in case API fails or key is missing
 const getMockNews = (): NewsItem[] => [
   {
     title: "Novas Diretrizes para Hipertensão Arterial",

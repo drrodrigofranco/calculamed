@@ -149,7 +149,7 @@ export const FlameIcon = ({ className }: { className?: string }) => (
 
 export const LungsIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M17.4 4.6A9 9 0 0 1 21 12c0 5-4.5 9-9.5 9H11a9.5 9.5 0 0 1-9.5-9c0-2.8 1.3-5.2 3.4-6.9"/>
+    <path d="M17.4 4.6A9 9 0 0 1 21 12c0 5-4.5 9-9.5 9H11a9.5 9 0 0 1-9.5-9c0-2.8 1.3-5.2 3.4-6.9"/>
     <path d="M12 22v-7"/>
     <path d="M12 15a5 5 0 0 0 5-5c0-1-.3-2-.8-2.8"/>
     <path d="M12 15a5 5 0 0 1-5-5c0-1 .3-2 .8-2.8"/>

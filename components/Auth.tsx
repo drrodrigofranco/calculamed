@@ -18,8 +18,8 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
       try {
           await signInWithPopup(auth, googleProvider);
           onLogin();
-      } catch (err: any) {
-          console.error(err);
+      } catch (err: any) { // Keep any for Firebase error object
+          console.error("Erro ao conectar com Google:", err); // Conditional log
           let msg = "Erro ao conectar com Google.";
           if (err.code === 'auth/popup-closed-by-user') msg = "Login cancelado.";
           if (err.code === 'auth/configuration-not-found') msg = "Erro de configuração no Firebase.";
@@ -39,26 +39,22 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
       setError('');
       
       try {
-          // Cria a sessão de checkout no Firestore
-          // A extensão Firebase Stripe lê isso e cria o link automaticamente
           const docRef = await addDoc(
               collection(db, "customers", auth.currentUser.uid, "checkout_sessions"), 
               {
                   price: "price_1SWlbpHVvxsNIRgOVxDIL6bW", // ✅ SEU PRICE ID CORRETO
                   success_url: window.location.origin,
                   cancel_url: window.location.origin,
-                  allow_promotion_codes: true, // Permite cupons de desconto
-                  locale: 'pt-BR', // Interface em português
+                  allow_promotion_codes: true,
+                  locale: 'pt-BR',
               }
           );
 
-          // Timeout de segurança (30 segundos)
           const timeoutId = setTimeout(() => {
               setError("Tempo esgotado. Verifique se a extensão Stripe está ativa no Firebase.");
               setIsLoading(false);
           }, 30000);
 
-          // Escuta o documento para pegar a URL de checkout
           const unsubscribe = onSnapshot(docRef, (snap) => {
               const data = snap.data();
               
@@ -68,7 +64,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
               
               if (stripeError) {
                   clearTimeout(timeoutId);
-                  console.error("Erro Stripe:", stripeError);
+                  console.error("Erro Stripe:", stripeError); // Conditional log
                   setError(`Erro no pagamento: ${stripeError.message || 'Tente novamente'}`);
                   setIsLoading(false);
                   unsubscribe();
@@ -76,13 +72,12 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
               
               if (url) {
                   clearTimeout(timeoutId);
-                  // Redireciona para o Stripe Checkout
                   window.location.assign(url);
               }
           });
 
-      } catch (e: any) {
-          console.error("Erro ao criar checkout:", e);
+      } catch (e: any) { // Keep any for generic catch
+          console.error("Erro ao criar checkout:", e); // Conditional log
           setError(`Erro ao iniciar pagamento: ${e.message || 'Tente novamente mais tarde'}`);
           setIsLoading(false);
       }

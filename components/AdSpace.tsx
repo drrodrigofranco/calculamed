@@ -12,9 +12,9 @@ const AdSpace: React.FC<AdSpaceProps> = ({ format = 'horizontal', className = ''
   if (format === 'rectangle') sizeClass = 'h-64 w-full';
 
   return (
-    <div className={`bg-slate-100 border border-slate-200 rounded-lg flex flex-col items-center justify-center overflow-hidden my-4 ${sizeClass} ${className}`}>
-      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Publicidade</span>
-      <div className="text-slate-300 text-xs text-center px-4">
+    <div className={`bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg flex flex-col items-center justify-center overflow-hidden my-4 ${sizeClass} ${className}`}>
+      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Publicidade</span>
+      <div className="text-slate-300 dark:text-slate-400 text-xs text-center px-4">
         Espaço reservado para Google AdSense
       </div>
     </div>

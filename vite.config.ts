@@ -5,7 +5,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
-    // This is important for Firebase auth redirects in dev
     host: 'localhost',
     port: 5173,
   },

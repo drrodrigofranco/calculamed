@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppView, SpecialtyDef, SpecialtyId, CalculatorDef } from './types';
+import { AppView, SpecialtyDef, SpecialtyId, CalculatorDef, NewsItem } from './types';
 import BMICalculator from './components/calculators/BMICalculator';
 import EGFRCalculator from './components/calculators/EGFRCalculator';
 import CockcroftGaultCalculator from './components/calculators/CockcroftGaultCalculator';
@@ -37,13 +37,13 @@ import ANCCalculator from './components/calculators/ANCCalculator';
 import PHQ9Calculator from './components/calculators/PHQ9Calculator';
 import ProteinCalculator from './components/calculators/ProteinCalculator';
 import TargetHeartRateCalculator from './components/calculators/TargetHeartRateCalculator';
-import PediatricDosageCalculator from './components/calculators/PediatricDosageCalculator'; // New pediatric dosage calc
+import PediatricDosageCalculator from './components/calculators/PediatricDosageCalculator';
 
 import AdSpace from './components/AdSpace';
 import Auth from './components/Auth';
 import NutritionManager from './components/NutritionManager';
-import NewsFeed from './components/NewsFeed'; // Re-including NewsFeed
-import PatientManager from './components/PatientManager'; // Re-including PatientManager
+import NewsFeed from './components/NewsFeed'; 
+import PatientManager from './components/PatientManager'; 
 
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
 import { auth, db, functions } from './services/firebaseConfig';
@@ -77,10 +77,10 @@ import {
   AppleIcon,
   ActivityIcon,
   StarIcon,
-  SunIcon, // For dark mode
-  MoonIcon, // For dark mode
-  UserIcon, // Added missing import for UserIcon
-  UsersIcon // Added missing import for UsersIcon
+  SunIcon,
+  MoonIcon,
+  UserIcon,
+  UsersIcon
 } from './components/icons';
 
 enum LegalView {
@@ -158,7 +158,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     calculators: [
         { id: AppView.CALC_PED_FLUIDS, name: 'Manutenção de Fluidos', description: 'Holliday-Segar' },
         { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Recém-Nascido' },
-        { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' }, // New
+        { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
     ]
   },
   {
@@ -211,7 +211,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     icon: BrainIcon,
     color: 'bg-violet-600',
     calculators: [
-        { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de Consciência' }, // Duplicated, keeping as requested
+        { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de Consciência' },
         { id: AppView.CALC_PHQ9, name: 'PHQ-9', description: 'Rastreio de Depressão' },
     ]
   },
@@ -245,6 +245,198 @@ const SPECIALTIES: SpecialtyDef[] = [
   },
 ];
 
+interface DashboardProps { 
+    onSelectSpecialty: (id: SpecialtyId) => void; 
+    onNavigate: (view: ExtendedView) => void;
+    favorites: string[];
+    onToggleFavorite: (id: string, e: React.MouseEvent) => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, favorites, onToggleFavorite }) => {
+  
+  const favoriteCalculators = SPECIALTIES.flatMap(s => s.calculators.map(c => ({...c, specialtyName: s.name})))
+        .filter(c => favorites.includes(c.id));
+
+  return (
+    <div className="pb-10">
+      <div className="mb-8">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Bem-vindo ao Ajuda Saúde</h2>
+          <p className="text-slate-600 dark:text-slate-300 max-w-2xl">
+              Acesse rapidamente as ferramentas essenciais para sua prática clínica. 
+              Organizadas por especialidade para facilitar o seu plantão.
+          </p>
+      </div>
+
+      {favoriteCalculators.length > 0 && (
+          <div className="mb-10 animate-fade-in">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                  <StarIcon className="w-5 h-5 text-yellow-500" filled />
+                  Suas Ferramentas Favoritas
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {favoriteCalculators.map(calc => (
+                      <div 
+                        key={calc.id}
+                        onClick={() => onNavigate(calc.id)}
+                        className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-medical-300 dark:hover:border-medical-500 hover:shadow-md transition flex justify-between items-start group"
+                      >
+                          <div>
+                              <h4 className="font-bold text-slate-800 dark:text-white text-sm">{calc.name}</h4>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{calc.specialtyName}</p>
+                          </div>
+                          <button 
+                            onClick={(e) => onToggleFavorite(calc.id, e)}
+                            className="text-yellow-400 hover:scale-110 transition"
+                          >
+                              <StarIcon className="w-5 h-5" filled />
+                          </button>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      )}
+
+      <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Especialidades</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {SPECIALTIES.map((spec) => {
+          const IconComponent = spec.icon; 
+          
+          return (
+            <div 
+                key={spec.id}
+                onClick={() => onSelectSpecialty(spec.id)}
+                className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-md hover:border-medical-200 dark:hover:border-medical-500 transition group flex flex-col h-full relative"
+            >
+                <div className={`w-12 h-12 ${spec.color} rounded-xl flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <IconComponent className="w-7 h-7 text-white" />
+                </div>
+                <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{spec.name}</h4>
+                <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">{spec.calculators.length} Calculadoras</p>
+                <div className="mt-auto flex -space-x-2 overflow-hidden mb-3">
+                    {spec.calculators.slice(0, 3).map((_calc, i) => ( // Use _calc to avoid unused variable warning
+                        <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-400 dark:text-slate-300 font-bold">
+                           <LightningIcon className="w-3 h-3" />
+                        </div>
+                    ))}
+                    {spec.calculators.length > 3 && (
+                        <div className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-500 dark:text-slate-400 font-bold">
+                            +
+                        </div>
+                    )}
+                </div>
+                <div className="flex items-center text-medical-600 dark:text-medical-400 font-medium text-xs">
+                    Explorar <ChevronLeftIcon className="rotate-180 w-3 h-3 ml-1" />
+                </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
+          <h3>Calculadoras Médicas Profissionais</h3>
+          <p>
+              O <strong>Ajuda Saúde</strong> é uma referência gratuita para profissionais de saúde, oferecendo acesso rápido a fórmulas complexas e escores clínicos. 
+              Nossa plataforma garante precisão em cálculos fundamentais para UTI, Emergência, Pediatria e diversas especialidades.
+          </p>
+          <div className="grid md:grid-cols-2 gap-8 mt-6">
+              <div>
+                  <h4 className="font-bold text-slate-800 dark:text-white">Ferramentas de Destaque</h4>
+                  <ul className="list-disc pl-5 space-y-1 text-sm">
+                      <li><strong>Drogas Vasoativas:</strong> Cálculo preciso de vazão e dose para Noradrenalina e outros.</li>
+                      <li><strong>Nefrologia:</strong> Estimativa de TFG (CKD-EPI) e ajustes renais.</li>
+                      <li><strong>Emergência:</strong> Escala de Glasgow, Parkland para queimados e Anion Gap.</li>
+                  </ul>
+              </div>
+              <div>
+                  <h4 className="font-bold text-slate-800 dark:text-white">Por que usar?</h4>
+                  <p className="text-sm">
+                      Economize tempo durante o atendimento com uma interface limpa, livre de distrações e otimizada para dispositivos móveis. 
+                      Todas as fórmulas são revisadas com base nas diretrizes médicas mais recentes.
+                  </p>
+              </div>
+          </div>
+      </div>
+    </div>
+  );
+};
+
+interface CategoryViewProps { 
+    specialtyId: SpecialtyId; 
+    onSelectCalc: (view: ExtendedView) => void; 
+    isPro: boolean;
+    favorites: string[];
+    onToggleFavorite: (id: string, e: React.MouseEvent) => void;
+}
+
+const CategoryView: React.FC<CategoryViewProps> = ({ specialtyId, onSelectCalc, isPro, favorites, onToggleFavorite }) => {
+    const specialty = SPECIALTIES.find(s => s.id === specialtyId);
+
+    if (!specialty) return <div>Especialidade não encontrada</div>;
+
+    return (
+        <div className="max-w-4xl mx-auto">
+             <div className="flex items-center gap-4 mb-8">
+                <div className={`w-16 h-16 ${specialty.color} rounded-2xl flex items-center justify-center shadow-md`}>
+                    <specialty.icon className="w-10 h-10 text-white" />
+                </div>
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{specialty.name}</h2>
+                    <p className="text-slate-500 dark:text-slate-300">Selecione uma ferramenta abaixo</p>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {specialty.calculators.map((calc) => {
+                    const locked = calc.isPro && !isPro;
+                    const isFav = favorites.includes(calc.id);
+                    return (
+                        <div 
+                            key={calc.id}
+                            onClick={() => onSelectCalc(calc.id)}
+                            className={`bg-white dark:bg-slate-800 p-5 rounded-lg border shadow-sm transition flex items-center justify-between group cursor-pointer ${locked ? 'border-yellow-200 dark:border-yellow-800 bg-yellow-50/50 dark:bg-yellow-900/20' : 'border-slate-200 dark:border-slate-700 hover:shadow-md hover:border-medical-300 dark:hover:border-medical-500'}`}
+                        >
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                    <h3 className={`font-bold ${locked ? 'text-slate-600 dark:text-slate-300' : 'text-slate-800 dark:text-white'}`}>{calc.name}</h3>
+                                    {calc.isPro && (
+                                        <div className="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-yellow-200 dark:border-yellow-700 flex items-center gap-1">
+                                            <CrownIcon className="w-3 h-3" /> PRO
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{calc.description}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    onClick={(e) => onToggleFavorite(calc.id, e)}
+                                    className={`p-2 rounded-full transition hover:bg-slate-100 dark:hover:bg-slate-700 ${isFav ? 'text-yellow-400' : 'text-slate-300 hover:text-yellow-400'}`}
+                                    title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                                >
+                                    <StarIcon className="w-5 h-5" filled={isFav} />
+                                </button>
+                                <div className={`p-2 rounded-full transition ${locked ? 'bg-slate-100 dark:bg-slate-700' : 'bg-slate-50 dark:bg-slate-700 group-hover:bg-medical-50 dark:group-hover:bg-medical-900'}`}>
+                                    {locked ? (
+                                        <LockIcon className="w-5 h-5 text-slate-400" />
+                                    ) : (
+                                        <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 dark:group-hover:text-medical-400 rotate-180 transition" />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+            
+            <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 text-sm text-slate-500 dark:text-slate-400">
+                <p>
+                    As calculadoras de <strong>{specialty.name}</strong> são ferramentas de apoio à decisão clínica. 
+                    Certifique-se de validar os dados de entrada antes de aplicar os resultados no cuidado ao paciente.
+                </p>
+            </div>
+        </div>
+    );
+}
+
 const App: React.FC = () => {
   const [view, setView] = useState<ExtendedView>(AppView.DASHBOARD);
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<SpecialtyId | null>(null);
@@ -254,7 +446,6 @@ const App: React.FC = () => {
   const [loadingPro, setLoadingPro] = useState(true);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    // Initialize theme from localStorage or system preference
     if (typeof window !== 'undefined') {
       const storedTheme = localStorage.getItem('theme');
       if (storedTheme) {
@@ -266,13 +457,11 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-    // Apply theme class to HTML element
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    // Save theme preference to localStorage
     localStorage.setItem('theme', theme);
   }, [theme]);
 
@@ -280,7 +469,6 @@ const App: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         setUser(currentUser);
         if (currentUser) {
-            // Check for Subscription
             const q = query(
                 collection(db, 'customers', currentUser.uid, 'subscriptions'), 
                 where('status', 'in', ['active', 'trialing'])
@@ -291,12 +479,11 @@ const App: React.FC = () => {
                 setLoadingPro(false);
             });
 
-            // Load Favorites
             try {
                 const userDocRef = doc(db, 'users', currentUser.uid);
                 const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists() && userDocSnap.data().favorites) {
-                    setFavorites(userDocSnap.data().favorites);
+                if (userDocSnap.exists() && userDocSnap.data()?.favorites) {
+                    setFavorites(userDocSnap.data()?.favorites);
                 }
             } catch (e) {
                 console.error("Erro ao carregar favoritos", e);
@@ -328,8 +515,9 @@ const App: React.FC = () => {
   const handleManageSubscription = async () => {
       try {
           const functionRef = httpsCallable(functions, 'ext-firestore-stripe-payments-createPortalLink');
-          const { data }: any = await functionRef({ returnUrl: window.location.origin });
-          window.location.assign(data.url);
+          const { data } = await functionRef({ returnUrl: window.location.origin });
+          const url = (data as { url: string }).url; // Explicitly cast to ensure 'url' property
+          window.location.assign(url);
       } catch (e) {
           console.error("Erro ao abrir portal", e);
           alert("Erro ao abrir portal de assinatura. Tente novamente.");
@@ -339,7 +527,7 @@ const App: React.FC = () => {
   const handleToggleFavorite = async (calcId: string, e: React.MouseEvent) => {
       e.stopPropagation();
       if (!user) {
-          handleNavigate(AppView.PRO_LOGIN); // Changed to handleNavigate for consistency
+          handleNavigate(AppView.PRO_LOGIN);
           return;
       }
 
@@ -348,7 +536,7 @@ const App: React.FC = () => {
         ? favorites.filter(id => id !== calcId)
         : [...favorites, calcId];
       
-      setFavorites(newFavorites); // Optimistic update
+      setFavorites(newFavorites);
 
       try {
           const userDocRef = doc(db, 'users', user.uid);
@@ -359,19 +547,18 @@ const App: React.FC = () => {
           }
       } catch (error) {
           console.error("Erro ao salvar favorito", error);
-          // Revert on error
-          setFavorites(favorites);
+          setFavorites(favorites); // Revert on error
       }
   };
 
   const handleNavigate = (targetView: ExtendedView) => {
     if (Object.values(AppView).includes(targetView as AppView)) {
         const targetCalc = SPECIALTIES.flatMap(s => s.calculators).find(c => c.id === targetView);
-        if (targetCalc?.isPro && !isPro && !user) { // If PRO calc, not pro and not logged in -> PRO_LOGIN
+        if (targetCalc?.isPro && !isPro && !user) {
             setView(AppView.PRO_LOGIN);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
-        } else if (targetCalc?.isPro && !isPro && user) { // If PRO calc, not pro but logged in -> message
+        } else if (targetCalc?.isPro && !isPro && user) {
              alert("Esta calculadora é exclusiva para assinantes PRO.");
              return;
         }
@@ -429,8 +616,8 @@ const App: React.FC = () => {
       
       case AppView.PRO_LOGIN: return <Auth onLogin={handleLoginSuccess} />;
       case AppView.NUTRITION_PRO: return <NutritionManager />;
-      case AppView.NEWS: return <NewsFeed />;
-      case AppView.PATIENTS_LIST: return <PatientManager onBack={() => handleNavigate(AppView.DASHBOARD)} />;
+      // case AppView.NEWS: return <NewsFeed />; // Desabilitado para evitar erros/seguir pedidos anteriores
+      // case AppView.PATIENTS_LIST: return <PatientManager onBack={() => handleNavigate(AppView.DASHBOARD)} />; // Desabilitado
 
       case LegalView.PRIVACY: return <PrivacyPolicy />;
       case LegalView.TERMS: return <TermsOfUse />;
@@ -448,7 +635,7 @@ const App: React.FC = () => {
       case AppView.CALC_QTC: return <QTcCalculator />;
       case AppView.CALC_GLASGOW: return <GlasgowCalculator />;
       case AppView.CALC_PED_FLUIDS: return <PediatricFluidCalculator />;
-      case AppView.CALC_PEDIATRIC_DOSAGE: return <PediatricDosageCalculator />; // New
+      case AppView.CALC_PEDIATRIC_DOSAGE: return <PediatricDosageCalculator />;
       case AppView.CALC_BMR: return <BMRCalculator />;
       case AppView.CALC_PROTEIN: return <ProteinCalculator />;
       case AppView.CALC_HR_TARGET: return <TargetHeartRateCalculator />;
@@ -578,21 +765,21 @@ const App: React.FC = () => {
             <span className="font-medium">Início</span>
           </button>
 
-          <button
+          {/* <button
             onClick={() => handleNavigate(AppView.NEWS)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${view === AppView.NEWS ? 'bg-medical-600 text-white shadow-lg shadow-medical-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
           >
             <div className="w-5 h-5"><ActivityIcon /></div>
             <span className="font-medium">Notícias Médicas</span>
-          </button>
+          </button> */}
 
-          <button
+          {/* <button
             onClick={() => handleNavigate(AppView.PATIENTS_LIST)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${view === AppView.PATIENTS_LIST ? 'bg-medical-600 text-white shadow-lg shadow-medical-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
           >
             <div className="w-5 h-5"><UsersIcon /></div>
             <span className="font-medium">Meus Pacientes</span>
-          </button>
+          </button> */}
 
           <button
             onClick={() => { handleNavigate(AppView.NUTRITION_PRO); setSelectedSpecialtyId(null); }}
@@ -688,14 +875,13 @@ const App: React.FC = () => {
 
            <div className="flex items-center gap-2 pl-4">
                {isPro && (
-                   <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold border border-yellow-200 flex items-center gap-1">
+                   <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold border border-yellow-200 dark:border-yellow-700 flex items-center gap-1">
                        <CrownIcon className="w-3 h-3" /> PRO
                    </span>
                )}
                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden sm:block"></span>
                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 hidden sm:block">Online</span>
                
-               {/* Dark Mode Toggle */}
                <button 
                   onClick={toggleTheme}
                   className="ml-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition"
@@ -762,197 +948,5 @@ const App: React.FC = () => {
     </div>
   );
 };
-
-interface DashboardProps { 
-    onSelectSpecialty: (id: SpecialtyId) => void; 
-    onNavigate: (view: ExtendedView) => void;
-    favorites: string[];
-    onToggleFavorite: (id: string, e: React.MouseEvent) => void;
-}
-
-const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, favorites, onToggleFavorite }) => {
-  
-  const favoriteCalculators = SPECIALTIES.flatMap(s => s.calculators.map(c => ({...c, specialtyName: s.name})))
-        .filter(c => favorites.includes(c.id));
-
-  return (
-    <div className="pb-10">
-      <div className="mb-8">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Bem-vindo ao Ajuda Saúde</h2>
-          <p className="text-slate-600 dark:text-slate-300 max-w-2xl">
-              Acesse rapidamente as ferramentas essenciais para sua prática clínica. 
-              Organizadas por especialidade para facilitar o seu plantão.
-          </p>
-      </div>
-
-      {favoriteCalculators.length > 0 && (
-          <div className="mb-10 animate-fade-in">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                  <StarIcon className="w-5 h-5 text-yellow-500" filled />
-                  Suas Ferramentas Favoritas
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {favoriteCalculators.map(calc => (
-                      <div 
-                        key={calc.id}
-                        onClick={() => onNavigate(calc.id)}
-                        className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-medical-300 dark:hover:border-medical-500 hover:shadow-md transition flex justify-between items-start group"
-                      >
-                          <div>
-                              <h4 className="font-bold text-slate-800 dark:text-white text-sm">{calc.name}</h4>
-                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{calc.specialtyName}</p>
-                          </div>
-                          <button 
-                            onClick={(e) => onToggleFavorite(calc.id, e)}
-                            className="text-yellow-400 hover:scale-110 transition"
-                          >
-                              <StarIcon className="w-5 h-5" filled />
-                          </button>
-                      </div>
-                  ))}
-              </div>
-          </div>
-      )}
-
-      <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Especialidades</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {SPECIALTIES.map((spec) => {
-          const IconComponent = spec.icon; 
-          
-          return (
-            <div 
-                key={spec.id}
-                onClick={() => onSelectSpecialty(spec.id)}
-                className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-md hover:border-medical-200 dark:hover:border-medical-500 transition group flex flex-col h-full relative"
-            >
-                <div className={`w-12 h-12 ${spec.color} rounded-xl flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="w-7 h-7 text-white" />
-                </div>
-                <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{spec.name}</h4>
-                <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">{spec.calculators.length} Calculadoras</p>
-                <div className="mt-auto flex -space-x-2 overflow-hidden mb-3">
-                    {spec.calculators.slice(0, 3).map((_, i) => (
-                        <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-400 dark:text-slate-300 font-bold">
-                           <LightningIcon className="w-3 h-3" />
-                        </div>
-                    ))}
-                    {spec.calculators.length > 3 && (
-                        <div className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-500 dark:text-slate-400 font-bold">
-                            +
-                        </div>
-                    )}
-                </div>
-                <div className="flex items-center text-medical-600 dark:text-medical-400 font-medium text-xs">
-                    Explorar <ChevronLeftIcon className="rotate-180 w-3 h-3 ml-1" />
-                </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
-          <h3>Calculadoras Médicas Profissionais</h3>
-          <p>
-              O <strong>Ajuda Saúde</strong> é uma referência gratuita para profissionais de saúde, oferecendo acesso rápido a fórmulas complexas e escores clínicos. 
-              Nossa plataforma garante precisão em cálculos fundamentais para UTI, Emergência, Pediatria e diversas especialidades.
-          </p>
-          <div className="grid md:grid-cols-2 gap-8 mt-6">
-              <div>
-                  <h4 className="font-bold text-slate-800 dark:text-white">Ferramentas de Destaque</h4>
-                  <ul className="list-disc pl-5 space-y-1 text-sm">
-                      <li><strong>Drogas Vasoativas:</strong> Cálculo preciso de vazão e dose para Noradrenalina e outros.</li>
-                      <li><strong>Nefrologia:</strong> Estimativa de TFG (CKD-EPI) e ajustes renais.</li>
-                      <li><strong>Emergência:</strong> Escala de Glasgow, Parkland para queimados e Anion Gap.</li>
-                  </ul>
-              </div>
-              <div>
-                  <h4 className="font-bold text-slate-800 dark:text-white">Por que usar?</h4>
-                  <p className="text-sm">
-                      Economize tempo durante o atendimento com uma interface limpa, livre de distrações e otimizada para dispositivos móveis. 
-                      Todas as fórmulas são revisadas com base nas diretrizes médicas mais recentes.
-                  </p>
-              </div>
-          </div>
-      </div>
-    </div>
-  );
-};
-
-interface CategoryViewProps { 
-    specialtyId: SpecialtyId; 
-    onSelectCalc: (view: ExtendedView) => void; 
-    isPro: boolean;
-    favorites: string[];
-    onToggleFavorite: (id: string, e: React.MouseEvent) => void;
-}
-
-const CategoryView: React.FC<CategoryViewProps> = ({ specialtyId, onSelectCalc, isPro, favorites, onToggleFavorite }) => {
-    const specialty = SPECIALTIES.find(s => s.id === specialtyId);
-
-    if (!specialty) return <div>Especialidade não encontrada</div>;
-
-    return (
-        <div className="max-w-4xl mx-auto">
-             <div className="flex items-center gap-4 mb-8">
-                <div className={`w-16 h-16 ${specialty.color} rounded-2xl flex items-center justify-center shadow-md`}>
-                    <specialty.icon className="w-10 h-10 text-white" />
-                </div>
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{specialty.name}</h2>
-                    <p className="text-slate-500 dark:text-slate-300">Selecione uma ferramenta abaixo</p>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {specialty.calculators.map((calc) => {
-                    const locked = calc.isPro && !isPro;
-                    const isFav = favorites.includes(calc.id);
-                    return (
-                        <div 
-                            key={calc.id}
-                            onClick={() => onSelectCalc(calc.id)}
-                            className={`bg-white dark:bg-slate-800 p-5 rounded-lg border shadow-sm transition flex items-center justify-between group cursor-pointer ${locked ? 'border-yellow-200 dark:border-yellow-800 bg-yellow-50/50 dark:bg-yellow-900/20' : 'border-slate-200 dark:border-slate-700 hover:shadow-md hover:border-medical-300 dark:hover:border-medical-500'}`}
-                        >
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                    <h3 className={`font-bold ${locked ? 'text-slate-600 dark:text-slate-300' : 'text-slate-800 dark:text-white'}`}>{calc.name}</h3>
-                                    {calc.isPro && (
-                                        <div className="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-yellow-200 dark:border-yellow-700 flex items-center gap-1">
-                                            <CrownIcon className="w-3 h-3" /> PRO
-                                        </div>
-                                    )}
-                                </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{calc.description}</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <button 
-                                    onClick={(e) => onToggleFavorite(calc.id, e)}
-                                    className={`p-2 rounded-full transition hover:bg-slate-100 dark:hover:bg-slate-700 ${isFav ? 'text-yellow-400' : 'text-slate-300 hover:text-yellow-400'}`}
-                                    title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-                                >
-                                    <StarIcon className="w-5 h-5" filled={isFav} />
-                                </button>
-                                <div className={`p-2 rounded-full transition ${locked ? 'bg-slate-100 dark:bg-slate-700' : 'bg-slate-50 dark:bg-slate-700 group-hover:bg-medical-50 dark:group-hover:bg-medical-900'}`}>
-                                    {locked ? (
-                                        <LockIcon className="w-5 h-5 text-slate-400" />
-                                    ) : (
-                                        <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 dark:group-hover:text-medical-400 rotate-180 transition" />
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-            
-            <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 text-sm text-slate-500 dark:text-slate-400">
-                <p>
-                    As calculadoras de <strong>{specialty.name}</strong> são ferramentas de apoio à decisão clínica. 
-                    Certifique-se de validar os dados de entrada antes de aplicar os resultados no cuidado ao paciente.
-                </p>
-            </div>
-        </div>
-    );
-}
 
 export default App;
