@@ -1,7 +1,10 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { NewsItem } from '../types';
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+const apiKey = process.env.API_KEY || '';
+
+// Initialize Gemini Client
+const ai = new GoogleGenAI({ apiKey });
 
 export const fetchMedicalNews = async (): Promise<NewsItem[]> => {
   if (!apiKey) {
@@ -10,20 +13,20 @@ export const fetchMedicalNews = async (): Promise<NewsItem[]> => {
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
-      generationConfig: {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: "Gere 5 resumos informativos sobre tópicos recentes e relevantes na medicina, focados em clínica geral, cardiologia ou saúde pública. O tom deve ser profissional e técnico.",
+      config: {
         responseMimeType: "application/json",
         responseSchema: {
-          type: "array" as const,
+          type: Type.ARRAY,
           items: {
-            type: "object" as const,
+            type: Type.OBJECT,
             properties: {
-              title: { type: "string" as const },
-              category: { type: "string" as const },
-              summary: { type: "string" as const },
-              impact: { type: "string" as const }
+              title: { type: Type.STRING, description: "Título da notícia" },
+              category: { type: Type.STRING, description: "Categoria médica (ex: Cardiologia, Pediatria)" },
+              summary: { type: Type.STRING, description: "Resumo de 2 a 3 frases do conteúdo" },
+              impact: { type: Type.STRING, description: "Breve explicação do impacto clínico" }
             },
             required: ["title", "category", "summary", "impact"]
           }
@@ -31,21 +34,17 @@ export const fetchMedicalNews = async (): Promise<NewsItem[]> => {
       }
     });
 
-    const prompt = `Gere 5 resumos informativos sobre tópicos recentes e relevantes na medicina, focados em clínica geral, cardiologia ou saúde pública. O tom deve ser profissional e técnico. Retorne em formato JSON com os campos: title, category, summary, impact.`;
-
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+    const jsonText = response.text;
+    if (!jsonText) throw new Error("No data returned");
     
-    if (!text) throw new Error("No data returned");
-    
-    return JSON.parse(text) as NewsItem[];
+    return JSON.parse(jsonText) as NewsItem[];
   } catch (error) {
     console.error("Error fetching news from Gemini:", error);
     return getMockNews();
   }
 };
 
+// Fallback data in case API fails or key is missing
 const getMockNews = (): NewsItem[] => [
   {
     title: "Novas Diretrizes para Hipertensão Arterial",
@@ -58,23 +57,5 @@ const getMockNews = (): NewsItem[] => [
     category: "Oncologia",
     summary: "Estudo recente demonstra eficácia aumentada de inibidores de checkpoint em estágios iniciais de câncer pulmonar.",
     impact: "Potencial mudança no tratamento adjuvante."
-  },
-  {
-    title: "Protocolo Atualizado para Sepse",
-    category: "Emergência",
-    summary: "A Surviving Sepsis Campaign publicou novas recomendações sobre ressuscitação hídrica e uso precoce de antibióticos.",
-    impact: "Implementação imediata em unidades de emergência recomendada."
-  },
-  {
-    title: "Diabetes Tipo 2 em Crianças",
-    category: "Pediatria",
-    summary: "Aumento significativo de casos de diabetes tipo 2 em população pediátrica relacionado à obesidade infantil.",
-    impact: "Necessidade de programas preventivos escolares."
-  },
-  {
-    title: "Telemedicina no Pós-Pandemia",
-    category: "Saúde Pública",
-    summary: "Estudo demonstra manutenção de 40% das consultas em formato remoto após fim da emergência sanitária.",
-    impact: "Consolidação da telemedicina como modalidade permanente."
   }
 ];
