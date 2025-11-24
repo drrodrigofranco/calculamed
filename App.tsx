@@ -37,10 +37,14 @@ import ANCCalculator from './components/calculators/ANCCalculator';
 import PHQ9Calculator from './components/calculators/PHQ9Calculator';
 import ProteinCalculator from './components/calculators/ProteinCalculator';
 import TargetHeartRateCalculator from './components/calculators/TargetHeartRateCalculator';
+import PediatricDosageCalculator from './components/calculators/PediatricDosageCalculator'; // New pediatric dosage calc
 
 import AdSpace from './components/AdSpace';
 import Auth from './components/Auth';
 import NutritionManager from './components/NutritionManager';
+import NewsFeed from './components/NewsFeed'; // Re-including NewsFeed
+import PatientManager from './components/PatientManager'; // Re-including PatientManager
+
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
 import { auth, db, functions } from './services/firebaseConfig';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
@@ -72,7 +76,11 @@ import {
   CrownIcon,
   AppleIcon,
   ActivityIcon,
-  StarIcon
+  StarIcon,
+  SunIcon, // For dark mode
+  MoonIcon, // For dark mode
+  UserIcon, // Added missing import for UserIcon
+  UsersIcon // Added missing import for UsersIcon
 } from './components/icons';
 
 enum LegalView {
@@ -150,6 +158,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     calculators: [
         { id: AppView.CALC_PED_FLUIDS, name: 'Manutenção de Fluidos', description: 'Holliday-Segar' },
         { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Recém-Nascido' },
+        { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' }, // New
     ]
   },
   {
@@ -202,7 +211,7 @@ const SPECIALTIES: SpecialtyDef[] = [
     icon: BrainIcon,
     color: 'bg-violet-600',
     calculators: [
-        { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de Consciência' },
+        { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de Consciência' }, // Duplicated, keeping as requested
         { id: AppView.CALC_PHQ9, name: 'PHQ-9', description: 'Rastreio de Depressão' },
     ]
   },
@@ -244,6 +253,28 @@ const App: React.FC = () => {
   const [isPro, setIsPro] = useState(false);
   const [loadingPro, setLoadingPro] = useState(true);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    // Initialize theme from localStorage or system preference
+    if (typeof window !== 'undefined') {
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme) {
+        return storedTheme as 'light' | 'dark';
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'light';
+  });
+
+  useEffect(() => {
+    // Apply theme class to HTML element
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    // Save theme preference to localStorage
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -308,8 +339,7 @@ const App: React.FC = () => {
   const handleToggleFavorite = async (calcId: string, e: React.MouseEvent) => {
       e.stopPropagation();
       if (!user) {
-          setView(AppView.PRO_LOGIN);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          handleNavigate(AppView.PRO_LOGIN); // Changed to handleNavigate for consistency
           return;
       }
 
@@ -337,10 +367,13 @@ const App: React.FC = () => {
   const handleNavigate = (targetView: ExtendedView) => {
     if (Object.values(AppView).includes(targetView as AppView)) {
         const targetCalc = SPECIALTIES.flatMap(s => s.calculators).find(c => c.id === targetView);
-        if (targetCalc?.isPro && !isPro) {
+        if (targetCalc?.isPro && !isPro && !user) { // If PRO calc, not pro and not logged in -> PRO_LOGIN
             setView(AppView.PRO_LOGIN);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
+        } else if (targetCalc?.isPro && !isPro && user) { // If PRO calc, not pro but logged in -> message
+             alert("Esta calculadora é exclusiva para assinantes PRO.");
+             return;
         }
     }
 
@@ -357,7 +390,7 @@ const App: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (view === AppView.NUTRITION_PRO) {
+    if (view === AppView.NUTRITION_PRO || view === AppView.NEWS || view === AppView.PATIENTS_LIST) {
         setView(AppView.DASHBOARD);
     } else if (view === AppView.CATEGORY_VIEW) {
       setView(AppView.DASHBOARD);
@@ -376,7 +409,8 @@ const App: React.FC = () => {
     ? SPECIALTIES.flatMap(s => s.calculators.map(c => ({...c, specialtyName: s.name})))
         .filter(c => 
             c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-            c.description.toLowerCase().includes(searchQuery.toLowerCase())
+            c.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.specialtyName.toLowerCase().includes(searchQuery.toLowerCase())
         )
     : [];
 
@@ -395,6 +429,9 @@ const App: React.FC = () => {
       
       case AppView.PRO_LOGIN: return <Auth onLogin={handleLoginSuccess} />;
       case AppView.NUTRITION_PRO: return <NutritionManager />;
+      case AppView.NEWS: return <NewsFeed />;
+      case AppView.PATIENTS_LIST: return <PatientManager onBack={() => handleNavigate(AppView.DASHBOARD)} />;
+
       case LegalView.PRIVACY: return <PrivacyPolicy />;
       case LegalView.TERMS: return <TermsOfUse />;
       case LegalView.ABOUT: return <AboutUs />;
@@ -411,6 +448,7 @@ const App: React.FC = () => {
       case AppView.CALC_QTC: return <QTcCalculator />;
       case AppView.CALC_GLASGOW: return <GlasgowCalculator />;
       case AppView.CALC_PED_FLUIDS: return <PediatricFluidCalculator />;
+      case AppView.CALC_PEDIATRIC_DOSAGE: return <PediatricDosageCalculator />; // New
       case AppView.CALC_BMR: return <BMRCalculator />;
       case AppView.CALC_PROTEIN: return <ProteinCalculator />;
       case AppView.CALC_HR_TARGET: return <TargetHeartRateCalculator />;
@@ -447,16 +485,23 @@ const App: React.FC = () => {
     if (view === AppView.DASHBOARD) return 'Início';
     if (view === AppView.PRO_LOGIN) return 'Assinatura';
     if (view === AppView.NUTRITION_PRO) return 'Nutrition Calc';
+    if (view === AppView.NEWS) return 'Notícias Médicas'; 
+    if (view === AppView.PATIENTS_LIST) return 'Meus Pacientes'; 
     if (Object.values(LegalView).includes(view as LegalView)) return 'Institucional';
     if (view === AppView.CATEGORY_VIEW && selectedSpecialtyId) {
         return SPECIALTIES.find(s => s.id === selectedSpecialtyId)?.name || 'Categoria';
     }
-    return 'Calculadora';
+    const currentCalc = SPECIALTIES.flatMap(s => s.calculators).find(c => c.id === view);
+    return currentCalc?.name || 'Calculadora';
+  };
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
-      <aside className="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col z-30">
+    <div className={`min-h-screen flex flex-col md:flex-row ${theme === 'dark' ? 'dark' : ''}`}>
+      <aside className="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col z-30 shadow-lg md:shadow-none">
         <div className="p-6 border-b border-slate-700">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigate(AppView.DASHBOARD)}>
             <AjudaSaudeLogo className="w-9 h-9" />
@@ -470,51 +515,57 @@ const App: React.FC = () => {
         </div>
 
         <div className="p-4 bg-slate-800 border-b border-slate-700">
-            {user ? (
-                 <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
-                        {user.photoURL ? (
-                            <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-full border border-slate-500" />
-                        ) : (
-                            <div className="bg-slate-600 p-1 rounded">
-                                <CrownIcon className="w-4 h-4 text-slate-300" />
-                            </div>
-                        )}
-                        <div className="overflow-hidden">
-                            <p className="text-xs font-bold text-white truncate w-32">{user.displayName || 'Usuário'}</p>
-                            <p className={`text-[10px] ${isPro ? 'text-green-400 font-bold' : 'text-slate-400'}`}>
-                                {isPro ? 'Assinante PRO' : 'Plano Grátis'}
-                            </p>
-                        </div>
-                    </div>
-                    
-                    {isPro ? (
-                        <button 
-                            onClick={handleManageSubscription}
-                            className="text-xs bg-slate-700 hover:bg-slate-600 text-white py-1.5 rounded transition text-center"
-                        >
-                            Gerenciar Assinatura
-                        </button>
-                    ) : (
-                        <button 
-                            onClick={() => handleNavigate(AppView.PRO_LOGIN)}
-                            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-slate-900 font-bold py-2 rounded text-sm transition"
-                        >
-                            <CrownIcon className="w-4 h-4" />
-                            Virar PRO
-                        </button>
-                    )}
-                    
-                    <button onClick={handleLogout} className="text-xs text-slate-400 hover:text-white underline text-left">Sair</button>
-                 </div>
+            {loadingPro ? (
+                <div className="flex items-center justify-center py-2">
+                    <div className="w-5 h-5 border-2 border-medical-200 border-t-medical-600 rounded-full animate-spin"></div>
+                </div>
             ) : (
-                <button 
-                    onClick={() => handleNavigate(AppView.PRO_LOGIN)}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-slate-900 font-bold py-2 rounded text-sm transition"
-                >
-                    <CrownIcon className="w-4 h-4" />
-                    Seja Pro
-                </button>
+                user ? (
+                    <div className="flex flex-col gap-3">
+                        <div className="flex items-center gap-2">
+                            {user.photoURL ? (
+                                <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-full border border-slate-500" />
+                            ) : (
+                                <div className="bg-slate-600 p-1 rounded-full">
+                                    <UserIcon className="w-4 h-4 text-slate-300" />
+                                </div>
+                            )}
+                            <div className="overflow-hidden">
+                                <p className="text-xs font-bold text-white truncate w-32">{user.displayName || 'Usuário'}</p>
+                                <p className={`text-[10px] ${isPro ? 'text-green-400 font-bold' : 'text-slate-400'}`}>
+                                    {isPro ? 'Assinante PRO' : 'Plano Grátis'}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {isPro ? (
+                            <button 
+                                onClick={handleManageSubscription}
+                                className="text-xs bg-slate-700 hover:bg-slate-600 text-white py-1.5 rounded transition text-center"
+                            >
+                                Gerenciar Assinatura
+                            </button>
+                        ) : (
+                            <button 
+                                onClick={() => handleNavigate(AppView.PRO_LOGIN)}
+                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-slate-900 font-bold py-2 rounded text-sm transition"
+                            >
+                                <CrownIcon className="w-4 h-4" />
+                                Virar PRO
+                            </button>
+                        )}
+                        
+                        <button onClick={handleLogout} className="text-xs text-slate-400 hover:text-white underline text-left">Sair</button>
+                    </div>
+                ) : (
+                    <button 
+                        onClick={() => handleNavigate(AppView.PRO_LOGIN)}
+                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-slate-900 font-bold py-2 rounded text-sm transition"
+                    >
+                        <CrownIcon className="w-4 h-4" />
+                        Seja Pro
+                    </button>
+                )
             )}
         </div>
 
@@ -528,7 +579,23 @@ const App: React.FC = () => {
           </button>
 
           <button
-            onClick={() => { setView(AppView.NUTRITION_PRO); setSelectedSpecialtyId(null); }}
+            onClick={() => handleNavigate(AppView.NEWS)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${view === AppView.NEWS ? 'bg-medical-600 text-white shadow-lg shadow-medical-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+          >
+            <div className="w-5 h-5"><ActivityIcon /></div>
+            <span className="font-medium">Notícias Médicas</span>
+          </button>
+
+          <button
+            onClick={() => handleNavigate(AppView.PATIENTS_LIST)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${view === AppView.PATIENTS_LIST ? 'bg-medical-600 text-white shadow-lg shadow-medical-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+          >
+            <div className="w-5 h-5"><UsersIcon /></div>
+            <span className="font-medium">Meus Pacientes</span>
+          </button>
+
+          <button
+            onClick={() => { handleNavigate(AppView.NUTRITION_PRO); setSelectedSpecialtyId(null); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${view === AppView.NUTRITION_PRO ? 'bg-medical-600 text-white shadow-lg shadow-medical-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
           >
             <div className="w-5 h-5"><AppleIcon /></div>
@@ -551,22 +618,22 @@ const App: React.FC = () => {
         </nav>
       </aside>
 
-      <main className="flex-1 h-screen overflow-y-auto relative flex flex-col">
-        <header className="bg-white border-b border-slate-200 p-4 md:px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+      <main className="flex-1 h-screen overflow-y-auto relative flex flex-col bg-slate-50 dark:bg-slate-800">
+        <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 p-4 md:px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm">
            <div className="flex items-center gap-4 flex-1">
              {view !== AppView.DASHBOARD && (
-                 <button onClick={handleBack} className="md:hidden p-2 hover:bg-slate-100 rounded-full">
-                     <ChevronLeftIcon className="text-slate-600" />
+                 <button onClick={handleBack} className="md:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
+                     <ChevronLeftIcon className="text-slate-600 dark:text-slate-300" />
                  </button>
              )}
-             <h2 className="text-lg font-semibold text-slate-800 hidden md:block">
+             <h2 className="text-lg font-semibold text-slate-800 dark:text-white hidden md:block">
                 {getHeaderTitle()}
              </h2>
              
              {view === AppView.DASHBOARD && (
                <div className="md:hidden flex items-center gap-2">
                   <AjudaSaudeLogo className="w-6 h-6" />
-                  <span className="font-bold text-slate-800">Ajuda Saúde</span>
+                  <span className="font-bold text-slate-800 dark:text-white">Ajuda Saúde</span>
                </div>
              )}
 
@@ -577,7 +644,7 @@ const App: React.FC = () => {
                     </div>
                     <input
                         type="text"
-                        className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-full leading-5 bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-medical-500 focus:border-medical-500 sm:text-sm transition"
+                        className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-full leading-5 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-medical-500 focus:border-medical-500 sm:text-sm transition"
                         placeholder="Buscar calculadora..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -587,37 +654,36 @@ const App: React.FC = () => {
                             onClick={() => setSearchQuery('')}
                             className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                          >
-                            <XIcon className="h-4 w-4 text-slate-400 hover:text-slate-600" />
+                            <XIcon className="h-4 w-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" />
                         </button>
                     )}
                 </div>
 
                 {searchQuery && (
-                    <div className="absolute mt-1 w-full bg-white shadow-lg rounded-xl border border-slate-200 overflow-hidden z-50 max-h-96 overflow-y-auto">
+                    <div className="absolute mt-1 w-full bg-white dark:bg-slate-800 shadow-lg rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-50 max-h-96 overflow-y-auto">
                         {filteredCalculators.length > 0 ? (
                             <ul>
                                 {filteredCalculators.map((calc, idx) => (
                                     <li 
                                         key={`${calc.id}-${idx}`}
                                         onClick={() => handleNavigate(calc.id)}
-                                        className="px-4 py-3 hover:bg-medical-50 cursor-pointer border-b border-slate-100 last:border-0 flex items-center justify-between"
+                                        className="px-4 py-3 hover:bg-medical-50 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700 last:border-0 flex items-center justify-between"
                                     >
                                         <div className="flex flex-col">
-                                            <span className="font-medium text-slate-800">{calc.name}</span>
-                                            <span className="text-xs text-slate-500">{calc.description} • {calc.specialtyName}</span>
+                                            <span className="font-medium text-slate-800 dark:text-white">{calc.name}</span>
+                                            <span className="text-xs text-slate-500 dark:text-slate-400">{calc.description} • {calc.specialtyName}</span>
                                         </div>
                                         {calc.isPro && !isPro && <LockIcon className="w-4 h-4 text-slate-400" />}
                                     </li>
                                 ))}
                             </ul>
                         ) : (
-                            <div className="p-4 text-center text-slate-500 text-sm">
+                            <div className="p-4 text-center text-slate-500 dark:text-slate-400 text-sm">
                                 Nenhuma calculadora encontrada.
                             </div>
                         )}
                     </div>
                 )}
-             </div>
            </div>
 
            <div className="flex items-center gap-2 pl-4">
@@ -627,7 +693,19 @@ const App: React.FC = () => {
                    </span>
                )}
                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden sm:block"></span>
-               <span className="text-xs font-medium text-slate-500 hidden sm:block">Online</span>
+               <span className="text-xs font-medium text-slate-500 dark:text-slate-400 hidden sm:block">Online</span>
+               
+               {/* Dark Mode Toggle */}
+               <button 
+                  onClick={toggleTheme}
+                  className="ml-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+               >
+                  {theme === 'dark' ? (
+                      <SunIcon className="w-5 h-5 text-yellow-400" />
+                  ) : (
+                      <MoonIcon className="w-5 h-5 text-slate-600" />
+                  )}
+               </button>
            </div>
         </header>
 
@@ -636,10 +714,10 @@ const App: React.FC = () => {
             <div className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
                 <AdSpace format="horizontal" className="mb-6" />
 
-                {view !== AppView.DASHBOARD && view !== AppView.PRO_LOGIN && view !== AppView.NUTRITION_PRO && (
+                {view !== AppView.DASHBOARD && view !== AppView.PRO_LOGIN && view !== AppView.NUTRITION_PRO && view !== AppView.NEWS && view !== AppView.PATIENTS_LIST && (
                     <button 
                         onClick={handleBack}
-                        className="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-medical-600 transition group"
+                        className="mb-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-medical-600 dark:hover:text-medical-400 transition group"
                     >
                         <ChevronLeftIcon className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         Voltar
@@ -649,33 +727,33 @@ const App: React.FC = () => {
                 {renderContent()}
 
                 <AdSpace format="horizontal" className="mt-8" />
-                <div className="mt-8 text-center text-xs text-slate-400 max-w-2xl mx-auto">
+                <div className="mt-8 text-center text-xs text-slate-400 dark:text-slate-500 max-w-2xl mx-auto">
                     Aviso Legal: As informações contidas neste aplicativo servem apenas como auxílio e não substituem o julgamento clínico profissional. 
                     Confirme sempre os resultados com outras fontes.
                 </div>
             </div>
 
-            <div className="hidden xl:block w-80 p-6 border-l border-slate-200 bg-white">
+            <div className="hidden xl:block w-80 p-6 border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                 <h4 className="text-xs font-bold text-slate-400 uppercase mb-4 tracking-wider">Patrocinado</h4>
                 <AdSpace format="vertical" />
-                <div className="mt-6 text-xs text-slate-400">
+                <div className="mt-6 text-xs text-slate-400 dark:text-slate-500">
                     <p>O Ajuda Saúde é mantido através de publicidade para garantir o acesso gratuito a todos os profissionais.</p>
                 </div>
             </div>
         </div>
 
-        <footer className="bg-white border-t border-slate-200 py-8 px-4 mt-auto">
+        <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 py-8 px-4 mt-auto">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="flex items-center gap-2">
                      <AjudaSaudeLogo className="w-6 h-6 grayscale opacity-50" />
-                     <span className="text-slate-500 font-semibold">Ajuda Saúde</span>
+                     <span className="text-slate-500 dark:text-slate-400 font-semibold">Ajuda Saúde</span>
                 </div>
-                <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-500">
-                    <button onClick={() => handleNavigate(LegalView.ABOUT)} className="hover:text-medical-600">Sobre</button>
-                    <button onClick={() => handleNavigate(LegalView.PRIVACY)} className="hover:text-medical-600">Política de Privacidade</button>
-                    <button onClick={() => handleNavigate(LegalView.TERMS)} className="hover:text-medical-600">Termos de Uso</button>
+                <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-500 dark:text-slate-400">
+                    <button onClick={() => handleNavigate(LegalView.ABOUT)} className="hover:text-medical-600 dark:hover:text-medical-400">Sobre</button>
+                    <button onClick={() => handleNavigate(LegalView.PRIVACY)} className="hover:text-medical-600 dark:hover:text-medical-400">Política de Privacidade</button>
+                    <button onClick={() => handleNavigate(LegalView.TERMS)} className="hover:text-medical-600 dark:hover:text-medical-400">Termos de Uso</button>
                 </div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-slate-400 dark:text-slate-500">
                     © {new Date().getFullYear()} Ajuda Saúde. Todos os direitos reservados.
                 </div>
             </div>
@@ -700,8 +778,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
   return (
     <div className="pb-10">
       <div className="mb-8">
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Bem-vindo ao Ajuda Saúde</h2>
-          <p className="text-slate-600 max-w-2xl">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Bem-vindo ao Ajuda Saúde</h2>
+          <p className="text-slate-600 dark:text-slate-300 max-w-2xl">
               Acesse rapidamente as ferramentas essenciais para sua prática clínica. 
               Organizadas por especialidade para facilitar o seu plantão.
           </p>
@@ -709,7 +787,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
 
       {favoriteCalculators.length > 0 && (
           <div className="mb-10 animate-fade-in">
-              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                   <StarIcon className="w-5 h-5 text-yellow-500" filled />
                   Suas Ferramentas Favoritas
               </h3>
@@ -718,11 +796,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
                       <div 
                         key={calc.id}
                         onClick={() => onNavigate(calc.id)}
-                        className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 cursor-pointer hover:border-medical-300 hover:shadow-md transition flex justify-between items-start group"
+                        className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-medical-300 dark:hover:border-medical-500 hover:shadow-md transition flex justify-between items-start group"
                       >
                           <div>
-                              <h4 className="font-bold text-slate-800 text-sm">{calc.name}</h4>
-                              <p className="text-xs text-slate-500 mt-1">{calc.specialtyName}</p>
+                              <h4 className="font-bold text-slate-800 dark:text-white text-sm">{calc.name}</h4>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{calc.specialtyName}</p>
                           </div>
                           <button 
                             onClick={(e) => onToggleFavorite(calc.id, e)}
@@ -736,7 +814,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
           </div>
       )}
 
-      <h3 className="text-lg font-bold text-slate-800 mb-4">Especialidades</h3>
+      <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Especialidades</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {SPECIALTIES.map((spec) => {
           const IconComponent = spec.icon; 
@@ -745,26 +823,26 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
             <div 
                 key={spec.id}
                 onClick={() => onSelectSpecialty(spec.id)}
-                className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer hover:shadow-md hover:border-medical-200 transition group flex flex-col h-full relative"
+                className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-md hover:border-medical-200 dark:hover:border-medical-500 transition group flex flex-col h-full relative"
             >
                 <div className={`w-12 h-12 ${spec.color} rounded-xl flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <IconComponent className="w-7 h-7 text-white" />
                 </div>
-                <h4 className="text-lg font-bold text-slate-800 mb-1">{spec.name}</h4>
-                <p className="text-slate-500 text-xs mb-4">{spec.calculators.length} Calculadoras</p>
+                <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{spec.name}</h4>
+                <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">{spec.calculators.length} Calculadoras</p>
                 <div className="mt-auto flex -space-x-2 overflow-hidden mb-3">
                     {spec.calculators.slice(0, 3).map((_, i) => (
-                        <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-100 flex items-center justify-center text-[10px] text-slate-400 font-bold">
+                        <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-400 dark:text-slate-300 font-bold">
                            <LightningIcon className="w-3 h-3" />
                         </div>
                     ))}
                     {spec.calculators.length > 3 && (
-                        <div className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-100 flex items-center justify-center text-[10px] text-slate-500 font-bold">
+                        <div className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-500 dark:text-slate-400 font-bold">
                             +
                         </div>
                     )}
                 </div>
-                <div className="flex items-center text-medical-600 font-medium text-xs">
+                <div className="flex items-center text-medical-600 dark:text-medical-400 font-medium text-xs">
                     Explorar <ChevronLeftIcon className="rotate-180 w-3 h-3 ml-1" />
                 </div>
             </div>
@@ -772,7 +850,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
         })}
       </div>
 
-      <div className="mt-12 pt-8 border-t border-slate-200 prose prose-slate max-w-none text-slate-600">
+      <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
           <h3>Calculadoras Médicas Profissionais</h3>
           <p>
               O <strong>Ajuda Saúde</strong> é uma referência gratuita para profissionais de saúde, oferecendo acesso rápido a fórmulas complexas e escores clínicos. 
@@ -780,7 +858,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
           </p>
           <div className="grid md:grid-cols-2 gap-8 mt-6">
               <div>
-                  <h4 className="font-bold text-slate-800">Ferramentas de Destaque</h4>
+                  <h4 className="font-bold text-slate-800 dark:text-white">Ferramentas de Destaque</h4>
                   <ul className="list-disc pl-5 space-y-1 text-sm">
                       <li><strong>Drogas Vasoativas:</strong> Cálculo preciso de vazão e dose para Noradrenalina e outros.</li>
                       <li><strong>Nefrologia:</strong> Estimativa de TFG (CKD-EPI) e ajustes renais.</li>
@@ -788,7 +866,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
                   </ul>
               </div>
               <div>
-                  <h4 className="font-bold text-slate-800">Por que usar?</h4>
+                  <h4 className="font-bold text-slate-800 dark:text-white">Por que usar?</h4>
                   <p className="text-sm">
                       Economize tempo durante o atendimento com uma interface limpa, livre de distrações e otimizada para dispositivos móveis. 
                       Todas as fórmulas são revisadas com base nas diretrizes médicas mais recentes.
@@ -820,8 +898,8 @@ const CategoryView: React.FC<CategoryViewProps> = ({ specialtyId, onSelectCalc, 
                     <specialty.icon className="w-10 h-10 text-white" />
                 </div>
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-800">{specialty.name}</h2>
-                    <p className="text-slate-500">Selecione uma ferramenta abaixo</p>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{specialty.name}</h2>
+                    <p className="text-slate-500 dark:text-slate-300">Selecione uma ferramenta abaixo</p>
                 </div>
             </div>
 
@@ -833,32 +911,32 @@ const CategoryView: React.FC<CategoryViewProps> = ({ specialtyId, onSelectCalc, 
                         <div 
                             key={calc.id}
                             onClick={() => onSelectCalc(calc.id)}
-                            className={`bg-white p-5 rounded-lg border shadow-sm transition flex items-center justify-between group cursor-pointer ${locked ? 'border-yellow-200 bg-yellow-50/50' : 'border-slate-200 hover:shadow-md hover:border-medical-300'}`}
+                            className={`bg-white dark:bg-slate-800 p-5 rounded-lg border shadow-sm transition flex items-center justify-between group cursor-pointer ${locked ? 'border-yellow-200 dark:border-yellow-800 bg-yellow-50/50 dark:bg-yellow-900/20' : 'border-slate-200 dark:border-slate-700 hover:shadow-md hover:border-medical-300 dark:hover:border-medical-500'}`}
                         >
                             <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                    <h3 className={`font-bold ${locked ? 'text-slate-600' : 'text-slate-800'}`}>{calc.name}</h3>
+                                    <h3 className={`font-bold ${locked ? 'text-slate-600 dark:text-slate-300' : 'text-slate-800 dark:text-white'}`}>{calc.name}</h3>
                                     {calc.isPro && (
-                                        <div className="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-yellow-200 flex items-center gap-1">
+                                        <div className="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-yellow-200 dark:border-yellow-700 flex items-center gap-1">
                                             <CrownIcon className="w-3 h-3" /> PRO
                                         </div>
                                     )}
                                 </div>
-                                <p className="text-sm text-slate-500 mt-1">{calc.description}</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{calc.description}</p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button 
                                     onClick={(e) => onToggleFavorite(calc.id, e)}
-                                    className={`p-2 rounded-full transition hover:bg-slate-100 ${isFav ? 'text-yellow-400' : 'text-slate-300 hover:text-yellow-400'}`}
+                                    className={`p-2 rounded-full transition hover:bg-slate-100 dark:hover:bg-slate-700 ${isFav ? 'text-yellow-400' : 'text-slate-300 hover:text-yellow-400'}`}
                                     title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
                                 >
                                     <StarIcon className="w-5 h-5" filled={isFav} />
                                 </button>
-                                <div className={`p-2 rounded-full transition ${locked ? 'bg-slate-100' : 'bg-slate-50 group-hover:bg-medical-50'}`}>
+                                <div className={`p-2 rounded-full transition ${locked ? 'bg-slate-100 dark:bg-slate-700' : 'bg-slate-50 dark:bg-slate-700 group-hover:bg-medical-50 dark:group-hover:bg-medical-900'}`}>
                                     {locked ? (
                                         <LockIcon className="w-5 h-5 text-slate-400" />
                                     ) : (
-                                        <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 rotate-180 transition" />
+                                        <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 dark:group-hover:text-medical-400 rotate-180 transition" />
                                     )}
                                 </div>
                             </div>
@@ -867,7 +945,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({ specialtyId, onSelectCalc, 
                 })}
             </div>
             
-            <div className="mt-8 pt-6 border-t border-slate-100 text-sm text-slate-500">
+            <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 text-sm text-slate-500 dark:text-slate-400">
                 <p>
                     As calculadoras de <strong>{specialty.name}</strong> são ferramentas de apoio à decisão clínica. 
                     Certifique-se de validar os dados de entrada antes de aplicar os resultados no cuidado ao paciente.

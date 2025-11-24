@@ -21,4 +21,4 @@ const db = getFirestore(app);
 const functions = getFunctions(app, 'southamerica-east1'); // Região configurada na extensão
 const googleProvider = new GoogleAuthProvider();
 
-export { auth, db, functions, googleProvider };
+export { app, auth, db, functions, googleProvider };

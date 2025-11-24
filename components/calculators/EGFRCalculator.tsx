@@ -56,15 +56,15 @@ const EGFRCalculator: React.FC = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+    <div className="max-w-lg mx-auto bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
         Taxa de Filtração Glomerular (CKD-EPI 2021)
       </h3>
 
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
             <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Creatinina (mg/dL)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Creatinina (mg/dL)</label>
             <input
                 type="number"
                 value={creatinine}
@@ -74,7 +74,7 @@ const EGFRCalculator: React.FC = () => {
             />
             </div>
             <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Idade</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Idade</label>
             <input
                 type="number"
                 value={age}
@@ -86,13 +86,13 @@ const EGFRCalculator: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Sexo Biológico</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sexo Biológico</label>
           <div className="flex gap-4">
-            <label className={`flex-1 p-3 border rounded-lg cursor-pointer text-center transition ${gender === 'male' ? 'bg-medical-50 border-medical-500 text-medical-700' : 'border-slate-300 hover:bg-slate-50'}`}>
+            <label className={`flex-1 p-3 border rounded-lg cursor-pointer text-center transition ${gender === 'male' ? 'bg-medical-50 border-medical-500 text-medical-700' : 'border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50'}`}>
               <input type="radio" name="gender" className="hidden" checked={gender === 'male'} onChange={() => setGender('male')} />
               Masculino
             </label>
-            <label className={`flex-1 p-3 border rounded-lg cursor-pointer text-center transition ${gender === 'female' ? 'bg-medical-50 border-medical-500 text-medical-700' : 'border-slate-300 hover:bg-slate-50'}`}>
+            <label className={`flex-1 p-3 border rounded-lg cursor-pointer text-center transition ${gender === 'female' ? 'bg-medical-50 border-medical-500 text-medical-700' : 'border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50'}`}>
               <input type="radio" name="gender" className="hidden" checked={gender === 'female'} onChange={() => setGender('female')} />
               Feminino
             </label>
@@ -108,16 +108,16 @@ const EGFRCalculator: React.FC = () => {
       </div>
 
       {result && (
-        <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-          <p className="text-sm text-slate-500 uppercase tracking-wide">Resultado Estimado</p>
+        <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+          <p className="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wide">Resultado Estimado</p>
           <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-3xl font-bold text-slate-900">{result.value}</span>
-            <span className="text-slate-500">mL/min/1.73m²</span>
+            <span className="text-3xl font-bold text-slate-900 dark:text-white">{result.value}</span>
+            <span className="text-slate-500 dark:text-slate-400">mL/min/1.73m²</span>
           </div>
-          <p className="mt-2 font-medium text-slate-700">
+          <p className="mt-2 font-medium text-slate-700 dark:text-slate-200">
             {result.classification}
           </p>
-          <p className="text-xs text-slate-400 mt-2">{result.notes}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">{result.notes}</p>
         </div>
       )}
     </div>

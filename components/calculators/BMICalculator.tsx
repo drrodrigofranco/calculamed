@@ -31,14 +31,14 @@ const BMICalculator: React.FC = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+    <div className="max-w-lg mx-auto bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
         Índice de Massa Corporal (IMC)
       </h3>
       
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Peso (kg)</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Peso (kg)</label>
           <input
             type="number"
             value={weight}
@@ -49,7 +49,7 @@ const BMICalculator: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Altura (cm)</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Altura (cm)</label>
           <input
             type="number"
             value={height}
@@ -68,11 +68,11 @@ const BMICalculator: React.FC = () => {
       </div>
 
       {result && (
-        <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200 animate-fade-in">
-          <p className="text-sm text-slate-500 uppercase tracking-wide">Resultado</p>
+        <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 animate-fade-in">
+          <p className="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wide">Resultado</p>
           <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-3xl font-bold text-slate-900">{result.value}</span>
-            <span className="text-slate-500">kg/m²</span>
+            <span className="text-3xl font-bold text-slate-900 dark:text-white">{result.value}</span>
+            <span className="text-slate-500 dark:text-slate-400">kg/m²</span>
           </div>
           <p className={`mt-2 font-medium ${result.notes}`}>
             {result.classification}

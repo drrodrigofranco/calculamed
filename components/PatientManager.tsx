@@ -92,7 +92,7 @@ const PatientManager: React.FC<PatientManagerProps> = ({ onBack }) => {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                     <UsersIcon className="w-8 h-8 text-medical-600" />
                     Meus Pacientes
                 </h2>
@@ -107,8 +107,8 @@ const PatientManager: React.FC<PatientManagerProps> = ({ onBack }) => {
 
             {/* Add Patient Form */}
             {showAddForm && (
-                <div className="bg-white p-6 rounded-xl border border-medical-200 shadow-sm mb-6 animate-fade-in">
-                    <h3 className="text-lg font-bold text-slate-800 mb-4">Cadastro de Paciente</h3>
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-medical-200 dark:border-medical-700 shadow-sm mb-6 animate-fade-in">
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Cadastro de Paciente</h3>
                     <AddPatientForm onSubmit={handleAddPatient} />
                 </div>
             )}
@@ -120,7 +120,7 @@ const PatientManager: React.FC<PatientManagerProps> = ({ onBack }) => {
                 </div>
                 <input
                     type="text"
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg leading-5 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-medical-500 focus:border-medical-500 transition"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-300 dark:border-slate-600 rounded-lg leading-5 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-medical-500 focus:border-medical-500 transition"
                     placeholder="Buscar por nome..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -129,10 +129,10 @@ const PatientManager: React.FC<PatientManagerProps> = ({ onBack }) => {
 
             {/* Patient List */}
             {patients.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
-                    <UsersIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <p className="text-slate-500">Nenhum paciente cadastrado.</p>
-                    <p className="text-sm text-slate-400 mt-1">Seus dados ficam salvos apenas neste dispositivo.</p>
+                <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <UsersIcon className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                    <p className="text-slate-500 dark:text-slate-400">Nenhum paciente cadastrado.</p>
+                    <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Seus dados ficam salvos apenas neste dispositivo.</p>
                 </div>
             ) : (
                 <div className="grid gap-4">
@@ -140,22 +140,22 @@ const PatientManager: React.FC<PatientManagerProps> = ({ onBack }) => {
                         <div 
                             key={patient.id}
                             onClick={() => setSelectedPatientId(patient.id)}
-                            className="bg-white p-4 rounded-xl border border-slate-200 hover:border-medical-300 hover:shadow-md transition cursor-pointer flex items-center justify-between group"
+                            className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-medical-300 dark:hover:border-medical-500 hover:shadow-md transition cursor-pointer flex items-center justify-between group"
                         >
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-full bg-medical-50 text-medical-600 flex items-center justify-center font-bold text-lg">
                                     {patient.name.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-800">{patient.name}</h4>
-                                    <p className="text-sm text-slate-500">
+                                    <h4 className="font-bold text-slate-800 dark:text-white">{patient.name}</h4>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">
                                         {calculateAge(patient.birthDate)} anos • Última evolução: {patient.notes.length > 0 ? new Date(patient.notes[0].date).toLocaleDateString() : 'Nenhuma'}
                                     </p>
                                 </div>
                             </div>
                             <button 
                                 onClick={(e) => handleDeletePatient(patient.id, e)}
-                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
+                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 dark:hover:text-red-400 rounded-lg transition"
                                 title="Excluir Paciente"
                             >
                                 <TrashIcon className="w-5 h-5" />
@@ -182,18 +182,18 @@ const PatientDetailView: React.FC<{ patient: Patient, onBack: () => void, onAddN
         <div className="max-w-4xl mx-auto">
             <button 
                 onClick={onBack}
-                className="flex items-center gap-2 text-slate-500 hover:text-medical-600 mb-6 transition"
+                className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-medical-600 dark:hover:text-medical-400 mb-6 transition"
             >
                 <ChevronLeftIcon className="w-4 h-4" />
                 Voltar para lista
             </button>
 
             {/* Patient Header */}
-            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-6">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mb-6">
                 <div className="flex items-start justify-between">
                     <div>
-                        <h2 className="text-3xl font-bold text-slate-900 mb-1">{patient.name}</h2>
-                        <div className="flex items-center gap-4 text-slate-600 text-sm">
+                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-1">{patient.name}</h2>
+                        <div className="flex items-center gap-4 text-slate-600 dark:text-slate-300 text-sm">
                             <span>{calculateAge(patient.birthDate)} anos ({new Date(patient.birthDate).toLocaleDateString()})</span>
                             {patient.contact && <span>• {patient.contact}</span>}
                         </div>
@@ -208,8 +208,8 @@ const PatientDetailView: React.FC<{ patient: Patient, onBack: () => void, onAddN
             <div className="grid md:grid-cols-3 gap-6">
                 {/* Add Note Column */}
                 <div className="md:col-span-1">
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm sticky top-24">
-                        <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm sticky top-24">
+                        <h4 className="font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
                             <FileTextIcon className="w-4 h-4 text-medical-600" />
                             Nova Evolução
                         </h4>
@@ -223,7 +223,7 @@ const PatientDetailView: React.FC<{ patient: Patient, onBack: () => void, onAddN
                             <button 
                                 type="submit"
                                 disabled={!noteContent.trim()}
-                                className="w-full bg-medical-600 hover:bg-medical-700 disabled:bg-slate-300 text-white font-semibold py-2 rounded-lg transition"
+                                className="w-full bg-medical-600 hover:bg-medical-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white font-semibold py-2 rounded-lg transition"
                             >
                                 Salvar Nota
                             </button>
@@ -233,21 +233,21 @@ const PatientDetailView: React.FC<{ patient: Patient, onBack: () => void, onAddN
 
                 {/* History Column */}
                 <div className="md:col-span-2">
-                    <h4 className="font-bold text-slate-800 mb-4">Histórico Clínico</h4>
+                    <h4 className="font-bold text-slate-800 dark:text-white mb-4">Histórico Clínico</h4>
                     {patient.notes.length === 0 ? (
-                        <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300 text-slate-500">
+                        <div className="text-center py-10 bg-slate-50 dark:bg-slate-700 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400">
                             Nenhuma anotação registrada ainda.
                         </div>
                     ) : (
                         <div className="space-y-4">
                             {patient.notes.map(note => (
-                                <div key={note.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                                    <div className="flex items-center justify-between mb-3 border-b border-slate-50 pb-2">
-                                        <span className="text-sm font-bold text-medical-700">
+                                <div key={note.id} className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                                    <div className="flex items-center justify-between mb-3 border-b border-slate-50 dark:border-slate-700 pb-2">
+                                        <span className="text-sm font-bold text-medical-700 dark:text-medical-400">
                                             {new Date(note.date).toLocaleDateString()} às {new Date(note.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                         </span>
                                     </div>
-                                    <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">
+                                    <p className="text-slate-700 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
                                         {note.content}
                                     </p>
                                 </div>
@@ -278,7 +278,7 @@ const AddPatientForm: React.FC<{ onSubmit: (name: string, dob: string, contact: 
     return (
         <form onSubmit={handleSubmit} className="grid md:grid-cols-3 gap-4">
             <div className="md:col-span-1">
-                <label className="block text-sm font-medium text-slate-700 mb-1">Nome Completo</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome Completo</label>
                 <input
                     type="text"
                     required
@@ -288,7 +288,7 @@ const AddPatientForm: React.FC<{ onSubmit: (name: string, dob: string, contact: 
                 />
             </div>
             <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Data de Nascimento</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Data de Nascimento</label>
                 <input
                     type="date"
                     required
@@ -298,7 +298,7 @@ const AddPatientForm: React.FC<{ onSubmit: (name: string, dob: string, contact: 
                 />
             </div>
             <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Contato (Opcional)</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Contato (Opcional)</label>
                 <input
                     type="text"
                     value={contact}

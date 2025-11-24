@@ -5,6 +5,8 @@ export enum AppView {
   CATEGORY_VIEW = 'CATEGORY_VIEW',
   PRO_LOGIN = 'PRO_LOGIN',
   NUTRITION_PRO = 'NUTRITION_PRO', 
+  NEWS = 'NEWS', // Added missing AppView member
+  PATIENTS_LIST = 'PATIENTS_LIST', // Added missing AppView member
   // Nursing / General
   CALC_BMI = 'CALC_BMI',
   CALC_IDEAL_WEIGHT = 'CALC_IDEAL_WEIGHT',
@@ -35,6 +37,7 @@ export enum AppView {
   CALC_SODIUM_CORR = 'CALC_SODIUM_CORR',
   // Pediatrics
   CALC_PED_FLUIDS = 'CALC_PED_FLUIDS',
+  CALC_PEDIATRIC_DOSAGE = 'CALC_PEDIATRIC_DOSAGE', // Added missing AppView member
   // Nutrition
   CALC_BMR = 'CALC_BMR',
   CALC_PROTEIN = 'CALC_PROTEIN',

@@ -30,14 +30,14 @@ const PregnancyCalculator: React.FC = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+    <div className="max-w-lg mx-auto bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
         Idade Gestacional & DPP
       </h3>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Data da Última Menstruação (DUM)</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Data da Última Menstruação (DUM)</label>
           <input
             type="date"
             value={lmp}
@@ -55,17 +55,17 @@ const PregnancyCalculator: React.FC = () => {
       </div>
 
       {result && (
-        <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-          <p className="text-sm text-slate-500 uppercase tracking-wide">Data Provável do Parto</p>
+        <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+          <p className="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wide">Data Provável do Parto</p>
           <div className="flex items-baseline gap-2 mt-1 mb-3">
-            <span className="text-3xl font-bold text-slate-900">{result.value}</span>
+            <span className="text-3xl font-bold text-slate-900 dark:text-white">{result.value}</span>
           </div>
           
-          <p className="text-sm text-slate-500 uppercase tracking-wide">Idade Gestacional Atual</p>
-          <p className="mt-1 font-medium text-lg text-slate-800">
+          <p className="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wide">Idade Gestacional Atual</p>
+          <p className="mt-1 font-medium text-lg text-slate-800 dark:text-white">
             {result.classification}
           </p>
-          <p className="text-xs text-slate-400 mt-2">{result.notes}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">{result.notes}</p>
         </div>
       )}
     </div>

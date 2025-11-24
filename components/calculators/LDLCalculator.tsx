@@ -40,14 +40,14 @@ const LDLCalculator: React.FC = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+    <div className="max-w-lg mx-auto bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
         Cálculo de Colesterol LDL
       </h3>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Colesterol Total (mg/dL)</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Colesterol Total (mg/dL)</label>
           <input
             type="number"
             value={total}
@@ -59,7 +59,7 @@ const LDLCalculator: React.FC = () => {
 
         <div className="grid grid-cols-2 gap-4">
             <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">HDL (mg/dL)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">HDL (mg/dL)</label>
             <input
                 type="number"
                 value={hdl}
@@ -69,7 +69,7 @@ const LDLCalculator: React.FC = () => {
             />
             </div>
             <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Triglicerídeos (mg/dL)</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Triglicerídeos (mg/dL)</label>
             <input
                 type="number"
                 value={trig}
@@ -89,16 +89,16 @@ const LDLCalculator: React.FC = () => {
       </div>
 
       {result && (
-        <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-          <p className="text-sm text-slate-500 uppercase tracking-wide">LDL Estimado</p>
+        <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+          <p className="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wide">LDL Estimado</p>
           <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-3xl font-bold text-slate-900">{result.value}</span>
-            <span className="text-slate-500">mg/dL</span>
+            <span className="text-3xl font-bold text-slate-900 dark:text-white">{result.value}</span>
+            <span className="text-slate-500 dark:text-slate-400">mg/dL</span>
           </div>
-          <p className="mt-2 font-medium text-medical-700">
+          <p className="mt-2 font-medium text-medical-700 dark:text-medical-400">
             {result.classification}
           </p>
-          <p className="text-xs text-slate-400 mt-2">{result.notes}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">{result.notes}</p>
         </div>
       )}
     </div>
