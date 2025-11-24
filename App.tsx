@@ -738,14 +738,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
 
       <h3 className="text-lg font-bold text-slate-800 mb-4">Especialidades</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {SPECIALTIES.map((spec) => (
+        {SPECIALTIES.map((spec) => {
+          const IconComponent = spec.icon; 
+          
+          return (
             <div 
                 key={spec.id}
                 onClick={() => onSelectSpecialty(spec.id)}
                 className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer hover:shadow-md hover:border-medical-200 transition group flex flex-col h-full relative"
             >
                 <div className={`w-12 h-12 ${spec.color} rounded-xl flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <spec.icon className="w-7 h-7 text-white" />
+                    <IconComponent className="w-7 h-7 text-white" />
                 </div>
                 <h4 className="text-lg font-bold text-slate-800 mb-1">{spec.name}</h4>
                 <p className="text-slate-500 text-xs mb-4">{spec.calculators.length} Calculadoras</p>
@@ -765,7 +768,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, fa
                     Explorar <ChevronLeftIcon className="rotate-180 w-3 h-3 ml-1" />
                 </div>
             </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-12 pt-8 border-t border-slate-200 prose prose-slate max-w-none text-slate-600">

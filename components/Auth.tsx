@@ -44,25 +44,24 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
           const docRef = await addDoc(
               collection(db, "customers", auth.currentUser.uid, "checkout_sessions"), 
               {
-                  price: "price_1SWlbpHVvxsNIRgOVxDIL6bW", // ID Correto da Assinatura
+                  price: "price_1SWlbpHVvxsNIRgOVxDIL6bW", // ✅ SEU PRICE ID CORRETO
                   success_url: window.location.origin,
                   cancel_url: window.location.origin,
-                  allow_promotion_codes: true,
-                  locale: 'pt-BR',
+                  allow_promotion_codes: true, // Permite cupons de desconto
+                  locale: 'pt-BR', // Interface em português
               }
           );
 
-          // Timeout de segurança
+          // Timeout de segurança (30 segundos)
           const timeoutId = setTimeout(() => {
-              if (isLoading) {
-                  setError("O pagamento está demorando para iniciar. Verifique se a extensão do Stripe está ativa no Firebase.");
-                  setIsLoading(false);
-              }
-          }, 15000);
+              setError("Tempo esgotado. Verifique se a extensão Stripe está ativa no Firebase.");
+              setIsLoading(false);
+          }, 30000);
 
-          // Escuta o documento para pegar a URL de checkout gerada pela extensão
+          // Escuta o documento para pegar a URL de checkout
           const unsubscribe = onSnapshot(docRef, (snap) => {
               const data = snap.data();
+              
               if (!data) return;
 
               const { error: stripeError, url } = data;
@@ -70,20 +69,21 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
               if (stripeError) {
                   clearTimeout(timeoutId);
                   console.error("Erro Stripe:", stripeError);
-                  setError(`Erro no pagamento: ${stripeError.message}`);
+                  setError(`Erro no pagamento: ${stripeError.message || 'Tente novamente'}`);
                   setIsLoading(false);
                   unsubscribe();
               }
               
               if (url) {
                   clearTimeout(timeoutId);
+                  // Redireciona para o Stripe Checkout
                   window.location.assign(url);
               }
           });
 
       } catch (e: any) {
           console.error("Erro ao criar checkout:", e);
-          setError(`Erro ao iniciar pagamento: ${e.message}`);
+          setError(`Erro ao iniciar pagamento: ${e.message || 'Tente novamente mais tarde'}`);
           setIsLoading(false);
       }
   };
