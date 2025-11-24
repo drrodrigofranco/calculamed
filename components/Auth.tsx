@@ -9,28 +9,27 @@ interface AuthProps {
 }
 
 const Auth: React.FC<AuthProps> = ({ onLogin }) => {
-  const [error, setError] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleLogin = async (): Promise<void> => {
+  const handleGoogleLogin = async () => {
       setIsLoading(true);
       setError('');
       try {
           await signInWithPopup(auth, googleProvider);
           onLogin();
-      } catch (err: unknown) {
+      } catch (err: any) {
           console.error(err);
-          const errorObj = err as { code?: string; message?: string };
-          let msg = 'Erro ao conectar com Google.';
-          if (errorObj.code === 'auth/popup-closed-by-user') msg = 'Login cancelado.';
-          if (errorObj.code === 'auth/configuration-not-found') msg = 'Erro de configuração no Firebase.';
+          let msg = "Erro ao conectar com Google.";
+          if (err.code === 'auth/popup-closed-by-user') msg = "Login cancelado.";
+          if (err.code === 'auth/configuration-not-found') msg = "Erro de configuração no Firebase.";
           setError(msg);
       } finally {
           setIsLoading(false);
       }
   };
 
-  const createCheckoutSession = async (): Promise<void> => {
+  const createCheckoutSession = async () => {
       if (!auth.currentUser) {
           await handleGoogleLogin();
           return;
@@ -40,32 +39,36 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
       setError('');
       
       try {
+          // Cria a sessão de checkout no Firestore
+          // A extensão Firebase Stripe lê isso e cria o link automaticamente
           const docRef = await addDoc(
-              collection(db, 'customers', auth.currentUser.uid, 'checkout_sessions'), 
+              collection(db, "customers", auth.currentUser.uid, "checkout_sessions"), 
               {
-                  price: 'price_1SWlbpHVvxsNIRgOVxDIL6bW', 
+                  price: "price_1SWlbpHVvxsNIRgOVxDIL6bW", // ✅ SEU PRICE ID CORRETO
                   success_url: window.location.origin,
                   cancel_url: window.location.origin,
-                  allow_promotion_codes: true,
-                  locale: 'pt-BR', 
+                  allow_promotion_codes: true, // Permite cupons de desconto
+                  locale: 'pt-BR', // Interface em português
               }
           );
 
+          // Timeout de segurança (30 segundos)
           const timeoutId = setTimeout(() => {
-              setError('Tempo esgotado. Verifique se a extensão Stripe está ativa no Firebase.');
+              setError("Tempo esgotado. Verifique se a extensão Stripe está ativa no Firebase.");
               setIsLoading(false);
           }, 30000);
 
+          // Escuta o documento para pegar a URL de checkout
           const unsubscribe = onSnapshot(docRef, (snap) => {
               const data = snap.data();
               
               if (!data) return;
 
-              const { error: stripeError, url } = data as { error?: { message?: string }; url?: string };
+              const { error: stripeError, url } = data;
               
               if (stripeError) {
                   clearTimeout(timeoutId);
-                  console.error('Erro Stripe:', stripeError);
+                  console.error("Erro Stripe:", stripeError);
                   setError(`Erro no pagamento: ${stripeError.message || 'Tente novamente'}`);
                   setIsLoading(false);
                   unsubscribe();
@@ -73,21 +76,21 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
               
               if (url) {
                   clearTimeout(timeoutId);
+                  // Redireciona para o Stripe Checkout
                   window.location.assign(url);
               }
           });
 
-      } catch (e: unknown) {
-          console.error('Erro ao criar checkout:', e);
-          const errObj = e as { message?: string };
-          setError(`Erro ao iniciar pagamento: ${errObj.message || 'Tente novamente mais tarde'}`);
+      } catch (e: any) {
+          console.error("Erro ao criar checkout:", e);
+          setError(`Erro ao iniciar pagamento: ${e.message || 'Tente novamente mais tarde'}`);
           setIsLoading(false);
       }
   };
 
-  const handleEmailLogin = (e: React.FormEvent): void => {
+  const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('No momento, apenas o login com Google está ativado para segurança.');
+    setError("No momento, apenas o login com Google está ativado para segurança.");
   };
 
   return (
@@ -138,13 +141,13 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     <button 
                         onClick={createCheckoutSession} 
                         disabled={isLoading}
-                        className="w-full mt-6 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-cen[...]"
+                        className="w-full mt-6 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
                         {isLoading ? (
                             <>
                                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-slate-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.[...]"/>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                                 Processando...
                             </>
@@ -162,7 +165,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                 <button 
                     onClick={handleGoogleLogin}
                     disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white font-semibold [...]"
+                    className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white font-semibold py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition mb-6 shadow-sm relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isLoading ? (
                          <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-slate-700">
