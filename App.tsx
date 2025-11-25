@@ -94,6 +94,16 @@ type ExtendedView = AppView | LegalView;
 
 const SPECIALTIES: SpecialtyDef[] = [
     {
+        id: 'nursing',
+        name: 'Enfermagem e Geriatria',
+        icon: ElderIcon,
+        color: 'bg-emerald-600',
+        calculators: [
+            { id: AppView.CALC_IV, name: 'Cálculo de Gotejamento', description: 'Gotas/min' },
+            { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
+        ]
+    },
+    {
         id: 'cardio',
         name: 'Cardiologia e Vascular',
         icon: HeartPulseIcon,
@@ -228,16 +238,6 @@ const SPECIALTIES: SpecialtyDef[] = [
         color: 'bg-teal-600',
         calculators: [
             { id: AppView.CALC_ALVARADO, name: 'Escore de Alvarado', description: 'Apendicite Aguda' },
-        ]
-    },
-    {
-        id: 'nursing',
-        name: 'Enfermagem e Geriatria',
-        icon: ElderIcon,
-        color: 'bg-emerald-600',
-        calculators: [
-            { id: AppView.CALC_IV, name: 'Cálculo de Gotejamento', description: 'Gotas/min' },
-            { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
         ]
     },
     {
