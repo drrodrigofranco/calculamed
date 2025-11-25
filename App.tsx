@@ -647,6 +647,8 @@ const App: React.FC = () => {
                 ) : <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} favorites={favorites} onToggleFavorite={handleToggleFavorite} />;
 
             case AppView.PRO_LOGIN: return <Auth onLogin={handleLoginSuccess} />;
+            case AppView.SUBSCRIPTION_MANAGER: 
+                return user ? <SubscriptionManager user={user} onBack={() => handleNavigate(AppView.DASHBOARD)} /> : null;
             case AppView.NUTRITION_PRO: return <NutritionManager />;
             // case AppView.NEWS: return <NewsFeed />; // Desabilitado para evitar erros/seguir pedidos anteriores
             // case AppView.PATIENTS_LIST: return <PatientManager onBack={() => handleNavigate(AppView.DASHBOARD)} />; // Desabilitado
@@ -759,7 +761,7 @@ const App: React.FC = () => {
 
                                 {isPro ? (
                                     <button
-                                        onClick={handleManageSubscription}
+                                        onClick={() => handleNavigate(AppView.SUBSCRIPTION_MANAGER)}
                                         className="text-xs bg-slate-700 hover:bg-slate-600 text-white py-1.5 rounded transition text-center"
                                     >
                                         Gerenciar Assinatura

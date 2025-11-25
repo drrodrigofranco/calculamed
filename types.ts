@@ -4,7 +4,8 @@ export enum AppView {
   DASHBOARD = 'DASHBOARD',
   CATEGORY_VIEW = 'CATEGORY_VIEW',
   PRO_LOGIN = 'PRO_LOGIN',
-  NUTRITION_PRO = 'NUTRITION_PRO', 
+  SUBSCRIPTION_MANAGER = 'SUBSCRIPTION_MANAGER',
+  NUTRITION_PRO = 'NUTRITION_PRO',
   NEWS = 'NEWS',
   PATIENTS_LIST = 'PATIENTS_LIST',
   // Nursing / General
@@ -66,16 +67,16 @@ export interface CalculatorResult {
   notes?: string;
 }
 
-export type SpecialtyId = 
-  'cardio' | 'nutrition' | 'endo' | 'nephro' | 'obs' | 'peds' | 
-  'emergency' | 'pneumo' | 'gastro' | 'hema' | 'neuro' | 'surgery' | 
+export type SpecialtyId =
+  'cardio' | 'nutrition' | 'endo' | 'nephro' | 'obs' | 'peds' |
+  'emergency' | 'pneumo' | 'gastro' | 'hema' | 'neuro' | 'surgery' |
   'nursing' | 'dental' | 'psych' | 'geriatrics' | 'ortho';
 
 export interface CalculatorDef {
   id: AppView;
   name: string;
   description: string;
-  isPro?: boolean; 
+  isPro?: boolean;
 }
 
 export interface SpecialtyDef {
