@@ -1,0 +1,41 @@
+--- a/App.tsx
++++ b/App.tsx
+@@ -577,14 +577,30 @@ const App: React.FC = () => {
+   };
+ 
+   const handleBack = () => {
++    // Handle special views that always go back to dashboard
+     if (view === AppView.NUTRITION_PRO || view === AppView.NEWS || view === AppView.PATIENTS_LIST) {
+         setView(AppView.DASHBOARD);
++        setSelectedSpecialtyId(null);
++        return;
++    }
++    
++    // Handle legal views - go back to dashboard
++    if (view === LegalView.PRIVACY || view === LegalView.TERMS || view === LegalView.ABOUT) {
++        setView(AppView.DASHBOARD);
++        setSelectedSpecialtyId(null);
++        return;
++    }
++    
++    // From category view, go back to dashboard
++    if (view === AppView.CATEGORY_VIEW) {
++      setView(AppView.DASHBOARD);
++      setSelectedSpecialtyId(null);
++      return;
++    }
++    
++    // From a calculator view
++    if (view !== AppView.DASHBOARD && view !== AppView.PRO_LOGIN) {
++        // If we have a selected specialty, go back to that category
+-    } else if (view === AppView.CATEGORY_VIEW) {
+-      setView(AppView.DASHBOARD);
+-      setSelectedSpecialtyId(null);
+-    } else if (view !== AppView.DASHBOARD) {
+         if (selectedSpecialtyId && Object.values(AppView).includes(view as AppView)) {
+             setView(AppView.CATEGORY_VIEW);
+         } else {
++            // Otherwise go to dashboard
+             setView(AppView.DASHBOARD);
+             setSelectedSpecialtyId(null);
+         }
