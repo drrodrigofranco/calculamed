@@ -469,6 +469,14 @@ const App: React.FC = () => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
             if (currentUser) {
+                // ADMIN BYPASS: Email com acesso PRO gratuito
+                const ADMIN_EMAILS = ['rodrigo@ajudamediko.com.br'];
+                
+                if (currentUser.email && ADMIN_EMAILS.includes(currentUser.email)) {
+                    setIsPro(true);
+                    setLoadingPro(false);
+                }
+
                 const q = query(
                     collection(db, 'customers', currentUser.uid, 'subscriptions'),
                     where('status', 'in', ['active', 'trialing'])
