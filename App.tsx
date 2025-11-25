@@ -891,27 +891,28 @@ const App: React.FC = () => {
                                 </div>
                             )}
                         </div>
+                    </div>
 
-                        <div className="flex items-center gap-2 pl-4">
-                            {isPro && (
-                                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold border border-yellow-200 dark:border-yellow-700 flex items-center gap-1">
-                                    <CrownIcon className="w-3 h-3" /> PRO
-                                </span>
+                    <div className="flex items-center gap-2 pl-4">
+                        {isPro && (
+                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold border border-yellow-200 dark:border-yellow-700 flex items-center gap-1">
+                                <CrownIcon className="w-3 h-3" /> PRO
+                            </span>
+                        )}
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden sm:block"></span>
+                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 hidden sm:block">Online</span>
+
+                        <button
+                            onClick={toggleTheme}
+                            className="ml-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                        >
+                            {theme === 'dark' ? (
+                                <SunIcon className="w-5 h-5 text-yellow-400" />
+                            ) : (
+                                <MoonIcon className="w-5 h-5 text-slate-600" />
                             )}
-                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden sm:block"></span>
-                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 hidden sm:block">Online</span>
-
-                            <button
-                                onClick={toggleTheme}
-                                className="ml-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-                            >
-                                {theme === 'dark' ? (
-                                    <SunIcon className="w-5 h-5 text-yellow-400" />
-                                ) : (
-                                    <MoonIcon className="w-5 h-5 text-slate-600" />
-                                )}
-                            </button>
-                        </div>
+                        </button>
+                    </div>
                 </header>
 
                 <div className="flex-1 flex flex-col xl:flex-row">
