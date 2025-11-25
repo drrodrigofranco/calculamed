@@ -26,4 +26,4 @@
   },
   "include": ["src", "types.d.ts", "index.tsx", "App.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
-} 
+}
