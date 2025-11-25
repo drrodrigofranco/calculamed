@@ -3,7 +3,7 @@ import { User } from 'firebase/auth';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '../services/firebaseConfig';
-import { CrownIcon, ChevronLeftIcon } from './Icons';
+import { CrownIcon, ChevronLeftIcon } from './icons';
 
 interface SubscriptionManagerProps {
     user: User;
