@@ -44,6 +44,7 @@ import Auth from './components/Auth';
 import NutritionManager from './components/NutritionManager';
 import NewsFeed from './components/NewsFeed';
 import PatientManager from './components/PatientManager';
+import SubscriptionManager from './components/SubscriptionManager';
 
 import { PrivacyPolicy, TermsOfUse, AboutUs } from './components/LegalDocs';
 import { auth, db, functions } from './services/firebaseConfig';
