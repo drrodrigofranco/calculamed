@@ -471,8 +471,9 @@ const App: React.FC = () => {
             if (currentUser) {
                 // ADMIN BYPASS: Email com acesso PRO gratuito
                 const ADMIN_EMAILS = ['rodrigo@ajudamediko.com.br'];
+                const isAdmin = currentUser.email && ADMIN_EMAILS.includes(currentUser.email);
                 
-                if (currentUser.email && ADMIN_EMAILS.includes(currentUser.email)) {
+                if (isAdmin) {
                     setIsPro(true);
                     setLoadingPro(false);
                 }
@@ -483,8 +484,11 @@ const App: React.FC = () => {
                 );
 
                 const unsubscribeSubs = onSnapshot(q, (snapshot) => {
-                    setIsPro(!snapshot.empty);
-                    setLoadingPro(false);
+                    // Só atualiza isPro se não for admin
+                    if (!isAdmin) {
+                        setIsPro(!snapshot.empty);
+                        setLoadingPro(false);
+                    }
                 });
 
                 try {
