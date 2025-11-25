@@ -149,6 +149,8 @@ const SPECIALTIES: SpecialtyDef[] = [
         calculators: [
             { id: AppView.CALC_PREGNANCY, name: 'Idade Gestacional (DUM)', description: 'Data da Última Menstruação' },
             { id: AppView.CALC_PREGNANCY_USG, name: 'IG pelo Ultrassom', description: 'Correção pela USG', isPro: true },
+            { id: AppView.CALC_BISHOP, name: 'Bishop Score', description: 'Indução de Parto', isPro: true },
+            { id: AppView.CALC_HELLP, name: 'HELLP Syndrome', description: 'Classificação', isPro: true },
         ]
     },
     {
@@ -160,6 +162,9 @@ const SPECIALTIES: SpecialtyDef[] = [
             { id: AppView.CALC_PED_FLUIDS, name: 'Manutenção de Fluidos', description: 'Holliday-Segar' },
             { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Recém-Nascido' },
             { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
+            { id: AppView.CALC_PED_GLASGOW, name: 'Glasgow Pediátrico', description: 'Consciência < 2 anos', isPro: true },
+            { id: AppView.CALC_BALLARD, name: 'Ballard Score', description: 'Idade Gestacional RN' },
+            { id: AppView.CALC_WESTLEY, name: 'Westley Croup', description: 'Gravidade Laringotraqueobronquite' },
         ]
     },
     {
