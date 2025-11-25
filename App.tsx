@@ -101,6 +101,7 @@ const SPECIALTIES: SpecialtyDef[] = [
         calculators: [
             { id: AppView.CALC_IV, name: 'Cálculo de Gotejamento', description: 'Gotas/min' },
             { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
+            { id: AppView.CALC_MOUNJARO, name: 'Fracionamento Mounjaro', description: 'Calcular dose fracionada' },
         ]
     },
     {

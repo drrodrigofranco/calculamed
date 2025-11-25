@@ -104,7 +104,9 @@ export enum AppView {
   CALC_FENA = 'CALC_FENA',
   // Batch 4 - Sports Medicine
   CALC_VO2MAX = 'CALC_VO2MAX',
-  CALC_LBM = 'CALC_LBM'
+  CALC_LBM = 'CALC_LBM',
+  // Medication Dosing
+  CALC_MOUNJARO = 'CALC_MOUNJARO'
 }
 
 export interface CalculatorResult {
