@@ -40,6 +40,7 @@ import TargetHeartRateCalculator from './components/calculators/TargetHeartRateC
 import PediatricDosageCalculator from './components/calculators/PediatricDosageCalculator';
 import MounjaroCalculator from './components/calculators/MounjaroCalculator';
 import VaccinationScheduleCalculator from './components/calculators/VaccinationScheduleCalculator';
+import BulaMedicamento from './components/calculators/BulaMedicamento';
 
 import AdSpace from './components/AdSpace';
 import Auth from './components/Auth';
@@ -251,6 +252,7 @@ const SPECIALTIES: SpecialtyDef[] = [
         color: 'bg-slate-500',
         calculators: [
             { id: AppView.CALC_CONVERTER, name: 'Conversor de Unidades', description: 'Geral' },
+            { id: AppView.CALC_BULA_MEDICAMENTO, name: 'Bulas de Medicamentos', description: 'Consulta ANVISA' },
         ]
     },
 ];
@@ -706,6 +708,7 @@ const App: React.FC = () => {
             case AppView.CALC_PHQ9: return <PHQ9Calculator />;
             case AppView.CALC_MOUNJARO: return <MounjaroCalculator />;
             case AppView.CALC_VACCINATION_SCHEDULE: return <VaccinationScheduleCalculator />;
+            case AppView.CALC_BULA_MEDICAMENTO: return <BulaMedicamento />;
 
             case AppView.DASHBOARD:
             default:
