@@ -478,7 +478,7 @@ const App: React.FC = () => {
             setUser(currentUser);
             if (currentUser) {
                 // ADMIN BYPASS: Email com acesso PRO gratuito
-                const ADMIN_EMAILS = ['rodrigo@ajudamediko.com.br'];
+                const ADMIN_EMAILS = ['rodrigo@ajudamediko.com.br', 'kessysof@gmail.com'];
                 const isAdmin = currentUser.email && ADMIN_EMAILS.includes(currentUser.email);
                 
                 if (isAdmin) {
