@@ -172,7 +172,7 @@ export interface CalculatorResult {
 export type SpecialtyId =
   'cardio' | 'nutrition' | 'endo' | 'nephro' | 'obs' | 'peds' |
   'emergency' | 'pneumo' | 'gastro' | 'hema' | 'neuro' | 'surgery' |
-  'nursing' | 'dental' | 'psych' | 'geriatrics' | 'ortho';
+  'nursing' | 'dental' | 'psych' | 'geriatrics' | 'ortho' | 'medications';
 
 export interface CalculatorDef {
   id: AppView;

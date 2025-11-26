@@ -103,7 +103,6 @@ const SPECIALTIES: SpecialtyDef[] = [
         color: 'bg-emerald-600',
         calculators: [
             { id: AppView.CALC_IV, name: 'Cálculo de Gotejamento', description: 'Gotas/min' },
-            { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
             { id: AppView.CALC_MOUNJARO, name: 'Fracionamento Mounjaro', description: 'Calcular dose fracionada' },
         ]
     },
@@ -175,7 +174,6 @@ const SPECIALTIES: SpecialtyDef[] = [
         calculators: [
             { id: AppView.CALC_PED_FLUIDS, name: 'Manutenção de Fluidos', description: 'Holliday-Segar' },
             { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Recém-Nascido' },
-            { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
             { id: AppView.CALC_VACCINATION_SCHEDULE, name: 'Calendário Vacinal', description: 'Vacinas por Idade' },
             { id: AppView.CALC_PED_GLASGOW, name: 'Glasgow Pediátrico', description: 'Consciência < 2 anos', isPro: true },
             { id: AppView.CALC_BALLARD, name: 'Ballard Score', description: 'Idade Gestacional RN' },
@@ -252,7 +250,17 @@ const SPECIALTIES: SpecialtyDef[] = [
         color: 'bg-slate-500',
         calculators: [
             { id: AppView.CALC_CONVERTER, name: 'Conversor de Unidades', description: 'Geral' },
+        ]
+    },
+    {
+        id: 'medications',
+        name: 'Medicações',
+        icon: FlaskIcon,
+        color: 'bg-purple-600',
+        calculators: [
             { id: AppView.CALC_BULA_MEDICAMENTO, name: 'Bulas de Medicamentos', description: 'Consulta ANVISA' },
+            { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
+            { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
         ]
     },
 ];
