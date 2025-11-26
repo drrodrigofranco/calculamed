@@ -38,6 +38,7 @@ import PHQ9Calculator from './components/calculators/PHQ9Calculator';
 import ProteinCalculator from './components/calculators/ProteinCalculator';
 import TargetHeartRateCalculator from './components/calculators/TargetHeartRateCalculator';
 import PediatricDosageCalculator from './components/calculators/PediatricDosageCalculator';
+import MounjaroCalculator from './components/calculators/MounjaroCalculator';
 
 import AdSpace from './components/AdSpace';
 import Auth from './components/Auth';
@@ -701,6 +702,7 @@ const App: React.FC = () => {
             case AppView.CALC_APGAR: return <APGARCalculator />;
             case AppView.CALC_ANC: return <ANCCalculator />;
             case AppView.CALC_PHQ9: return <PHQ9Calculator />;
+            case AppView.CALC_MOUNJARO: return <MounjaroCalculator />;
 
             case AppView.DASHBOARD:
             default:
