@@ -59,7 +59,7 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
             }
         } catch (err) {
             console.error('Erro:', err);
-            setError('Erro ao buscar medicamento. Tente novamente.');
+            setError('Não foi possível conectar à API da ANVISA. Tente novamente ou use os medicamentos populares abaixo.');
         } finally {
             setLoading(false);
         }
@@ -114,7 +114,7 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     onKeyPress={handleKeyPress}
                                     placeholder="Ex: Dipirona, Paracetamol, Ibuprofeno..."
-                                    className="w-full p-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none"
+                                    className="w-full p-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-gray-900 placeholder-gray-400"
                                 />
                                 <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
                             </div>
