@@ -39,6 +39,7 @@ import ProteinCalculator from './components/calculators/ProteinCalculator';
 import TargetHeartRateCalculator from './components/calculators/TargetHeartRateCalculator';
 import PediatricDosageCalculator from './components/calculators/PediatricDosageCalculator';
 import MounjaroCalculator from './components/calculators/MounjaroCalculator';
+import VaccinationScheduleCalculator from './components/calculators/VaccinationScheduleCalculator';
 
 import AdSpace from './components/AdSpace';
 import Auth from './components/Auth';
@@ -174,6 +175,7 @@ const SPECIALTIES: SpecialtyDef[] = [
             { id: AppView.CALC_PED_FLUIDS, name: 'Manutenção de Fluidos', description: 'Holliday-Segar' },
             { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Recém-Nascido' },
             { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
+            { id: AppView.CALC_VACCINATION_SCHEDULE, name: 'Calendário Vacinal', description: 'Vacinas por Idade' },
             { id: AppView.CALC_PED_GLASGOW, name: 'Glasgow Pediátrico', description: 'Consciência < 2 anos', isPro: true },
             { id: AppView.CALC_BALLARD, name: 'Ballard Score', description: 'Idade Gestacional RN' },
             { id: AppView.CALC_WESTLEY, name: 'Westley Croup', description: 'Gravidade Laringotraqueobronquite' },
@@ -703,6 +705,7 @@ const App: React.FC = () => {
             case AppView.CALC_ANC: return <ANCCalculator />;
             case AppView.CALC_PHQ9: return <PHQ9Calculator />;
             case AppView.CALC_MOUNJARO: return <MounjaroCalculator />;
+            case AppView.CALC_VACCINATION_SCHEDULE: return <VaccinationScheduleCalculator />;
 
             case AppView.DASHBOARD:
             default:
