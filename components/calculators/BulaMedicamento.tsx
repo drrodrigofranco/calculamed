@@ -1,7 +1,30 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Search, FileText, AlertCircle, Loader2, ExternalLink } from 'lucide-react';
 import { AppView } from '../../types';
-import medicationsDB from '../../data/medications_db.json';
+
+// Base de dados local de medicamentos (seed data)
+const medicationsDB = [
+    { "nomeProduto": "DIPIRONA MONOHIDRATADA", "principioAtivo": "DIPIRONA MONOHIDRATADA", "numProcesso": "25351.000000/0000-00", "nomeEmpresa": "GENERICO", "categoria": "ANALGÉSICO", "dataVencimento": "" },
+    { "nomeProduto": "PARACETAMOL", "principioAtivo": "PARACETAMOL", "numProcesso": "25351.000000/0000-01", "nomeEmpresa": "GENERICO", "categoria": "ANALGÉSICO", "dataVencimento": "" },
+    { "nomeProduto": "IBUPROFENO", "principioAtivo": "IBUPROFENO", "numProcesso": "25351.000000/0000-02", "nomeEmpresa": "GENERICO", "categoria": "ANTI-INFLAMATÓRIO", "dataVencimento": "" },
+    { "nomeProduto": "AMOXICILINA", "principioAtivo": "AMOXICILINA TRI-HIDRATADA", "numProcesso": "25351.000000/0000-03", "nomeEmpresa": "GENERICO", "categoria": "ANTIBIÓTICO", "dataVencimento": "" },
+    { "nomeProduto": "OMEPRAZOL", "principioAtivo": "OMEPRAZOL", "numProcesso": "25351.000000/0000-04", "nomeEmpresa": "GENERICO", "categoria": "ANTIULCEROSO", "dataVencimento": "" },
+    { "nomeProduto": "LOSARTANA POTASSICA", "principioAtivo": "LOSARTANA POTASSICA", "numProcesso": "25351.000000/0000-05", "nomeEmpresa": "GENERICO", "categoria": "ANTI-HIPERTENSIVO", "dataVencimento": "" },
+    { "nomeProduto": "METFORMINA", "principioAtivo": "CLORIDRATO DE METFORMINA", "numProcesso": "25351.000000/0000-06", "nomeEmpresa": "GENERICO", "categoria": "ANTIDIABÉTICO", "dataVencimento": "" },
+    { "nomeProduto": "ATORVASTATINA CALCICA", "principioAtivo": "ATORVASTATINA CALCICA", "numProcesso": "25351.000000/0000-07", "nomeEmpresa": "GENERICO", "categoria": "HIPOLIPEMIANTE", "dataVencimento": "" },
+    { "nomeProduto": "SIMVASTATINA", "principioAtivo": "SIMVASTATINA", "numProcesso": "25351.000000/0000-08", "nomeEmpresa": "GENERICO", "categoria": "HIPOLIPEMIANTE", "dataVencimento": "" },
+    { "nomeProduto": "CEFALEXINA", "principioAtivo": "CEFALEXINA", "numProcesso": "25351.000000/0000-09", "nomeEmpresa": "GENERICO", "categoria": "ANTIBIÓTICO", "dataVencimento": "" },
+    { "nomeProduto": "AZITROMICINA", "principioAtivo": "AZITROMICINA DI-HIDRATADA", "numProcesso": "25351.000000/0000-10", "nomeEmpresa": "GENERICO", "categoria": "ANTIBIÓTICO", "dataVencimento": "" },
+    { "nomeProduto": "CIPROFLOXACINO", "principioAtivo": "CLORIDRATO DE CIPROFLOXACINO", "numProcesso": "25351.000000/0000-11", "nomeEmpresa": "GENERICO", "categoria": "ANTIBIÓTICO", "dataVencimento": "" },
+    { "nomeProduto": "DEXAMETASONA", "principioAtivo": "DEXAMETASONA", "numProcesso": "25351.000000/0000-12", "nomeEmpresa": "GENERICO", "categoria": "CORTICOIDE", "dataVencimento": "" },
+    { "nomeProduto": "PREDNISONA", "principioAtivo": "PREDNISONA", "numProcesso": "25351.000000/0000-13", "nomeEmpresa": "GENERICO", "categoria": "CORTICOIDE", "dataVencimento": "" },
+    { "nomeProduto": "DIAZEPAM", "principioAtivo": "DIAZEPAM", "numProcesso": "25351.000000/0000-14", "nomeEmpresa": "GENERICO", "categoria": "ANSIOLÍTICO", "dataVencimento": "" },
+    { "nomeProduto": "CLONAZEPAM", "principioAtivo": "CLONAZEPAM", "numProcesso": "25351.000000/0000-15", "nomeEmpresa": "GENERICO", "categoria": "ANSIOLÍTICO", "dataVencimento": "" },
+    { "nomeProduto": "ALPRAZOLAM", "principioAtivo": "ALPRAZOLAM", "numProcesso": "25351.000000/0000-16", "nomeEmpresa": "GENERICO", "categoria": "ANSIOLÍTICO", "dataVencimento": "" },
+    { "nomeProduto": "FLUOXETINA", "principioAtivo": "CLORIDRATO DE FLUOXETINA", "numProcesso": "25351.000000/0000-17", "nomeEmpresa": "GENERICO", "categoria": "ANTIDEPRESSIVO", "dataVencimento": "" },
+    { "nomeProduto": "SERTRALINA", "principioAtivo": "CLORIDRATO DE SERTRALINA", "numProcesso": "25351.000000/0000-18", "nomeEmpresa": "GENERICO", "categoria": "ANTIDEPRESSIVO", "dataVencimento": "" },
+    { "nomeProduto": "ESCITALOPRAM", "principioAtivo": "OXALATO DE ESCITALOPRAM", "numProcesso": "25351.000000/0000-19", "nomeEmpresa": "GENERICO", "categoria": "ANTIDEPRESSIVO", "dataVencimento": "" }
+];
 
 interface BulaMedicamentoProps {
     onNavigate: (view: AppView) => void;
