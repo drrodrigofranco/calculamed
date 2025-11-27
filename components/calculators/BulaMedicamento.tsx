@@ -4,12 +4,72 @@ import { AppView } from '../../types';
 
 // Base de dados local de medicamentos (seed data)
 const medicationsDB = [
-    { "nomeProduto": "DIPIRONA MONOHIDRATADA", "principioAtivo": "DIPIRONA MONOHIDRATADA", "numProcesso": "25351.000000/0000-00", "nomeEmpresa": "GENERICO", "categoria": "ANALGÉSICO", "dataVencimento": "" },
-    { "nomeProduto": "PARACETAMOL", "principioAtivo": "PARACETAMOL", "numProcesso": "25351.000000/0000-01", "nomeEmpresa": "GENERICO", "categoria": "ANALGÉSICO", "dataVencimento": "" },
-    { "nomeProduto": "IBUPROFENO", "principioAtivo": "IBUPROFENO", "numProcesso": "25351.000000/0000-02", "nomeEmpresa": "GENERICO", "categoria": "ANTI-INFLAMATÓRIO", "dataVencimento": "" },
-    { "nomeProduto": "AMOXICILINA", "principioAtivo": "AMOXICILINA TRI-HIDRATADA", "numProcesso": "25351.000000/0000-03", "nomeEmpresa": "GENERICO", "categoria": "ANTIBIÓTICO", "dataVencimento": "" },
-    { "nomeProduto": "OMEPRAZOL", "principioAtivo": "OMEPRAZOL", "numProcesso": "25351.000000/0000-04", "nomeEmpresa": "GENERICO", "categoria": "ANTIULCEROSO", "dataVencimento": "" },
-    { "nomeProduto": "LOSARTANA POTASSICA", "principioAtivo": "LOSARTANA POTASSICA", "numProcesso": "25351.000000/0000-05", "nomeEmpresa": "GENERICO", "categoria": "ANTI-HIPERTENSIVO", "dataVencimento": "" },
+    {
+        "nomeProduto": "DIPIRONA MONOHIDRATADA",
+        "principioAtivo": "DIPIRONA MONOHIDRATADA",
+        "numProcesso": "25351.000000/0000-00",
+        "nomeEmpresa": "GENERICO",
+        "categoria": "ANALGÉSICO",
+        "dataVencimento": "",
+        "apresentacoes": "Comprimidos 500mg e 1g; Solução Oral 500mg/mL (Gotas)",
+        "dosesRecomendadas": "Adultos: 500mg a 1g a cada 6h. Max: 4g/dia. Crianças: 10-12mg/kg/dose.",
+        "indicacoes": "Dor e Febre."
+    },
+    {
+        "nomeProduto": "PARACETAMOL",
+        "principioAtivo": "PARACETAMOL",
+        "numProcesso": "25351.000000/0000-01",
+        "nomeEmpresa": "GENERICO",
+        "categoria": "ANALGÉSICO",
+        "dataVencimento": "",
+        "apresentacoes": "Comprimidos 500mg e 750mg; Solução Oral 200mg/mL",
+        "dosesRecomendadas": "Adultos: 500-1000mg a cada 4-6h. Max: 4g/dia. Crianças: 10-15mg/kg/dose.",
+        "indicacoes": "Dor e Febre."
+    },
+    {
+        "nomeProduto": "IBUPROFENO",
+        "principioAtivo": "IBUPROFENO",
+        "numProcesso": "25351.000000/0000-02",
+        "nomeEmpresa": "GENERICO",
+        "categoria": "ANTI-INFLAMATÓRIO",
+        "dataVencimento": "",
+        "apresentacoes": "Comprimidos 300mg, 400mg, 600mg; Suspensão 50mg/mL e 100mg/mL",
+        "dosesRecomendadas": "Adultos: 300-600mg a cada 6-8h. Max: 2.4g/dia. Crianças: 5-10mg/kg/dose.",
+        "indicacoes": "Dor, Febre, Inflamação."
+    },
+    {
+        "nomeProduto": "AMOXICILINA",
+        "principioAtivo": "AMOXICILINA TRI-HIDRATADA",
+        "numProcesso": "25351.000000/0000-03",
+        "nomeEmpresa": "GENERICO",
+        "categoria": "ANTIBIÓTICO",
+        "dataVencimento": "",
+        "apresentacoes": "Cápsulas 500mg; Suspensão 250mg/5mL e 500mg/5mL",
+        "dosesRecomendadas": "Adultos: 500mg a cada 8h. Crianças: 20-50mg/kg/dia divididos em 3 doses.",
+        "indicacoes": "Infecções bacterianas (Vias aéreas, Urinárias, etc)."
+    },
+    {
+        "nomeProduto": "OMEPRAZOL",
+        "principioAtivo": "OMEPRAZOL",
+        "numProcesso": "25351.000000/0000-04",
+        "nomeEmpresa": "GENERICO",
+        "categoria": "ANTIULCEROSO",
+        "dataVencimento": "",
+        "apresentacoes": "Cápsulas 10mg, 20mg, 40mg",
+        "dosesRecomendadas": "20mg a 40mg em jejum, 1x ao dia.",
+        "indicacoes": "Gastrite, Úlcera Peptica, Refluxo (DRGE)."
+    },
+    {
+        "nomeProduto": "LOSARTANA POTASSICA",
+        "principioAtivo": "LOSARTANA POTASSICA",
+        "numProcesso": "25351.000000/0000-05",
+        "nomeEmpresa": "GENERICO",
+        "categoria": "ANTI-HIPERTENSIVO",
+        "dataVencimento": "",
+        "apresentacoes": "Comprimidos 50mg e 100mg",
+        "dosesRecomendadas": "Inicial: 50mg 1x/dia. Manutenção: 25-100mg/dia.",
+        "indicacoes": "Hipertensão Arterial, Insuficiência Cardíaca."
+    },
     { "nomeProduto": "METFORMINA", "principioAtivo": "CLORIDRATO DE METFORMINA", "numProcesso": "25351.000000/0000-06", "nomeEmpresa": "GENERICO", "categoria": "ANTIDIABÉTICO", "dataVencimento": "" },
     { "nomeProduto": "ATORVASTATINA CALCICA", "principioAtivo": "ATORVASTATINA CALCICA", "numProcesso": "25351.000000/0000-07", "nomeEmpresa": "GENERICO", "categoria": "HIPOLIPEMIANTE", "dataVencimento": "" },
     { "nomeProduto": "SIMVASTATINA", "principioAtivo": "SIMVASTATINA", "numProcesso": "25351.000000/0000-08", "nomeEmpresa": "GENERICO", "categoria": "HIPOLIPEMIANTE", "dataVencimento": "" },
@@ -37,6 +97,9 @@ interface Medicamento {
     principioAtivo: string;
     categoria: string;
     dataVencimento: string;
+    apresentacoes?: string;
+    dosesRecomendadas?: string;
+    indicacoes?: string;
 }
 
 const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
@@ -218,6 +281,27 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
                                             <p className="text-xs text-gray-500 mt-2">
                                                 Processo: {med.numProcesso}
                                             </p>
+
+                                            {/* Resumo Clínico */}
+                                            {(med.apresentacoes || med.dosesRecomendadas || med.indicacoes) && (
+                                                <div className="mt-3 pt-3 border-t border-green-100 space-y-1">
+                                                    {med.indicacoes && (
+                                                        <p className="text-sm text-gray-700">
+                                                            <span className="font-semibold text-green-700">Indicações:</span> {med.indicacoes}
+                                                        </p>
+                                                    )}
+                                                    {med.apresentacoes && (
+                                                        <p className="text-sm text-gray-700">
+                                                            <span className="font-semibold text-green-700">Apresentação:</span> {med.apresentacoes}
+                                                        </p>
+                                                    )}
+                                                    {med.dosesRecomendadas && (
+                                                        <p className="text-sm text-gray-700">
+                                                            <span className="font-semibold text-green-700">Dose Usual:</span> {med.dosesRecomendadas}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                         <button
                                             onClick={(e) => {

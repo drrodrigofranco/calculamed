@@ -38,6 +38,7 @@ import PHQ9Calculator from './components/calculators/PHQ9Calculator';
 import ProteinCalculator from './components/calculators/ProteinCalculator';
 import TargetHeartRateCalculator from './components/calculators/TargetHeartRateCalculator';
 import PediatricDosageCalculator from './components/calculators/PediatricDosageCalculator';
+import VaccinationScheduleCalculator from './components/calculators/VaccinationScheduleCalculator';
 import BulaMedicamento from './components/calculators/BulaMedicamento';
 
 import AdSpace from './components/AdSpace';
@@ -171,6 +172,7 @@ const SPECIALTIES: SpecialtyDef[] = [
             { id: AppView.CALC_PED_FLUIDS, name: 'Manutenção de Fluidos', description: 'Holliday-Segar' },
             { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Recém-Nascido' },
             { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
+            { id: AppView.CALC_VACCINATION, name: 'Calendário Vacinal', description: 'PNI 2024' },
         ]
     },
     {
@@ -671,6 +673,7 @@ const App: React.FC = () => {
             case AppView.CALC_ALVARADO: return <AlvaradoCalculator />;
             case AppView.CALC_BULA_MEDICAMENTO: return <BulaMedicamento onNavigate={handleNavigate} />;
             case AppView.CALC_PEDIATRIC_DOSAGE: return <PediatricDosageCalculator />;
+            case AppView.CALC_VACCINATION: return <VaccinationScheduleCalculator onNavigate={handleNavigate} />;
             case AppView.CALC_DOSAGE: return <DosageCalculator />;
             case AppView.CALC_APGAR: return <APGARCalculator />;
             case AppView.CALC_ANC: return <ANCCalculator />;
