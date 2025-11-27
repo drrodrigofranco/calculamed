@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Search, FileText, AlertCircle, Loader2, ExternalLink } from 'lucide-react';
 import { AppView } from '../../types';
+import medicationsDB from '../../data/medications_db.json';
 
 interface BulaMedicamentoProps {
     onNavigate: (view: AppView) => void;
@@ -22,7 +23,7 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
     const [selectedMed, setSelectedMed] = useState<Medicamento | null>(null);
     const [error, setError] = useState('');
 
-    // API da ANVISA - Consulta via Firebase Cloud Function (Proxy)
+    // Busca Local no JSON (Offline)
     const buscarMedicamento = async () => {
         if (!searchTerm.trim()) {
             setError('Digite o nome do medicamento');
@@ -34,28 +35,27 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
         setMedicamentos([]);
         setSelectedMed(null);
 
-        try {
-            // Importar dinamicamente para evitar problemas de SSR/Build se necessário, 
-            // mas aqui estamos num componente React padrão.
-            const { httpsCallable } = await import('firebase/functions');
-            const { functions } = await import('../../services/firebaseConfig');
+        // Simula um pequeno delay para feedback visual (opcional, mas bom para UX)
+        setTimeout(() => {
+            try {
+                const termo = searchTerm.toLowerCase();
+                const resultados = medicationsDB.filter((med: any) =>
+                    med.nomeProduto.toLowerCase().includes(termo) ||
+                    med.principioAtivo.toLowerCase().includes(termo)
+                ).slice(0, 50); // Limita a 50 resultados
 
-            const searchAnvisa = httpsCallable(functions, 'searchAnvisaMedicamentos');
-
-            const result = await searchAnvisa({ term: searchTerm });
-            const data = result.data as any;
-
-            if (data.content && data.content.length > 0) {
-                setMedicamentos(data.content);
-            } else {
-                setError('Nenhum medicamento encontrado');
+                if (resultados.length > 0) {
+                    setMedicamentos(resultados as Medicamento[]);
+                } else {
+                    setError('Nenhum medicamento encontrado na base local.');
+                }
+            } catch (err) {
+                console.error('Erro na busca local:', err);
+                setError('Erro ao buscar medicamento.');
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            console.error('Erro:', err);
-            setError('Não foi possível conectar à API da ANVISA. Tente novamente ou use os medicamentos populares abaixo.');
-        } finally {
-            setLoading(false);
-        }
+        }, 300);
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -90,7 +90,7 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-gray-800">Bulas de Medicamentos</h1>
-                            <p className="text-sm text-gray-600">Consulta oficial ANVISA</p>
+                            <p className="text-sm text-gray-600">Consulta Offline (Base Local)</p>
                         </div>
                     </div>
 
@@ -131,13 +131,42 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
                         </div>
                     </div>
 
-                    {/* Erro */}
+                    {/* Erro e Fallback */}
                     {error && (
-                        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-start gap-3">
-                            <AlertCircle className="text-red-500 flex-shrink-0 mt-0.5" size={20} />
-                            <div>
-                                <p className="font-semibold text-red-800">Erro</p>
-                                <p className="text-sm text-red-600">{error}</p>
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                            <div className="flex items-center gap-2 mb-4 justify-center">
+                                <AlertCircle className="text-red-500" size={20} />
+                                <p className="text-red-600 font-medium">{error}</p>
+                            </div>
+
+                            <div className="flex flex-col gap-3">
+                                <p className="text-gray-600 text-sm text-center mb-1">
+                                    Não encontrou na base local? Tente estas alternativas online:
+                                </p>
+
+                                <a
+                                    href={`https://www.google.com/search?q=filetype:pdf+bula+${encodeURIComponent(searchTerm)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-center gap-2 w-full bg-white border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                                >
+                                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
+                                    </svg>
+                                    Pesquisar PDF no Google
+                                </a>
+
+                                <a
+                                    href={`https://consultaremedios.com.br/busca?termo=${encodeURIComponent(searchTerm)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-center gap-2 w-full bg-blue-50 border border-blue-200 text-blue-700 py-3 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    Ver no Consulta Remédios
+                                </a>
                             </div>
                         </div>
                     )}
@@ -230,8 +259,8 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
                     {/* Informações */}
                     <div className="mt-6 p-4 bg-blue-50 rounded-xl">
                         <p className="text-xs text-gray-600">
-                            <strong>Fonte:</strong> Dados oficiais da ANVISA (Agência Nacional de Vigilância Sanitária).
-                            As bulas são documentos oficiais aprovados pela ANVISA.
+                            <strong>Fonte:</strong> Base de dados local (offline) derivada dos Dados Abertos da ANVISA.
+                            Atualizado periodicamente.
                         </p>
                     </div>
                 </div>
