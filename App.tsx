@@ -89,295 +89,109 @@ import {
 
 enum LegalView {
     PRIVACY = 'PRIVACY',
-    TERMS = 'TERMS',
-    ABOUT = 'ABOUT'
-}
-
-type ExtendedView = AppView | LegalView;
-
-const SPECIALTIES: SpecialtyDef[] = [
-    {
-        id: 'nursing',
-        name: 'Enfermagem e Geriatria',
-        icon: ElderIcon,
-        color: 'bg-emerald-600',
-        calculators: [
-            { id: AppView.CALC_IV, name: 'Cálculo de Gotejamento', description: 'Gotas/min' },
-            { id: AppView.CALC_MOUNJARO, name: 'Fracionamento Mounjaro', description: 'Calcular dose fracionada' },
-        ]
-    },
-    {
-        id: 'cardio',
-        name: 'Cardiologia e Vascular',
-        icon: HeartPulseIcon,
-        color: 'bg-rose-500',
-        calculators: [
-            { id: AppView.CALC_CHA2DS2_VASC, name: 'CHA₂DS₂-VASc', description: 'Risco AVC em FA' },
-            { id: AppView.CALC_HAS_BLED, name: 'HAS-BLED', description: 'Risco de Sangramento', isPro: true },
-            { id: AppView.CALC_MAP, name: 'Pressão Média (PAM)', description: 'Avaliação hemodinâmica' },
-            { id: AppView.CALC_QTC, name: 'QT Corrigido', description: 'Fórmula de Bazett' },
-        ]
-    },
-    {
-        id: 'nutrition',
-        name: 'Nutrição e Metabolismo',
-        icon: ScaleIcon,
-        color: 'bg-lime-600',
-        calculators: [
-            { id: AppView.CALC_BMI, name: 'IMC', description: 'Índice de Massa Corporal' },
-            { id: AppView.CALC_BMR, name: 'Taxa Metabólica', description: 'Harris-Benedict' },
-            { id: AppView.CALC_PROTEIN, name: 'Ingestão de Proteína', description: 'Meta para Hipertrofia' },
-            { id: AppView.CALC_HR_TARGET, name: 'Zona Alvo (FC)', description: 'Fórmula de Karvonen' },
-            { id: AppView.CALC_IDEAL_WEIGHT, name: 'Peso Ideal', description: 'Fórmula de Devine' },
-            { id: AppView.CALC_WATER, name: 'Hidratação Diária', description: 'Meta de água por peso' },
-        ]
-    },
-    {
-        id: 'endo',
-        name: 'Endocrinologia',
-        icon: FlaskIcon,
-        color: 'bg-indigo-500',
-        calculators: [
-            { id: AppView.CALC_SODIUM_CORR, name: 'Correção Sódio', description: 'Na Hiperglicemia' },
-            { id: AppView.CALC_LDL, name: 'LDL Calculado', description: 'Fórmula de Friedewald' },
-            { id: AppView.CALC_GLUCOSE, name: 'Conversão Glicose', description: 'mg/dL ↔ mmol/L' },
-        ]
-    },
-    {
-        id: 'nephro',
-        name: 'Nefrologia e Urologia',
-        icon: KidneyIcon,
-        color: 'bg-blue-500',
-        calculators: [
-            { id: AppView.CALC_COCKCROFT, name: 'Clearance Creatinina', description: 'Cockcroft-Gault' },
-            { id: AppView.CALC_EGFR, name: 'TFG (CKD-EPI)', description: 'Fórmula Atual (2021)' },
-            { id: AppView.CALC_ANION_GAP, name: 'Anion Gap', description: 'Acidose Metabólica' },
-        ]
-    },
-    {
-        id: 'obs',
-        name: 'Obstetrícia e Gineco',
-        icon: BabyIcon,
-        color: 'bg-pink-500',
-        calculators: [
-            { id: AppView.CALC_PREGNANCY, name: 'Idade Gestacional (DUM)', description: 'Data da Última Menstruação' },
-            { id: AppView.CALC_PREGNANCY_USG, name: 'IG pelo Ultrassom', description: 'Correção pela USG', isPro: true },
-            { id: AppView.CALC_BISHOP, name: 'Bishop Score', description: 'Indução de Parto', isPro: true },
-            { id: AppView.CALC_HELLP, name: 'HELLP Syndrome', description: 'Classificação', isPro: true },
-        ]
-    },
-    {
-        id: 'peds',
-        name: 'Pediatria',
-        icon: ChildIcon,
-        color: 'bg-orange-500',
-        calculators: [
-            { id: AppView.CALC_PED_FLUIDS, name: 'Manutenção de Fluidos', description: 'Holliday-Segar' },
-            { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Recém-Nascido' },
-            { id: AppView.CALC_VACCINATION_SCHEDULE, name: 'Calendário Vacinal', description: 'Vacinas por Idade' },
-            { id: AppView.CALC_PED_GLASGOW, name: 'Glasgow Pediátrico', description: 'Consciência < 2 anos', isPro: true },
-            { id: AppView.CALC_BALLARD, name: 'Ballard Score', description: 'Idade Gestacional RN' },
-            { id: AppView.CALC_WESTLEY, name: 'Westley Croup', description: 'Gravidade Laringotraqueobronquite' },
-        ]
-    },
-    {
-        id: 'emergency',
-        name: 'Emergência, Trauma e UTI',
-        icon: SirenIcon,
-        color: 'bg-red-600',
-        calculators: [
-            { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Coma e Consciência' },
-            { id: AppView.CALC_BURN_AREA, name: 'SCQ (Regra dos 9)', description: 'Área Queimada', isPro: true },
-            { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação Queimados' },
-            { id: AppView.CALC_WELLS_PE, name: 'Escore de Wells', description: 'Risco de TEP' },
-            { id: AppView.CALC_VASOACTIVE, name: 'Drogas Vasoativas', description: 'Noradrenalina, Sedação, etc', isPro: true },
-        ]
-    },
-    {
-        id: 'pneumo',
-        name: 'Ventilação e Pneumo',
-        icon: LungsIcon,
-        color: 'bg-sky-500',
-        calculators: [
-            { id: AppView.CALC_PAO2_FIO2, name: 'Relação P/F', description: 'Critério de Berlim (SDRA)' },
-            { id: AppView.CALC_CURB65, name: 'CURB-65', description: 'Pneumonia Adquirida' },
-        ]
-    },
-    {
-        id: 'gastro',
-        name: 'Gastro e Hepatologia',
-        icon: LiverIcon,
-        color: 'bg-amber-600',
-        calculators: [
-            { id: AppView.CALC_CHILD_PUGH, name: 'Escore Child-Pugh', description: 'Cirrose Hepática' },
-            { id: AppView.CALC_MELD, name: 'MELD Score', description: 'Transplante Hepático', isPro: true },
-        ]
-    },
-    {
-        id: 'hema',
-        name: 'Hematologia e Onco',
-        icon: BloodIcon,
-        color: 'bg-rose-700',
-        calculators: [
-            { id: AppView.CALC_CORR_CALCIUM, name: 'Cálcio Corrigido', description: 'Pela Albumina' },
-            { id: AppView.CALC_ANC, name: 'Neutrófilos Absolutos', description: 'Risco Infeccioso', isPro: true },
-            { id: AppView.CALC_BSA, name: 'Superfície Corporal', description: 'Doses de Quimioterapia' },
-        ]
-    },
-    {
-        id: 'neuro',
-        name: 'Neurologia e Psiquiatria',
-        icon: BrainIcon,
-        color: 'bg-violet-600',
-        calculators: [
-            { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de Consciência' },
-            { id: AppView.CALC_PHQ9, name: 'PHQ-9', description: 'Rastreio de Depressão' },
-        ]
-    },
-    {
-        id: 'surgery',
-        name: 'Cirurgia e Anestesia',
-        icon: ScalpelIcon,
-        color: 'bg-teal-600',
-        calculators: [
-            { id: AppView.CALC_ALVARADO, name: 'Escore de Alvarado', description: 'Apendicite Aguda' },
-        ]
-    },
-    {
-        id: 'dental',
-        name: 'Odontologia e Outros',
-        icon: ToothIcon,
-        color: 'bg-slate-500',
-        calculators: [
-            { id: AppView.CALC_CONVERTER, name: 'Conversor de Unidades', description: 'Geral' },
-        ]
-    },
-    {
-        id: 'medications',
-        name: 'Medicações',
-        icon: FlaskIcon,
-        color: 'bg-purple-600',
-        calculators: [
-            { id: AppView.CALC_BULA_MEDICAMENTO, name: 'Bulas de Medicamentos', description: 'Consulta ANVISA' },
-            { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
-            { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
-        ]
-    },
-];
-
-interface DashboardProps {
-    onSelectSpecialty: (id: SpecialtyId) => void;
-    onNavigate: (view: ExtendedView) => void;
-    favorites: string[];
-    onToggleFavorite: (id: string, e: React.MouseEvent) => void;
-}
-
-const Dashboard: React.FC<DashboardProps> = ({ onSelectSpecialty, onNavigate, favorites, onToggleFavorite }) => {
-
-    const favoriteCalculators = SPECIALTIES.flatMap(s => s.calculators.map(c => ({ ...c, specialtyName: s.name })))
         .filter(c => favorites.includes(c.id));
 
-    return (
-        <div className="pb-10">
-            <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Bem-vindo ao Ajuda Saúde</h2>
-                <p className="text-slate-600 dark:text-slate-300 max-w-2xl">
-                    Acesse rapidamente as ferramentas essenciais para sua prática clínica.
-                    Organizadas por especialidade para facilitar o seu plantão.
-                </p>
-            </div>
+return (
+    <div className="pb-10">
+        <div className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Bem-vindo ao Ajuda Saúde</h2>
+            <p className="text-slate-600 dark:text-slate-300 max-w-2xl">
+                Acesse rapidamente as ferramentas essenciais para sua prática clínica.
+                Organizadas por especialidade para facilitar o seu plantão.
+            </p>
+        </div>
 
-            {favoriteCalculators.length > 0 && (
-                <div className="mb-10 animate-fade-in">
-                    <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                        <StarIcon className="w-5 h-5 text-yellow-500" filled />
-                        Suas Ferramentas Favoritas
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {favoriteCalculators.map(calc => (
-                            <div
-                                key={calc.id}
-                                onClick={() => onNavigate(calc.id)}
-                                className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-medical-300 dark:hover:border-medical-500 hover:shadow-md transition flex justify-between items-start group"
-                            >
-                                <div>
-                                    <h4 className="font-bold text-slate-800 dark:text-white text-sm">{calc.name}</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{calc.specialtyName}</p>
-                                </div>
-                                <button
-                                    onClick={(e) => onToggleFavorite(calc.id, e)}
-                                    className="text-yellow-400 hover:scale-110 transition"
-                                >
-                                    <StarIcon className="w-5 h-5" filled />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Especialidades</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {SPECIALTIES.map((spec) => {
-                    const IconComponent = spec.icon;
-
-                    return (
+        {favoriteCalculators.length > 0 && (
+            <div className="mb-10 animate-fade-in">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                    <StarIcon className="w-5 h-5 text-yellow-500" filled />
+                    Suas Ferramentas Favoritas
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {favoriteCalculators.map(calc => (
                         <div
-                            key={spec.id}
-                            onClick={() => onSelectSpecialty(spec.id)}
-                            className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-md hover:border-medical-200 dark:hover:border-medical-500 transition group flex flex-col h-full relative"
+                            key={calc.id}
+                            onClick={() => onNavigate(calc.id)}
+                            className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-medical-300 dark:hover:border-medical-500 hover:shadow-md transition flex justify-between items-start group"
                         >
-                            <div className={`w-12 h-12 ${spec.color} rounded-xl flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                                <IconComponent className="w-7 h-7 text-white" />
+                            <div>
+                                <h4 className="font-bold text-slate-800 dark:text-white text-sm">{calc.name}</h4>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{calc.specialtyName}</p>
                             </div>
-                            <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{spec.name}</h4>
-                            <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">{spec.calculators.length} Calculadoras</p>
-                            <div className="mt-auto flex -space-x-2 overflow-hidden mb-3">
-                                {spec.calculators.slice(0, 3).map((_calc, i) => ( // Use _calc to avoid unused variable warning
-                                    <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-400 dark:text-slate-300 font-bold">
-                                        <LightningIcon className="w-3 h-3" />
-                                    </div>
-                                ))}
-                                {spec.calculators.length > 3 && (
-                                    <div className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-500 dark:text-slate-400 font-bold">
-                                        +
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex items-center text-medical-600 dark:text-medical-400 font-medium text-xs">
-                                Explorar <ChevronLeftIcon className="rotate-180 w-3 h-3 ml-1" />
-                            </div>
+                            <button
+                                onClick={(e) => onToggleFavorite(calc.id, e)}
+                                className="text-yellow-400 hover:scale-110 transition"
+                            >
+                                <StarIcon className="w-5 h-5" filled />
+                            </button>
                         </div>
-                    );
-                })}
+                    ))}
+                </div>
             </div>
+        )}
 
-            <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
-                <h3>Calculadoras Médicas Profissionais</h3>
-                <p>
-                    O <strong>Ajuda Saúde</strong> é uma referência gratuita para profissionais de saúde, oferecendo acesso rápido a fórmulas complexas e escores clínicos.
-                    Nossa plataforma garante precisão em cálculos fundamentais para UTI, Emergência, Pediatria e diversas especialidades.
-                </p>
-                <div className="grid md:grid-cols-2 gap-8 mt-6">
-                    <div>
-                        <h4 className="font-bold text-slate-800 dark:text-white">Ferramentas de Destaque</h4>
-                        <ul className="list-disc pl-5 space-y-1 text-sm">
-                            <li><strong>Drogas Vasoativas:</strong> Cálculo preciso de vazão e dose para Noradrenalina e outros.</li>
-                            <li><strong>Nefrologia:</strong> Estimativa de TFG (CKD-EPI) e ajustes renais.</li>
-                            <li><strong>Emergência:</strong> Escala de Glasgow, Parkland para queimados e Anion Gap.</li>
-                        </ul>
+        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Especialidades</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SPECIALTIES.map((spec) => {
+                const IconComponent = spec.icon;
+
+                return (
+                    <div
+                        key={spec.id}
+                        onClick={() => onSelectSpecialty(spec.id)}
+                        className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-md hover:border-medical-200 dark:hover:border-medical-500 transition group flex flex-col h-full relative"
+                    >
+                        <div className={`w-12 h-12 ${spec.color} rounded-xl flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                            <IconComponent className="w-7 h-7 text-white" />
+                        </div>
+                        <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{spec.name}</h4>
+                        <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">{spec.calculators.length} Calculadoras</p>
+                        <div className="mt-auto flex -space-x-2 overflow-hidden mb-3">
+                            {spec.calculators.slice(0, 3).map((_calc, i) => ( // Use _calc to avoid unused variable warning
+                                <div key={i} className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-400 dark:text-slate-300 font-bold">
+                                    <LightningIcon className="w-3 h-3" />
+                                </div>
+                            ))}
+                            {spec.calculators.length > 3 && (
+                                <div className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-500 dark:text-slate-400 font-bold">
+                                    +
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex items-center text-medical-600 dark:text-medical-400 font-medium text-xs">
+                            Explorar <ChevronLeftIcon className="rotate-180 w-3 h-3 ml-1" />
+                        </div>
                     </div>
-                    <div>
-                        <h4 className="font-bold text-slate-800 dark:text-white">Por que usar?</h4>
-                        <p className="text-sm">
-                            Economize tempo durante o atendimento com uma interface limpa, livre de distrações e otimizada para dispositivos móveis.
-                            Todas as fórmulas são revisadas com base nas diretrizes médicas mais recentes.
-                        </p>
-                    </div>
+                );
+            })}
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
+            <h3>Calculadoras Médicas Profissionais</h3>
+            <p>
+                O <strong>Ajuda Saúde</strong> é uma referência gratuita para profissionais de saúde, oferecendo acesso rápido a fórmulas complexas e escores clínicos.
+                Nossa plataforma garante precisão em cálculos fundamentais para UTI, Emergência, Pediatria e diversas especialidades.
+            </p>
+            <div className="grid md:grid-cols-2 gap-8 mt-6">
+                <div>
+                    <h4 className="font-bold text-slate-800 dark:text-white">Ferramentas de Destaque</h4>
+                    <ul className="list-disc pl-5 space-y-1 text-sm">
+                        <li><strong>Drogas Vasoativas:</strong> Cálculo preciso de vazão e dose para Noradrenalina e outros.</li>
+                        <li><strong>Nefrologia:</strong> Estimativa de TFG (CKD-EPI) e ajustes renais.</li>
+                        <li><strong>Emergência:</strong> Escala de Glasgow, Parkland para queimados e Anion Gap.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 className="font-bold text-slate-800 dark:text-white">Por que usar?</h4>
+                    <p className="text-sm">
+                        Economize tempo durante o atendimento com uma interface limpa, livre de distrações e otimizada para dispositivos móveis.
+                        Todas as fórmulas são revisadas com base nas diretrizes médicas mais recentes.
+                    </p>
                 </div>
             </div>
         </div>
-    );
+    </div>
+);
 };
 
 interface CategoryViewProps {
@@ -492,7 +306,7 @@ const App: React.FC = () => {
                 // ADMIN BYPASS: Email com acesso PRO gratuito
                 const ADMIN_EMAILS = ['rodrigo@ajudamediko.com.br', 'kessysof@gmail.com'];
                 const isAdmin = currentUser.email && ADMIN_EMAILS.includes(currentUser.email);
-                
+
                 if (isAdmin) {
                     setIsPro(true);
                     setLoadingPro(false);
@@ -666,7 +480,7 @@ const App: React.FC = () => {
                 ) : <Dashboard onSelectSpecialty={handleSelectSpecialty} onNavigate={handleNavigate} favorites={favorites} onToggleFavorite={handleToggleFavorite} />;
 
             case AppView.PRO_LOGIN: return <Auth onLogin={handleLoginSuccess} />;
-            case AppView.SUBSCRIPTION_MANAGER: 
+            case AppView.SUBSCRIPTION_MANAGER:
                 return user ? <SubscriptionManager user={user} onBack={() => handleNavigate(AppView.DASHBOARD)} /> : null;
             case AppView.NUTRITION_PRO: return <NutritionManager />;
             // case AppView.NEWS: return <NewsFeed />; // Desabilitado para evitar erros/seguir pedidos anteriores

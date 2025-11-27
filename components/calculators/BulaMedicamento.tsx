@@ -22,7 +22,7 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
     const [selectedMed, setSelectedMed] = useState<Medicamento | null>(null);
     const [error, setError] = useState('');
 
-    // API da ANVISA - Consulta Pública de Medicamentos
+    // API da ANVISA - Consulta via Firebase Cloud Function (Proxy)
     const buscarMedicamento = async () => {
         if (!searchTerm.trim()) {
             setError('Digite o nome do medicamento');
@@ -35,22 +35,15 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
         setSelectedMed(null);
 
         try {
-            // API da ANVISA - Consulta de Medicamentos
-            const response = await fetch(
-                `https://consultas.anvisa.gov.br/api/consulta/medicamentos?filter[nomeProduto]=${encodeURIComponent(searchTerm)}&count=10`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                }
-            );
+            // Importar dinamicamente para evitar problemas de SSR/Build se necessário, 
+            // mas aqui estamos num componente React padrão.
+            const { httpsCallable } = await import('firebase/functions');
+            const { functions } = await import('../../services/firebaseConfig');
 
-            if (!response.ok) {
-                throw new Error('Erro ao buscar medicamento');
-            }
+            const searchAnvisa = httpsCallable(functions, 'searchAnvisaMedicamentos');
 
-            const data = await response.json();
+            const result = await searchAnvisa({ term: searchTerm });
+            const data = result.data as any;
 
             if (data.content && data.content.length > 0) {
                 setMedicamentos(data.content);
