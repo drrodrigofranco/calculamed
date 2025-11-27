@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "calculamed"
-  }
+    "default": "calculamed",
+    "production": "ajuda-saude-e0fd7"
+  },
+  "targets": {},
+  "etags": {}
 }
