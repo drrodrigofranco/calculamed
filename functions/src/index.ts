@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 admin.initializeApp();
 
@@ -13,24 +13,18 @@ export const searchAnvisaMedicamentos = functions.https.onCall(async (data, cont
     }
 
     try {
-        const response = await fetch(
-            `https://consultas.anvisa.gov.br/api/consulta/medicamentos?filter[nomeProduto]=${encodeURIComponent(term)}&count=10`,
-            {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                    'Authorization': 'Guest' // Às vezes necessário para APIs públicas governamentais
-                }
-            }
-        );
+        const url = `https://consultas.anvisa.gov.br/api/consulta/medicamentos?filter[nomeProduto]=${encodeURIComponent(term)}&count=10`;
 
-        if (!response.ok) {
-            throw new Error(`Erro na API da ANVISA: ${response.statusText}`);
-        }
+        const response = await axios.get(url, {
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Authorization': 'Guest'
+            },
+            timeout: 10000
+        });
 
-        const result = await response.json();
-        return result;
+        return response.data;
 
     } catch (error: any) {
         console.error("Erro ao buscar medicamentos:", error);
