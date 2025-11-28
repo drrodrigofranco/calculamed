@@ -403,22 +403,16 @@ const CategoryView: React.FC<CategoryViewProps> = ({ specialtyId, onSelectCalc, 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {specialty.calculators.map((calc) => {
-                    const locked = calc.isPro && !isPro;
                     const isFav = favorites.includes(calc.id);
                     return (
                         <div
                             key={calc.id}
                             onClick={() => onSelectCalc(calc.id)}
-                            className={`bg-white dark:bg-slate-800 p-5 rounded-lg border shadow-sm transition flex items-center justify-between group cursor-pointer ${locked ? 'border-yellow-200 dark:border-yellow-800 bg-yellow-50/50 dark:bg-yellow-900/20' : 'border-slate-200 dark:border-slate-700 hover:shadow-md hover:border-medical-300 dark:hover:border-medical-500'}`}
+                            className="bg-white dark:bg-slate-800 p-5 rounded-lg border shadow-sm transition flex items-center justify-between group cursor-pointer border-slate-200 dark:border-slate-700 hover:shadow-md hover:border-medical-300 dark:hover:border-medical-500"
                         >
                             <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                    <h3 className={`font-bold ${locked ? 'text-slate-600 dark:text-slate-300' : 'text-slate-800 dark:text-white'}`}>{calc.name}</h3>
-                                    {calc.isPro && (
-                                        <div className="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-yellow-200 dark:border-yellow-700 flex items-center gap-1">
-                                            <CrownIcon className="w-3 h-3" /> PRO
-                                        </div>
-                                    )}
+                                    <h3 className="font-bold text-slate-800 dark:text-white">{calc.name}</h3>
                                 </div>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{calc.description}</p>
                             </div>
@@ -430,12 +424,8 @@ const CategoryView: React.FC<CategoryViewProps> = ({ specialtyId, onSelectCalc, 
                                 >
                                     <StarIcon className="w-5 h-5" filled={isFav} />
                                 </button>
-                                <div className={`p-2 rounded-full transition ${locked ? 'bg-slate-100 dark:bg-slate-700' : 'bg-slate-50 dark:bg-slate-700 group-hover:bg-medical-50 dark:group-hover:bg-medical-900'}`}>
-                                    {locked ? (
-                                        <LockIcon className="w-5 h-5 text-slate-400" />
-                                    ) : (
-                                        <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 dark:group-hover:text-medical-400 rotate-180 transition" />
-                                    )}
+                                <div className="p-2 rounded-full transition bg-slate-50 dark:bg-slate-700 group-hover:bg-medical-50 dark:group-hover:bg-medical-900">
+                                    <ChevronLeftIcon className="w-5 h-5 text-slate-400 group-hover:text-medical-600 dark:group-hover:text-medical-400 rotate-180 transition" />
                                 </div>
                             </div>
                         </div>
@@ -568,17 +558,8 @@ const App: React.FC = () => {
     };
 
     const handleNavigate = (targetView: ExtendedView) => {
-        if (Object.values(AppView).includes(targetView as AppView)) {
-            const targetCalc = SPECIALTIES.flatMap(s => s.calculators).find(c => c.id === targetView);
-            if (targetCalc?.isPro && !isPro && !user) {
-                setView(AppView.PRO_LOGIN);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                return;
-            } else if (targetCalc?.isPro && !isPro && user) {
-                alert("Esta calculadora é exclusiva para assinantes PRO.");
-                return;
-            }
-        }
+        // Removed PRO restrictions - all calculators are now accessible
+        // Login is still available for favorites functionality
 
         setView(targetView);
         setSearchQuery('');

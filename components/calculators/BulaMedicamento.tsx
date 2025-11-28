@@ -185,36 +185,34 @@ const BulaMedicamento: React.FC<BulaMedicamentoProps> = ({ onNavigate }) => {
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
                             Nome do Medicamento
                         </label>
-                        <div className="flex gap-2">
-                            <div className="flex-1 relative">
-                                <input
-                                    type="text"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    onKeyPress={handleKeyPress}
-                                    placeholder="Ex: Dipirona, Paracetamol, Ibuprofeno..."
-                                    className="w-full p-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-gray-900 placeholder-gray-400"
-                                />
-                                <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
-                            </div>
-                            <button
-                                onClick={buscarMedicamento}
-                                disabled={loading}
-                                className="px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-xl hover:from-green-600 hover:to-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                            >
-                                {loading ? (
-                                    <>
-                                        <Loader2 className="animate-spin" size={20} />
-                                        Buscando...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Search size={20} />
-                                        Buscar
-                                    </>
-                                )}
-                            </button>
+                        <div className="relative mb-3">
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyPress={handleKeyPress}
+                                placeholder="Ex: Dipirona, Paracetamol, Ibuprofeno..."
+                                className="w-full p-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-gray-900 placeholder-gray-400"
+                            />
+                            <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
                         </div>
+                        <button
+                            onClick={buscarMedicamento}
+                            disabled={loading}
+                            className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-xl hover:from-green-600 hover:to-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="animate-spin" size={20} />
+                                    Buscando...
+                                </>
+                            ) : (
+                                <>
+                                    <Search size={20} />
+                                    Buscar
+                                </>
+                            )}
+                        </button>
                     </div>
 
                     {/* Erro e Fallback */}
