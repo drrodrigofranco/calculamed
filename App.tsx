@@ -40,6 +40,7 @@ import TargetHeartRateCalculator from './components/calculators/TargetHeartRateC
 import PediatricDosageCalculator from './components/calculators/PediatricDosageCalculator';
 import VaccinationScheduleCalculator from './components/calculators/VaccinationScheduleCalculator';
 import BulaMedicamento from './components/calculators/BulaMedicamento';
+import MounjaroCalculator from './components/calculators/MounjaroCalculator';
 
 import AdSpace from './components/AdSpace';
 import Auth from './components/Auth';
@@ -101,6 +102,7 @@ const SPECIALTIES: SpecialtyDef[] = [
         color: 'bg-purple-600',
         calculators: [
             { id: AppView.CALC_BULA_MEDICAMENTO, name: 'Bulas de Medicamentos', description: 'Busca Local Offline' },
+            { id: AppView.CALC_MOUNJARO, name: 'Fracionamento Mounjaro', description: 'Cálculo de volume para doses' },
             { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
             { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
         ]
@@ -672,6 +674,7 @@ const App: React.FC = () => {
             case AppView.CALC_MELD: return <MELDCalculator />;
             case AppView.CALC_ALVARADO: return <AlvaradoCalculator />;
             case AppView.CALC_BULA_MEDICAMENTO: return <BulaMedicamento onNavigate={handleNavigate} />;
+            case AppView.CALC_MOUNJARO: return <MounjaroCalculator />;
             case AppView.CALC_PEDIATRIC_DOSAGE: return <PediatricDosageCalculator />;
             case AppView.CALC_VACCINATION: return <VaccinationScheduleCalculator onNavigate={handleNavigate} />;
             case AppView.CALC_DOSAGE: return <DosageCalculator />;
