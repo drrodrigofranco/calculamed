@@ -38,6 +38,18 @@ import PHQ9Calculator from './components/calculators/PHQ9Calculator';
 import ProteinCalculator from './components/calculators/ProteinCalculator';
 import TargetHeartRateCalculator from './components/calculators/TargetHeartRateCalculator';
 import PediatricDosageCalculator from './components/calculators/PediatricDosageCalculator';
+import DengueCalculator from './components/calculators/DengueCalculator';
+import FINDRISCCalculator from './components/calculators/FINDRISCCalculator';
+import CAGECalculator from './components/calculators/CAGECalculator';
+import BradenScaleCalculator from './components/calculators/BradenScaleCalculator';
+import DischargePredictor from './components/calculators/DischargePredictor';
+import OpioidConverter from './components/calculators/OpioidConverter';
+import InsulinSlidingScale from './components/calculators/InsulinSlidingScale';
+import PediatricAntibioticCalculator from './components/calculators/PediatricAntibioticCalculator';
+import GrowthZScoreCalculator from './components/calculators/GrowthZScoreCalculator';
+import TargetHeightCalculator from './components/calculators/TargetHeightCalculator';
+import GAD7Calculator from './components/calculators/GAD7Calculator';
+import MiniMentalCalculator from './components/calculators/MiniMentalCalculator';
 import VaccinationScheduleCalculator from './components/calculators/VaccinationScheduleCalculator';
 import BulaMedicamento from './components/calculators/BulaMedicamento';
 import MounjaroCalculator from './components/calculators/MounjaroCalculator';
@@ -105,6 +117,8 @@ const SPECIALTIES: SpecialtyDef[] = [
             { id: AppView.CALC_MOUNJARO, name: 'Fracionamento Mounjaro', description: 'Cálculo de volume para doses' },
             { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
             { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
+            { id: AppView.CALC_BRADEN, name: 'Escala de Braden', description: 'Risco de Lesão por Pressão' },
+            { id: AppView.CALC_DISCHARGE, name: 'Previsão de Alta', description: 'Gestão de Leitos' },
         ]
     },
     {
@@ -248,6 +262,8 @@ const SPECIALTIES: SpecialtyDef[] = [
         calculators: [
             { id: AppView.CALC_IV, name: 'Cálculo de Gotejamento', description: 'Gotas/min' },
             { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
+            { id: AppView.CALC_BRADEN, name: 'Escala de Braden', description: 'Risco de Lesão por Pressão' },
+            { id: AppView.CALC_DISCHARGE, name: 'Previsão de Alta', description: 'Gestão de Leitos' },
         ]
     },
     {
@@ -632,6 +648,18 @@ const App: React.FC = () => {
             case AppView.CALC_QTC: return <QTcCalculator />;
             case AppView.CALC_GLASGOW: return <GlasgowCalculator />;
             case AppView.CALC_PED_FLUIDS: return <PediatricFluidCalculator />;
+            case AppView.CALC_DENGUE: return <DengueCalculator onNavigate={handleNavigate} />;
+            case AppView.CALC_FINDRISC: return <FINDRISCCalculator />;
+            case AppView.CALC_CAGE: return <CAGECalculator />;
+            case AppView.CALC_BRADEN: return <BradenScaleCalculator />;
+            case AppView.CALC_DISCHARGE: return <DischargePredictor />;
+            case AppView.CALC_OPIOID: return <OpioidConverter />;
+            case AppView.CALC_INSULIN: return <InsulinSlidingScale />;
+            case AppView.CALC_PED_ABX: return <PediatricAntibioticCalculator />;
+            case AppView.CALC_GROWTH: return <GrowthZScoreCalculator />;
+            case AppView.CALC_TARGET_HEIGHT: return <TargetHeightCalculator />;
+            case AppView.CALC_GAD7: return <GAD7Calculator />;
+            case AppView.CALC_MINIMENTAL: return <MiniMentalCalculator />;
             case AppView.CALC_PEDIATRIC_DOSAGE: return <PediatricDosageCalculator />;
             case AppView.CALC_BMR: return <BMRCalculator />;
             case AppView.CALC_PROTEIN: return <ProteinCalculator />;
