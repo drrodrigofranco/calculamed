@@ -1,55 +1,100 @@
 import React, { useState } from 'react';
 import { CalculatorResult } from '../../types';
 
-type Medication = 'dipirona' | 'paracetamol' | 'acebrofilina' | 'bromoprida';
+type Medication = 'dipirona' | 'paracetamol' | 'acebrofilina' | 'bromoprida' | 'amoxicilina' | 'azitromicina' | 'amoxclav' | 'cefalexina' | 'cefaclor';
 
 interface MedConfig {
-    name: string;
-    concentration: string; // e.g., "500mg/ml", "200mg/ml"
-    dosageMgPerKg: number | string; // Max mg/kg per dose or range
-    dropsPerMl: number; // drops/ml
-    unit: string; // mg, mcg, etc.
-    minDose?: number; // Optional min dose per administration
-    maxDose?: number; // Optional max dose per administration
+  name: string;
+  concentration: string;
+  dosageMgPerKg: number | string;
+  dropsPerMl: number;
+  unit: string;
+  minDose?: number;
+  maxDose?: number;
 }
 
 const MEDICATIONS: Record<Medication, MedConfig> = {
-    dipirona: {
-        name: 'Dipirona Sódica',
-        concentration: '500mg/ml (20 gotas/ml)',
-        dosageMgPerKg: 10, // 10mg/kg/dose
-        dropsPerMl: 20,
-        unit: 'mg',
-        minDose: 10, // min dose per kg
-        maxDose: 15, // max dose per kg
-    },
-    paracetamol: {
-        name: 'Paracetamol',
-        concentration: '200mg/ml (20 gotas/ml)',
-        dosageMgPerKg: 10, // 10mg/kg/dose
-        dropsPerMl: 20,
-        unit: 'mg',
-        minDose: 10,
-        maxDose: 15,
-    },
-    acebrofilina: {
-        name: 'Acebrofilina Xarope',
-        concentration: '25mg/5ml',
-        dosageMgPerKg: "0.25ml/kg", // Special case, directly ml/kg/dose
-        dropsPerMl: 0, // Not applicable for xarope
-        unit: 'ml',
-        minDose: 0.25, // min ml/kg
-        maxDose: 0.25, // max ml/kg
-    },
-    bromoprida: {
-        name: 'Bromoprida Gotas',
-        concentration: '4mg/ml (24 gotas/ml)',
-        dosageMgPerKg: 0.5, // 0.5mg/kg/day divided (example: 0.125mg/kg/dose QID)
-        dropsPerMl: 24,
-        unit: 'mg/dia',
-        minDose: 0.5, // total mg/kg/day
-        maxDose: 1.0, // total mg/kg/day
-    }
+  dipirona: {
+    name: 'Dipirona Sódica',
+    concentration: '500mg/ml (20 gotas/ml)',
+    dosageMgPerKg: 10,
+    dropsPerMl: 20,
+    unit: 'mg',
+    minDose: 10,
+    maxDose: 15,
+  },
+  paracetamol: {
+    name: 'Paracetamol',
+    concentration: '200mg/ml (20 gotas/ml)',
+    dosageMgPerKg: 10,
+    dropsPerMl: 20,
+    unit: 'mg',
+    minDose: 10,
+    maxDose: 15,
+  },
+  acebrofilina: {
+    name: 'Acebrofilina Xarope',
+    concentration: '25mg/5ml',
+    dosageMgPerKg: "0.25ml/kg",
+    dropsPerMl: 0,
+    unit: 'ml',
+    minDose: 0.25,
+    maxDose: 0.25,
+  },
+  bromoprida: {
+    name: 'Bromoprida Gotas',
+    concentration: '4mg/ml (24 gotas/ml)',
+    dosageMgPerKg: 0.5,
+    dropsPerMl: 24,
+    unit: 'mg/dia',
+    minDose: 0.5,
+    maxDose: 1.0,
+  },
+  amoxicilina: {
+    name: 'Amoxicilina',
+    concentration: '250mg/5ml',
+    dosageMgPerKg: 25,
+    dropsPerMl: 0,
+    unit: 'mg',
+    minDose: 25,
+    maxDose: 50,
+  },
+  azitromicina: {
+    name: 'Azitromicina',
+    concentration: '200mg/5ml',
+    dosageMgPerKg: 10,
+    dropsPerMl: 0,
+    unit: 'mg',
+    minDose: 10,
+    maxDose: 10,
+  },
+  amoxclav: {
+    name: 'Amoxicilina + Clavulanato',
+    concentration: '400mg/5ml',
+    dosageMgPerKg: 25,
+    dropsPerMl: 0,
+    unit: 'mg',
+    minDose: 25,
+    maxDose: 45,
+  },
+  cefalexina: {
+    name: 'Cefalexina',
+    concentration: '250mg/5ml',
+    dosageMgPerKg: 25,
+    dropsPerMl: 0,
+    unit: 'mg',
+    minDose: 25,
+    maxDose: 50,
+  },
+  cefaclor: {
+    name: 'Cefaclor',
+    concentration: '250mg/5ml',
+    dosageMgPerKg: 20,
+    dropsPerMl: 0,
+    unit: 'mg',
+    minDose: 20,
+    maxDose: 40,
+  }
 };
 
 const PediatricDosageCalculator: React.FC = () => {
@@ -60,8 +105,8 @@ const PediatricDosageCalculator: React.FC = () => {
   const calculate = () => {
     const w = parseFloat(weight);
     if (isNaN(w) || w <= 0 || !selectedMed) {
-        setResult(null);
-        return;
+      setResult(null);
+      return;
     }
 
     const medConfig = MEDICATIONS[selectedMed];
@@ -70,51 +115,75 @@ const PediatricDosageCalculator: React.FC = () => {
     let dropsPerDose = 0;
     let notes = '';
 
-    const drugMassPerMl = parseFloat(medConfig.concentration.split('mg/ml')[0]); // e.g., 500 from "500mg/ml"
-    
+    const drugMassPerMl = parseFloat(medConfig.concentration.split('mg/ml')[0]);
+
     if (selectedMed === 'acebrofilina') {
-        mlPerDose = w * 0.25; // Directly ml/kg/dose
-        notes = "Dose em xarope (25mg/5ml). Administrar a cada 12 horas.";
-        doseValue = mlPerDose;
-        setResult({
-            value: mlPerDose.toFixed(2),
-            classification: 'ml/dose',
-            notes: notes
-        });
-        return;
+      mlPerDose = w * 0.25;
+      notes = "Dose em xarope (25mg/5ml). Administrar a cada 12 horas.";
+      doseValue = mlPerDose;
+      setResult({
+        value: mlPerDose.toFixed(2),
+        classification: 'ml/dose',
+        notes: notes
+      });
+      return;
     } else if (selectedMed === 'bromoprida') {
-        // Bromoprida: 0.5 a 1 mg/kg/DIA dividido. Usamos 0.5mg/kg/dia como base para exemplo.
-        // Se a dose diária é 0.5mg/kg/dia e a concentração é 4mg/ml (24 gotas/ml)
-        const totalMgDay = w * 0.5; // Example: 0.5 mg/kg/dia
-        const totalMlDay = totalMgDay / drugMassPerMl; // Total ml/dia
-        const totalDropsDay = totalMlDay * medConfig.dropsPerMl; // Total gotas/dia
+      const totalMgDay = w * 0.5;
+      const totalMlDay = totalMgDay / drugMassPerMl;
+      const totalDropsDay = totalMlDay * medConfig.dropsPerMl;
+      const dropsPerDoseQID = totalDropsDay / 4;
 
-        const dropsPerDoseQID = totalDropsDay / 4; // Usual: 4x ao dia
-
-        notes = `Dose total diária: ${totalMgDay.toFixed(1)} mg. Dividir a cada 6-8 horas.
+      notes = `Dose total diária: ${totalMgDay.toFixed(1)} mg. Dividir a cada 6-8 horas.
                  Aproximadamente ${Math.round(dropsPerDoseQID)} gotas por dose.`;
 
-        setResult({
-            value: totalMlDay.toFixed(2),
-            classification: 'ml/dia (total)',
-            notes: notes
-        });
-        return;
+      setResult({
+        value: totalMlDay.toFixed(2),
+        classification: 'ml/dia (total)',
+        notes: notes
+      });
+      return;
 
-    } else { // Dipirona & Paracetamol
-        const mgPerDose = w * (medConfig.dosageMgPerKg as number);
-        mlPerDose = mgPerDose / drugMassPerMl;
-        dropsPerDose = mlPerDose * medConfig.dropsPerMl;
-        doseValue = mgPerDose;
+    } else if (['amoxicilina', 'azitromicina', 'amoxclav', 'cefalexina', 'cefaclor'].includes(selectedMed)) {
+      const mgPerKg = medConfig.dosageMgPerKg as number;
+      const mgPerDose = w * mgPerKg;
 
-        notes = `Administrar a cada 6-8 horas. 1 gota/kg é uma boa regra geral.`;
+      const concParts = medConfig.concentration.match(/(\d+)mg\/(\d+)ml/);
+      if (concParts) {
+        const mgPer5ml = parseFloat(concParts[1]);
+        const mlBase = parseFloat(concParts[2]);
+        mlPerDose = (mgPerDose / mgPer5ml) * mlBase;
+      }
 
-        setResult({
-            value: mlPerDose.toFixed(2),
-            classification: `${doseValue.toFixed(1)} mg/dose`,
-            notes: `${Math.round(dropsPerDose)} gotas (${mlPerDose.toFixed(2)} ml) por dose. ${notes}`
-        });
-        return;
+      let frequency = '';
+      if (selectedMed === 'amoxicilina') frequency = 'a cada 8 horas (3x/dia)';
+      else if (selectedMed === 'azitromicina') frequency = '1x ao dia por 3-5 dias';
+      else if (selectedMed === 'amoxclav') frequency = 'a cada 12 horas (2x/dia)';
+      else if (selectedMed === 'cefalexina') frequency = 'a cada 6-12 horas';
+      else if (selectedMed === 'cefaclor') frequency = 'a cada 8 horas (3x/dia)';
+
+      notes = `Administrar ${frequency}. Dose baseada em ${mgPerKg}mg/kg/dia.`;
+
+      setResult({
+        value: mlPerDose.toFixed(1),
+        classification: `${mgPerDose.toFixed(0)} mg/dose`,
+        notes: `${mlPerDose.toFixed(1)} ml por dose. ${notes}`
+      });
+      return;
+
+    } else {
+      const mgPerDose = w * (medConfig.dosageMgPerKg as number);
+      mlPerDose = mgPerDose / drugMassPerMl;
+      dropsPerDose = mlPerDose * medConfig.dropsPerMl;
+      doseValue = mgPerDose;
+
+      notes = `Administrar a cada 6-8 horas. 1 gota/kg é uma boa regra geral.`;
+
+      setResult({
+        value: mlPerDose.toFixed(2),
+        classification: `${doseValue.toFixed(1)} mg/dose`,
+        notes: `${Math.round(dropsPerDose)} gotas (${mlPerDose.toFixed(2)} ml) por dose. ${notes}`
+      });
+      return;
     }
   };
 
@@ -145,7 +214,7 @@ const PediatricDosageCalculator: React.FC = () => {
           >
             <option value="">Selecione</option>
             {Object.entries(MEDICATIONS).map(([key, med]) => (
-                <option key={key} value={key}>{med.name} ({med.concentration})</option>
+              <option key={key} value={key}>{med.name} ({med.concentration})</option>
             ))}
           </select>
         </div>
