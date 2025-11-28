@@ -53,6 +53,7 @@ import MiniMentalCalculator from './components/calculators/MiniMentalCalculator'
 import VaccinationScheduleCalculator from './components/calculators/VaccinationScheduleCalculator';
 import BulaMedicamento from './components/calculators/BulaMedicamento';
 import MounjaroCalculator from './components/calculators/MounjaroCalculator';
+import FraminghamCalculator from './components/calculators/FraminghamCalculator';
 
 import AdSpace from './components/AdSpace';
 import Auth from './components/Auth';
@@ -130,6 +131,7 @@ const SPECIALTIES: SpecialtyDef[] = [
             { id: AppView.CALC_HAS_BLED, name: 'HAS-BLED', description: 'Risco de Sangramento', isPro: true },
             { id: AppView.CALC_MAP, name: 'Pressão Média (PAM)', description: 'Avaliação hemodinâmica' },
             { id: AppView.CALC_QTC, name: 'QT Corrigido', description: 'Fórmula de Bazett' },
+            { id: AppView.CALC_FRAMINGHAM, name: 'Escore de Framingham', description: 'Risco Cardiovascular' },
         ]
     },
     {
@@ -473,7 +475,10 @@ const App: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
     const [isPro, setIsPro] = useState(false);
     const [loadingPro, setLoadingPro] = useState(true);
-    const [favorites, setFavorites] = useState<string[]>([]);
+    const [favorites, setFavorites] = useState<string[]>(() => {
+        const saved = localStorage.getItem('favorites');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         if (typeof window !== 'undefined') {
             const storedTheme = localStorage.getItem('theme');
@@ -493,6 +498,11 @@ const App: React.FC = () => {
         }
         localStorage.setItem('theme', theme);
     }, [theme]);
+
+    // Scroll to top whenever view changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [view]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -545,7 +555,7 @@ const App: React.FC = () => {
         try {
             const functionRef = httpsCallable(functions, 'ext-firestore-stripe-payments-createPortalLink');
             const { data } = await functionRef({ returnUrl: window.location.origin });
-            const url = (data as { url: string }).url; // Explicitly cast to ensure 'url' property
+            const url = (data as { url: string }).url;
             window.location.assign(url);
         } catch (e) {
             console.error("Erro ao abrir portal", e);
@@ -581,9 +591,6 @@ const App: React.FC = () => {
     };
 
     const handleNavigate = (targetView: ExtendedView) => {
-        // Removed PRO restrictions - all calculators are now accessible
-        // Login is still available for favorites functionality
-
         setView(targetView);
         setSearchQuery('');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -636,8 +643,8 @@ const App: React.FC = () => {
 
             case AppView.PRO_LOGIN: return <Auth onLogin={handleLoginSuccess} />;
             case AppView.NUTRITION_PRO: return <NutritionManager />;
-            // case AppView.NEWS: return <NewsFeed />; // Desabilitado para evitar erros/seguir pedidos anteriores
-            // case AppView.PATIENTS_LIST: return <PatientManager onBack={() => handleNavigate(AppView.DASHBOARD)} />; // Desabilitado
+            // case AppView.NEWS: return <NewsFeed />;
+            // case AppView.PATIENTS_LIST: return <PatientManager onBack={() => handleNavigate(AppView.DASHBOARD)} />;
 
             case LegalView.PRIVACY: return <PrivacyPolicy />;
             case LegalView.TERMS: return <TermsOfUse />;
@@ -651,6 +658,7 @@ const App: React.FC = () => {
             case AppView.CALC_PREGNANCY_USG: return <PregnancyUSGCalculator />;
             case AppView.CALC_LDL: return <LDLCalculator />;
             case AppView.CALC_MAP: return <MAPCalculator />;
+            case AppView.CALC_FRAMINGHAM: return <FraminghamCalculator />;
             case AppView.CALC_WATER: return <WaterIntakeCalculator />;
             case AppView.CALC_QTC: return <QTcCalculator />;
             case AppView.CALC_GLASGOW: return <GlasgowCalculator />;
