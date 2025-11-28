@@ -115,10 +115,9 @@ const SPECIALTIES: SpecialtyDef[] = [
         calculators: [
             { id: AppView.CALC_BULA_MEDICAMENTO, name: 'Bulas de Medicamentos', description: 'Busca Local Offline' },
             { id: AppView.CALC_MOUNJARO, name: 'Fracionamento Mounjaro', description: 'Cálculo de volume para doses' },
+            { id: AppView.CALC_OPIOID, name: 'Conversor de Opioides', description: 'Equianalgesia' },
             { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
             { id: AppView.CALC_DOSAGE, name: 'Dosagem Universal', description: 'Regra de três' },
-            { id: AppView.CALC_BRADEN, name: 'Escala de Braden', description: 'Risco de Lesão por Pressão' },
-            { id: AppView.CALC_DISCHARGE, name: 'Previsão de Alta', description: 'Gestão de Leitos' },
         ]
     },
     {
@@ -156,6 +155,7 @@ const SPECIALTIES: SpecialtyDef[] = [
             { id: AppView.CALC_SODIUM_CORR, name: 'Correção Sódio', description: 'Na Hiperglicemia' },
             { id: AppView.CALC_LDL, name: 'LDL Calculado', description: 'Fórmula de Friedewald' },
             { id: AppView.CALC_GLUCOSE, name: 'Conversão Glicose', description: 'mg/dL → mmol/L' },
+            { id: AppView.CALC_FINDRISC, name: 'FINDRISC', description: 'Risco de Diabetes' },
         ]
     },
     {
@@ -189,6 +189,8 @@ const SPECIALTIES: SpecialtyDef[] = [
             { id: AppView.CALC_APGAR, name: 'Escore de APGAR', description: 'Recém-Nascido' },
             { id: AppView.CALC_PEDIATRIC_DOSAGE, name: 'Doses Pediátricas', description: 'Dipirona, Paracetamol, etc.' },
             { id: AppView.CALC_VACCINATION, name: 'Calendário Vacinal', description: 'PNI 2024' },
+            { id: AppView.CALC_TARGET_HEIGHT, name: 'Estatura Alvo', description: 'Altura esperada' },
+            { id: AppView.CALC_GROWTH, name: 'Curvas de Crescimento', description: 'Z-Score OMS' },
         ]
     },
     {
@@ -198,10 +200,12 @@ const SPECIALTIES: SpecialtyDef[] = [
         color: 'bg-red-600',
         calculators: [
             { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Coma e Consciência' },
-            { id: AppView.CALC_BURN_AREA, name: 'SCQ (Regra dos 9)', description: '├ürea Queimada', isPro: true },
+            { id: AppView.CALC_BURN_AREA, name: 'SCQ (Regra dos 9)', description: 'Área Queimada', isPro: true },
             { id: AppView.CALC_PARKLAND, name: 'Fórmula de Parkland', description: 'Hidratação Queimados' },
             { id: AppView.CALC_WELLS_PE, name: 'Escore de Wells', description: 'Risco de TEP' },
             { id: AppView.CALC_VASOACTIVE, name: 'Drogas Vasoativas', description: 'Noradrenalina, Sedação, etc', isPro: true },
+            { id: AppView.CALC_DENGUE, name: 'Dengue Hidratação', description: 'Protocolo MS' },
+            { id: AppView.CALC_INSULIN, name: 'Correção Insulina', description: 'Sliding Scale' },
         ]
     },
     {
@@ -243,6 +247,9 @@ const SPECIALTIES: SpecialtyDef[] = [
         calculators: [
             { id: AppView.CALC_GLASGOW, name: 'Escala de Glasgow', description: 'Nível de Consciência' },
             { id: AppView.CALC_PHQ9, name: 'PHQ-9', description: 'Rastreio de Depressão' },
+            { id: AppView.CALC_CAGE, name: 'CAGE', description: 'Rastreio de Alcoolismo' },
+            { id: AppView.CALC_GAD7, name: 'GAD-7', description: 'Rastreio de Ansiedade' },
+            { id: AppView.CALC_MINIMENTAL, name: 'Mini-Mental', description: 'Rastreio Cognitivo' },
         ]
     },
     {
