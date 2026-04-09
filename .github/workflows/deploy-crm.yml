@@ -1,0 +1,69 @@
+name: 🚀 Deploy CRM to VPS
+
+on:
+  push:
+    branches:
+      - claude/crm-login-page-Fiyx2
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 🔨 Build project
+        run: npm run build
+
+      - name: 📤 Deploy to VPS via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: 22
+          script: |
+            echo "🚀 Iniciando deploy no VPS..."
+            cd /home/claudeprojetos/crmclinica
+
+            echo "📦 Atualizando repositório..."
+            git fetch origin
+            git checkout ${{ github.ref_name }}
+
+            echo "📥 Instalando dependências..."
+            npm install
+
+            echo "🔨 Building projeto..."
+            npm run build
+
+            echo "📋 Copiando arquivos para public..."
+            cp -r dist/* public/
+
+            echo "✅ Deploy concluído com sucesso!"
+            ls -la public/ | head -10
+
+      - name: ✅ Deployment Success
+        if: success()
+        run: |
+          echo "🎉 Deploy realizado com sucesso!"
+          echo "🌐 Acesse: https://crm.calculamed.com"
+
+      - name: ❌ Deployment Failed
+        if: failure()
+        run: |
+          echo "❌ Deploy falhou. Verifique os logs."
+          exit 1
