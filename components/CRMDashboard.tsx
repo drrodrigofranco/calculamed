@@ -47,7 +47,7 @@ const CRMDashboard: React.FC<CRMDashboardProps> = ({ onLogout }) => {
 
   const filteredPatients = patients.filter(p =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.contact.toLowerCase().includes(searchQuery.toLowerCase())
+    (p.contact ?? '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAddPatient = (e: React.FormEvent) => {
