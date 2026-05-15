@@ -36,16 +36,37 @@ jobs:
           port: 22
           script: |
             set -e
-            cd /home/claudeprojetos/crmclinica
+
+            PROJECT_DIR="/home/claudeprojetos/crmclinica"
+            BRANCH="claude/check-contabo-connection-6w3Hm"
+            REPO="https://github.com/drrodrigofranco/calculamed.git"
+
+            # Instala Node.js se não estiver instalado
+            if ! command -v node &> /dev/null; then
+              echo "Instalando Node.js..."
+              curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+              apt-get install -y nodejs
+            fi
+
+            # Cria diretório e clona se não existir
+            if [ ! -d "$PROJECT_DIR/.git" ]; then
+              echo "Clonando repositório..."
+              mkdir -p "$PROJECT_DIR"
+              git clone "$REPO" "$PROJECT_DIR"
+            fi
+
+            cd "$PROJECT_DIR"
+
+            # Cria diretório public se não existir
+            mkdir -p public
 
             git fetch origin
-            git checkout ${{ github.ref_name }}
-            git pull origin ${{ github.ref_name }}
+            git checkout "$BRANCH"
+            git pull origin "$BRANCH"
 
             npm ci
             npm run build
             cp -r dist/* public/
 
             echo "Deploy concluido: $(date)"
-            echo "Arquivos em public/:"
             ls -lh public/ | head -5
