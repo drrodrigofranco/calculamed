@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
   ScanIcon,
@@ -6,8 +6,24 @@ import {
   FileTextIcon,
   ActivityIcon,
   ChevronLeftIcon,
-  RefreshCwIcon
+  RefreshCwIcon,
+  EyeIcon,
+  EyeOffIcon
 } from './icons';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type AIProvider = 'gemini' | 'gpt' | 'claude' | 'grok';
+
+interface ProviderDef {
+  id: AIProvider;
+  label: string;
+  model: string;
+  keyPlaceholder: string;
+  accentClass: string;
+  activeClass: string;
+  dotColor: string;
+}
 
 interface AnalysisResult {
   regiao: string;
@@ -17,9 +33,46 @@ interface AnalysisResult {
   recomendacoes: string[];
 }
 
-interface UltrasoundAnalyzerProps {
-  onBack: () => void;
-}
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const PROVIDERS: ProviderDef[] = [
+  {
+    id: 'gemini',
+    label: 'Gemini',
+    model: 'gemini-1.5-flash',
+    keyPlaceholder: 'AIza...',
+    accentClass: 'text-blue-400',
+    activeClass: 'bg-blue-600 text-white border-blue-600',
+    dotColor: 'bg-blue-400',
+  },
+  {
+    id: 'gpt',
+    label: 'GPT-4o',
+    model: 'gpt-4o',
+    keyPlaceholder: 'sk-...',
+    accentClass: 'text-green-400',
+    activeClass: 'bg-green-600 text-white border-green-600',
+    dotColor: 'bg-green-400',
+  },
+  {
+    id: 'claude',
+    label: 'Claude',
+    model: 'claude-opus-4-7',
+    keyPlaceholder: 'sk-ant-...',
+    accentClass: 'text-orange-400',
+    activeClass: 'bg-orange-600 text-white border-orange-600',
+    dotColor: 'bg-orange-400',
+  },
+  {
+    id: 'grok',
+    label: 'Grok',
+    model: 'grok-2-vision-1212',
+    keyPlaceholder: 'xai-...',
+    accentClass: 'text-purple-400',
+    activeClass: 'bg-purple-600 text-white border-purple-600',
+    dotColor: 'bg-purple-400',
+  },
+];
 
 const PROMPT = `Você é um assistente de análise de imagens médicas com especialização em ultrassonografia, auxiliando o Dr. Rodrigo Franco.
 Analise esta imagem de ultrassom e forneça um laudo estruturado em português brasileiro.
@@ -33,16 +86,144 @@ Responda SOMENTE em JSON válido com esta estrutura exata:
   "recomendacoes": ["recomendação 1", "recomendação 2"]
 }
 
-Se a imagem não for um ultrassom, coloque "Imagem não reconhecida como ultrassom" no campo regiao e explique nos achados.`;
+Se a imagem não for um ultrassom, coloque "Imagem não reconhecida como ultrassom" no campo regiao.`;
 
-const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
+function storageKey(provider: AIProvider) {
+  return `us_apikey_${provider}`;
+}
+
+function extractJson(text: string): AnalysisResult {
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('Resposta inesperada da IA — JSON não encontrado');
+  return JSON.parse(match[0]) as AnalysisResult;
+}
+
+// ─── API callers ──────────────────────────────────────────────────────────────
+
+async function analyzeWithGemini(base64: string, mime: string, apiKey: string): Promise<AnalysisResult> {
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const res = await model.generateContent([
+    { inlineData: { mimeType: mime, data: base64 } },
+    PROMPT,
+  ]);
+  return extractJson(res.response.text());
+}
+
+async function analyzeWithGPT(base64: string, mime: string, apiKey: string): Promise<AnalysisResult> {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'gpt-4o',
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image_url', image_url: { url: `data:${mime};base64,${base64}` } },
+          { type: 'text', text: PROMPT },
+        ],
+      }],
+      max_tokens: 1024,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any)?.error?.message || `Erro OpenAI: ${res.status}`);
+  }
+  const data = await res.json();
+  return extractJson(data.choices[0].message.content);
+}
+
+async function analyzeWithClaude(base64: string, mime: string, apiKey: string): Promise<AnalysisResult> {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-opus-4-7',
+      max_tokens: 1024,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mime, data: base64 } },
+          { type: 'text', text: PROMPT },
+        ],
+      }],
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any)?.error?.message || `Erro Anthropic: ${res.status}`);
+  }
+  const data = await res.json();
+  return extractJson(data.content[0].text);
+}
+
+async function analyzeWithGrok(base64: string, mime: string, apiKey: string): Promise<AnalysisResult> {
+  const res = await fetch('https://api.x.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'grok-2-vision-1212',
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image_url', image_url: { url: `data:${mime};base64,${base64}` } },
+          { type: 'text', text: PROMPT },
+        ],
+      }],
+      max_tokens: 1024,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any)?.error?.message || `Erro xAI: ${res.status}`);
+  }
+  const data = await res.json();
+  return extractJson(data.choices[0].message.content);
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+interface Props {
+  onBack: () => void;
+}
+
+const UltrasoundAnalyzer: React.FC<Props> = ({ onBack }) => {
+  const [provider, setProvider] = useState<AIProvider>('gemini');
+  const [apiKeys, setApiKeys] = useState<Record<AIProvider, string>>({
+    gemini: '', gpt: '', claude: '', grok: '',
+  });
+  const [showKey, setShowKey] = useState(false);
+
   const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [imageMime, setImageMime] = useState<string>('image/jpeg');
+  const [imageMime, setImageMime] = useState('image/jpeg');
   const [isDragging, setIsDragging] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const currentProvider = PROVIDERS.find(p => p.id === provider)!;
+
+  // Load saved keys from localStorage on mount
+  useEffect(() => {
+    const loaded: Record<AIProvider, string> = { gemini: '', gpt: '', claude: '', grok: '' };
+    for (const p of PROVIDERS) {
+      loaded[p.id] = localStorage.getItem(storageKey(p.id)) || '';
+    }
+    setApiKeys(loaded);
+  }, []);
+
+  const handleKeyChange = (value: string) => {
+    const updated = { ...apiKeys, [provider]: value };
+    setApiKeys(updated);
+    localStorage.setItem(storageKey(provider), value);
+  };
 
   const loadFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -71,33 +252,24 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
 
   const analyzeImage = async () => {
     if (!imageSrc) return;
+    const key = apiKeys[provider].trim();
+    if (!key) {
+      setError(`Insira a chave da API do ${currentProvider.label} antes de analisar.`);
+      return;
+    }
     setIsAnalyzing(true);
     setError('');
-
+    const base64 = imageSrc.split(',')[1];
     try {
-      const base64Data = imageSrc.split(',')[1];
-      const apiKey = (process.env.API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY) as string;
-
-      if (!apiKey) {
-        throw new Error('Chave da API não configurada. Defina API_KEY ou VITE_GEMINI_API_KEY.');
-      }
-
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-      const result = await model.generateContent([
-        { inlineData: { mimeType: imageMime, data: base64Data } },
-        PROMPT
-      ]);
-
-      const text = result.response.text();
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error('Resposta inesperada da IA');
-
-      setResult(JSON.parse(jsonMatch[0]) as AnalysisResult);
+      let res: AnalysisResult;
+      if (provider === 'gemini') res = await analyzeWithGemini(base64, imageMime, key);
+      else if (provider === 'gpt') res = await analyzeWithGPT(base64, imageMime, key);
+      else if (provider === 'claude') res = await analyzeWithClaude(base64, imageMime, key);
+      else res = await analyzeWithGrok(base64, imageMime, key);
+      setResult(res);
     } catch (err: any) {
       console.error('Erro na análise:', err);
-      setError(err.message || 'Erro ao analisar a imagem. Verifique se a chave da API Gemini está configurada.');
+      setError(err.message || 'Erro ao analisar. Verifique a chave da API e tente novamente.');
     } finally {
       setIsAnalyzing(false);
     }
@@ -117,7 +289,6 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
         <button
           onClick={onBack}
           className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition"
-          title="Voltar"
         >
           <ChevronLeftIcon className="w-5 h-5" />
         </button>
@@ -135,6 +306,54 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
         </div>
       </div>
 
+      {/* Provider selector + API key */}
+      <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6">
+        <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-3">
+          Selecionar IA
+        </p>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {PROVIDERS.map(p => (
+            <button
+              key={p.id}
+              onClick={() => { setProvider(p.id); setResult(null); setError(''); }}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold border transition flex items-center gap-2
+                ${provider === p.id
+                  ? p.activeClass
+                  : 'border-slate-600 text-slate-300 hover:border-slate-400 hover:text-white'}`}
+            >
+              <span className={`w-2 h-2 rounded-full ${p.dotColor}`} />
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {/* API key input for current provider */}
+        <div className="flex gap-2 items-center">
+          <div className="relative flex-1">
+            <input
+              type={showKey ? 'text' : 'password'}
+              value={apiKeys[provider]}
+              onChange={e => handleKeyChange(e.target.value)}
+              placeholder={`Chave API ${currentProvider.label} — ${currentProvider.keyPlaceholder}`}
+              className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 pl-3 pr-10 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition"
+            />
+            <button
+              type="button"
+              onClick={() => setShowKey(s => !s)}
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200"
+            >
+              {showKey ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+            </button>
+          </div>
+          <span className="text-slate-500 text-xs whitespace-nowrap">
+            Salvo localmente
+          </span>
+        </div>
+        <p className="text-slate-600 text-xs mt-1.5">
+          Modelo: {currentProvider.model} • A chave é salva só neste navegador
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left — Upload */}
         <div className="space-y-4">
@@ -144,9 +363,7 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
             onDragLeave={() => setIsDragging(false)}
             onClick={() => !imageSrc && fileInputRef.current?.click()}
             className={`relative border-2 border-dashed rounded-xl transition min-h-[260px] flex items-center justify-center
-              ${isDragging
-                ? 'border-cyan-400 bg-cyan-500/10'
-                : 'border-slate-600 hover:border-cyan-600 bg-slate-800/50 hover:bg-slate-800'}
+              ${isDragging ? 'border-cyan-400 bg-cyan-500/10' : 'border-slate-600 hover:border-cyan-600 bg-slate-800/50 hover:bg-slate-800'}
               ${!imageSrc ? 'cursor-pointer' : ''}`}
           >
             {imageSrc ? (
@@ -210,7 +427,7 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
                   ) : (
                     <>
                       <ActivityIcon className="w-5 h-5" />
-                      Analisar com IA
+                      Analisar com {currentProvider.label}
                     </>
                   )}
                 </button>
@@ -247,7 +464,7 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
                 <div className="animate-pulse w-16 h-16 bg-cyan-500/20 rounded-full mx-auto mb-4 flex items-center justify-center">
                   <ScanIcon className="w-8 h-8 text-cyan-400" />
                 </div>
-                <p className="text-white font-semibold">Processando imagem...</p>
+                <p className="text-white font-semibold">Processando com {currentProvider.label}...</p>
                 <p className="text-slate-400 text-sm mt-1">A IA está interpretando o ultrassom</p>
               </div>
             </div>
@@ -263,10 +480,15 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
                   </h3>
                   <p className="text-cyan-300/70 text-xs mt-0.5">{result.regiao}</p>
                 </div>
-                <span className="text-xs text-slate-500">
-                  {new Date().toLocaleDateString('pt-BR')}{' '}
-                  {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                </span>
+                <div className="text-right">
+                  <span className={`text-xs font-semibold ${currentProvider.accentClass}`}>
+                    via {currentProvider.label}
+                  </span>
+                  <p className="text-slate-500 text-xs mt-0.5">
+                    {new Date().toLocaleDateString('pt-BR')}{' '}
+                    {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
               </div>
 
               <div className="p-5 space-y-5">
@@ -282,10 +504,10 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
                     Achados
                   </p>
                   <ul className="space-y-1.5">
-                    {result.achados.map((achado, i) => (
+                    {result.achados.map((a, i) => (
                       <li key={i} className="text-slate-200 text-sm flex items-start gap-2">
                         <span className="text-cyan-400 mt-0.5 shrink-0">•</span>
-                        {achado}
+                        {a}
                       </li>
                     ))}
                   </ul>
@@ -305,10 +527,10 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
                     Recomendações
                   </p>
                   <ul className="space-y-1.5">
-                    {result.recomendacoes.map((rec, i) => (
+                    {result.recomendacoes.map((r, i) => (
                       <li key={i} className="text-slate-200 text-sm flex items-start gap-2">
                         <span className="text-green-400 mt-0.5 shrink-0">→</span>
-                        {rec}
+                        {r}
                       </li>
                     ))}
                   </ul>
@@ -316,9 +538,9 @@ const UltrasoundAnalyzer: React.FC<UltrasoundAnalyzerProps> = ({ onBack }) => {
 
                 <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
                   <p className="text-amber-300 text-xs leading-relaxed">
-                    ⚠️ Laudo gerado por IA como suporte à decisão clínica. Não substitui
-                    avaliação de médico especialista. Revise os achados com um radiologista
-                    ou ultrassonografista habilitado antes de qualquer conduta.
+                    ⚠️ Laudo gerado por IA como suporte à decisão clínica. Não substitui avaliação
+                    de médico especialista. Revise os achados com um radiologista ou ultrassonografista
+                    habilitado antes de qualquer conduta.
                   </p>
                 </div>
               </div>
