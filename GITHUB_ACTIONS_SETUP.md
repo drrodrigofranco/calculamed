@@ -21,14 +21,14 @@ https://github.com/drrodrigofranco/calculamed/settings/secrets/actions
 
 | Nome | Valor | Descrição |
 |------|-------|-----------|
-| `VPS_HOST` | `194.163.129.14` | IP do VPS |
-| `VPS_USER` | `root` | Usuário SSH |
-| `VPS_PASSWORD` | `Xp9@mK#7vL2$qR5!nT8` | Senha SSH |
+| `VPS_HOST` | `[IP_DO_VPS]` | IP do VPS |
+| `VPS_USER` | `[USUARIO_SSH]` | Usuário SSH |
+| `VPS_PASSWORD` | `[SENHA_SSH]` | Senha SSH |
 
 **Como adicionar:**
 1. Clique em "New repository secret"
 2. Name: `VPS_HOST`
-3. Secret: `194.163.129.14`
+3. Secret: `[IP_DO_VPS]`
 4. Clique em "Add secret"
 5. Repita para os outros 2
 

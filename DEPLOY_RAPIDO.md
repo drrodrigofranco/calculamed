@@ -25,14 +25,14 @@
 ### Secret 1:
 ```
 Name:   VPS_HOST
-Secret: 194.163.129.14
+Secret: [IP_DO_VPS]
 ```
 Clique em "Add secret"
 
 ### Secret 2:
 ```
 Name:   VPS_USER
-Secret: root
+Secret: [USUARIO_SSH]
 ```
 Clique em "Add secret"
 
@@ -51,7 +51,7 @@ Clique em "Add secret"
 
 ### Conecte ao VPS:
 ```bash
-ssh root@194.163.129.14
+ssh [USUARIO_SSH]@[IP_DO_VPS]
 # Digite sua senha SSH quando solicitado
 ```
 
@@ -93,7 +93,7 @@ Se vir a tela de LOGIN → ✅ **SUCESSO!**
 ## 🔐 PASSO 5: Mude Senha SSH (depois)
 
 ```bash
-ssh root@194.163.129.14
+ssh [USUARIO_SSH]@[IP_DO_VPS]
 passwd root
 # Digite nova senha (não compartilhe com ninguém!)
 ```
