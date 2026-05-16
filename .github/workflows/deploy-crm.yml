@@ -32,7 +32,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
           script: |
             set -e
@@ -41,23 +41,17 @@ jobs:
             BRANCH="claude/check-contabo-connection-6w3Hm"
             REPO="https://github.com/drrodrigofranco/calculamed.git"
 
-            # Instala Node.js se não estiver instalado
             if ! command -v node &> /dev/null; then
-              echo "Instalando Node.js..."
               curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
               apt-get install -y nodejs
             fi
 
-            # Cria diretório e clona se não existir
             if [ ! -d "$PROJECT_DIR/.git" ]; then
-              echo "Clonando repositório..."
               mkdir -p "$PROJECT_DIR"
               git clone "$REPO" "$PROJECT_DIR"
             fi
 
             cd "$PROJECT_DIR"
-
-            # Cria diretório public se não existir
             mkdir -p public
 
             git fetch origin
