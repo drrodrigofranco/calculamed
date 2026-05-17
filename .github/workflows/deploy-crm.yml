@@ -1,10 +1,10 @@
-name: 🚀 Deploy CRM to VPS
+name: Deploy CRM to VPS
 
 on:
   push:
     branches:
-      - claude/crm-login-page-Fiyx2
       - main
+      - claude/check-contabo-connection-6w3Hm
   workflow_dispatch:
 
 jobs:
@@ -12,58 +12,56 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
-      - name: 📦 Install dependencies
-        run: npm install
+      - name: Install dependencies
+        run: npm ci
 
-      - name: 🔨 Build project
+      - name: Build project
         run: npm run build
 
-      - name: 📤 Deploy to VPS via SSH
-        uses: appleboy/ssh-action@master
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: 22
           script: |
-            echo "🚀 Iniciando deploy no VPS..."
-            cd /home/claudeprojetos/crmclinica
+            set -e
 
-            echo "📦 Atualizando repositório..."
+            PROJECT_DIR="/home/claudeprojetos/crmclinica"
+            BRANCH="claude/check-contabo-connection-6w3Hm"
+            REPO="https://github.com/drrodrigofranco/calculamed.git"
+
+            if ! command -v node &> /dev/null; then
+              curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+              apt-get install -y nodejs
+            fi
+
+            if [ ! -d "$PROJECT_DIR/.git" ]; then
+              mkdir -p "$PROJECT_DIR"
+              git clone "$REPO" "$PROJECT_DIR"
+            fi
+
+            cd "$PROJECT_DIR"
+            mkdir -p public
+
             git fetch origin
-            git checkout ${{ github.ref_name }}
+            git checkout "$BRANCH"
+            git pull origin "$BRANCH"
 
-            echo "📥 Instalando dependências..."
-            npm install
-
-            echo "🔨 Building projeto..."
+            npm ci
             npm run build
-
-            echo "📋 Copiando arquivos para public..."
             cp -r dist/* public/
 
-            echo "✅ Deploy concluído com sucesso!"
-            ls -la public/ | head -10
-
-      - name: ✅ Deployment Success
-        if: success()
-        run: |
-          echo "🎉 Deploy realizado com sucesso!"
-          echo "🌐 Acesse: https://crm.calculamed.com"
-
-      - name: ❌ Deployment Failed
-        if: failure()
-        run: |
-          echo "❌ Deploy falhou. Verifique os logs."
-          exit 1
+            echo "Deploy concluido: $(date)"
+            ls -lh public/ | head -5

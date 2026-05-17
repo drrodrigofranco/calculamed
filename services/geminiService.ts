@@ -1,55 +1,25 @@
-// @google/genai coding guideline: Always use `import {GoogleGenAI} from "@google/genai";`.
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NewsItem } from '../types';
 
-// @google/genai coding guideline: The API key must be obtained exclusively from the environment variable `process.env.API_KEY`.
-// @google/genai coding guideline: Do not generate any UI elements (input fields, forms, prompts, configuration sections) or code snippets for entering or managing the API key.
-// Fix: Removed direct API key import from import.meta.env as per guidelines, now uses process.env.API_KEY directly.
-// Fix: Removed `apiKey` variable declaration.
-
-// @google/genai coding guideline: Always use `const ai = new GoogleGenAI({apiKey: process.env.API_KEY});`.
-// Fix: Initialized GoogleGenAI with the correct named parameter and environment variable.
-const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+const getAI = () => {
+  const apiKey = (process.env.API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY) as string;
+  return new GoogleGenerativeAI(apiKey || '');
+};
 
 export const fetchMedicalNews = async (): Promise<NewsItem[]> => {
-  // @google/genai coding guideline: The API key is assumed to be pre-configured, valid, and accessible.
-  // Fix: Removed API key check and direct return of mock data, as per guidelines.
-  // The API client initialization is expected to handle the API key availability.
-
   try {
-    const response = await ai.models.generateContent({
-      // @google/genai coding guideline: Do not use deprecated models like `gemini-1.5-flash`.
-      // Fix: Changed deprecated model to 'gemini-2.5-flash' for basic text tasks.
-      model: "gemini-2.5-flash", 
-      contents: [{
-        parts: [{
-          text: "Gere 5 resumos informativos sobre tópicos recentes e relevantes na medicina, focados em clínica geral, cardiologia ou saúde pública. O tom deve ser profissional e técnico. Retorne em formato JSON com os campos: title, category, summary, impact."
-        }]
-      }],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              title: { type: Type.STRING, description: "Título da notícia" },
-              category: { type: Type.STRING, description: "Categoria médica (ex: Cardiologia, Pediatria)" },
-              summary: { type: Type.STRING, description: "Resumo de 2 a 3 frases do conteúdo" },
-              impact: { type: Type.STRING, description: "Breve explicação do impacto clínico" }
-            },
-            required: ["title", "category", "summary", "impact"]
-          }
-        }
-      }
-    });
+    const ai = getAI();
+    const model = ai.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    // @google/genai coding guideline: Extracting Text Output from GenerateContentResponse using .text property.
-    // Fix: Using response.text to get the string output directly.
-    const jsonText = response.text;
-    if (!jsonText) throw new Error("No data returned");
-    
-    return JSON.parse(jsonText) as NewsItem[];
+    const result = await model.generateContent(
+      "Gere 5 resumos informativos sobre tópicos recentes e relevantes na medicina, focados em clínica geral, cardiologia ou saúde pública. O tom deve ser profissional e técnico. Retorne SOMENTE um array JSON com os campos: title, category, summary, impact. Sem texto fora do JSON."
+    );
+
+    const text = result.response.text();
+    const match = text.match(/\[[\s\S]*\]/);
+    if (!match) throw new Error("No JSON array in response");
+
+    return JSON.parse(match[0]) as NewsItem[];
   } catch (error) {
     console.error("Error fetching news from Gemini:", error);
     return getMockNews();

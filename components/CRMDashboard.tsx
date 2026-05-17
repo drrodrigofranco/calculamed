@@ -10,14 +10,19 @@ import {
   FileTextIcon,
   SearchIcon,
   TrashIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ScanIcon
 } from './icons';
+import UltrasoundAnalyzer from './UltrasoundAnalyzer';
+
+type DashboardView = 'main' | 'ultrasound';
 
 interface CRMDashboardProps {
   onLogout: () => void;
 }
 
 const CRMDashboard: React.FC<CRMDashboardProps> = ({ onLogout }) => {
+  const [view, setView] = useState<DashboardView>('main');
   const [patients, setPatients] = useState<Patient[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -42,7 +47,7 @@ const CRMDashboard: React.FC<CRMDashboardProps> = ({ onLogout }) => {
 
   const filteredPatients = patients.filter(p =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.contact.toLowerCase().includes(searchQuery.toLowerCase())
+    (p.contact ?? '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAddPatient = (e: React.FormEvent) => {
@@ -79,25 +84,83 @@ const CRMDashboard: React.FC<CRMDashboardProps> = ({ onLogout }) => {
     ? (patients.reduce((sum, p) => sum + p.notes.length, 0) / patients.length).toFixed(1)
     : '0';
 
+  if (view === 'ultrasound') {
+    return (
+      <div className="min-h-screen bg-slate-900 text-slate-100">
+        <div className="bg-gradient-to-r from-blue-900 to-slate-900 border-b border-slate-700 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <h1 className="text-xl font-bold text-white flex items-center gap-2">
+              <BarChart3Icon className="w-6 h-6 text-blue-400" />
+              CalculaMed CRM
+            </h1>
+            <div className="flex items-center gap-3">
+              <nav className="flex gap-1">
+                <button
+                  onClick={() => setView('main')}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700 transition"
+                >
+                  Dashboard
+                </button>
+                <button
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <ScanIcon className="w-4 h-4" />
+                    Ultrassom IA
+                  </span>
+                </button>
+              </nav>
+              <button
+                onClick={onLogout}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition text-sm"
+              >
+                Sair
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+          <UltrasoundAnalyzer onBack={() => setView('main')} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-900 to-slate-900 border-b border-slate-700 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-                <BarChart3Icon className="w-8 h-8 text-blue-400" />
+              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                <BarChart3Icon className="w-7 h-7 text-blue-400" />
                 CalculaMed CRM
               </h1>
-              <p className="text-slate-400 text-sm mt-1">Dashboard de Gestão Clínica</p>
+              <p className="text-slate-400 text-sm mt-0.5">Dashboard de Gestão Clínica</p>
             </div>
-            <button
-              onClick={onLogout}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition"
-            >
-              Sair
-            </button>
+            <div className="flex items-center gap-3">
+              <nav className="flex gap-1">
+                <button
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white"
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => setView('ultrasound')}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700 transition flex items-center gap-1.5"
+                >
+                  <ScanIcon className="w-4 h-4" />
+                  Ultrassom IA
+                </button>
+              </nav>
+              <button
+                onClick={onLogout}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition text-sm"
+              >
+                Sair
+              </button>
+            </div>
           </div>
         </div>
       </div>
